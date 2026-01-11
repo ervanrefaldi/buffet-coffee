@@ -56,6 +56,8 @@
     <br>
 
     <button type="submit">Login</button>
+    <br><br>
+    <a href="/forgot-password">Lupa password?</a>
 </form>
 
 <p>Belum punya akun? <a href="/register">Register</a></p>

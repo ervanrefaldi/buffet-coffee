@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+
+require __DIR__.'/auth.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -123,6 +127,15 @@ Route::post('/logout', function () {
 
 /*
 |--------------------------------------------------------------------------
+| EMAIL VERIFICATION
+|--------------------------------------------------------------------------
+*/
+Route::get('/verify-email', EmailVerificationPromptController::class)
+    ->middleware('auth')
+    ->name('verification.notice');
+
+/*
+|--------------------------------------------------------------------------
 | USER ONLY
 |--------------------------------------------------------------------------
 */
@@ -157,4 +170,28 @@ Route::get('/admin', function () {
     }
 
     return 'Dashboard Owner';
+});
+
+/*
+|--------------------------------------------------------------------------
+| PAGE
+|--------------------------------------------------------------------------
+*/
+Route::get('/tentang', [PageController::class, 'about']);
+
+/*
+|--------------------------------------------------------------------------
+| EVENT
+|--------------------------------------------------------------------------
+*/
+Route::get('/event', function () {
+
+    // Ambil hanya event yang masih aktif (berdasarkan tanggal)
+    $events = DB::table('events')
+        ->where('start_date', '<=', date('Y-m-d'))
+        ->where('end_date', '>=', date('Y-m-d'))
+        ->orderBy('start_date', 'asc')
+        ->get();
+
+    return view('event', compact('events'));
 });
