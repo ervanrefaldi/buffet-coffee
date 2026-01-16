@@ -30,14 +30,15 @@
             </a>
             
             <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
-                <a href="{{ url('/#hero') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="{{ url('/about') }}" class="text-gold border-b-2 border-gold pb-1 text-sm uppercase tracking-widest">About</a>
-                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Produk</a>
+                <a href="{{ url('/') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
+                <a href="{{ url('/tentang') }}" class="text-gold border-b-2 border-gold pb-1 text-sm uppercase tracking-widest">Tentang</a>
+                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Menu</a>
                 <a href="{{ url('/event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
             </div>
 
-            <a href="{{ url('/#hero') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
-                Kembali
+            <a href="{{ url('/') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
+                ← Kembali
             </a>
         </div>
     </nav>

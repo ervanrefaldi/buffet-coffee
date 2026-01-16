@@ -45,20 +45,29 @@
             </a>
             <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
                 <a href="#hero" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="#about" class="hover:text-gold transition text-sm uppercase tracking-widest">About</a>
-                <a href="#produk" class="hover:text-gold transition text-sm uppercase tracking-widest">Produk</a>
-                <a href="#event" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/tentang') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Tentang</a>
+                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Menu</a>
+                <a href="{{ url('/event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
             </div>
 
-            {{-- LOGIKA NAVBAR: Pesan Sekarang --}}
+            {{-- LOGIKA NAVBAR: Login/Register atau Profile --}}
             @if(session()->has('user_id'))
-                <a href="{{ url('/produk') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
-                    Pesan Sekarang
+                <a href="{{ url('/profile') }}" class="bg-gold text-white px-6 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Profile</span>
                 </a>
             @else
-                <a href="{{ url('/login') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
-                    Pesan Sekarang
-                </a>
+                <div class="hidden md:flex space-x-4">
+                    <a href="{{ url('/login') }}" class="bg-gold text-white px-6 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
+                        Login
+                    </a>
+                    <a href="{{ url('/register') }}" class="bg-gold text-white px-6 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
+                        Register
+                    </a>
+                </div>
             @endif
         </div>
     </nav>
@@ -142,37 +151,35 @@
             <h2 class="text-5xl font-serif font-bold mt-2 mb-16 text-brown">Produk Kami</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                @php 
-                $products = [
-                    ['name' => 'WINE', 'desc' => 'Bubuk Kopi', 'img' => 'p1.png', 'prices' => [['size' => '200gr', 'price' => '120.000'], ['size' => '1kg', 'price' => '350.000']]],
-                    ['name' => 'NATURAL', 'desc' => 'Bubuk Kopi', 'img' => 'p2.png', 'prices' => [['size' => '200gr', 'price' => '100.000'], ['size' => '1kg', 'price' => '300.000']]],
-                    ['name' => 'HONEY', 'desc' => 'Bubuk Kopi', 'img' => 'p3.png', 'prices' => [['size' => '200gr', 'price' => '95.000'], ['size' => '1kg', 'price' => '300.000']]]
-                ]; 
-                @endphp
-
+                @if($products->count() > 0)
                 @foreach($products as $product)
                 <div class="group bg-cream rounded-[2.5rem] p-8 shadow-xl border border-transparent hover:border-gold/20 transition-all duration-500">
                     <div class="rounded-[2rem] overflow-hidden mb-8 h-72 bg-white flex items-center justify-center p-6 shadow-inner">
-                        <img src="{{ asset('images/' . $product['img']) }}" alt="{{ $product['name'] }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-700">
+                        @if($product->image)
+                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-700">
+                        @else
+                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                <span class="text-4xl">☕</span>
+                                <span class="text-xs mt-2">No Image</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="text-center mb-6">
-                        <span class="text-gold font-bold text-[10px] uppercase tracking-[0.3em]">{{ $product['desc'] }}</span>
-                        <h3 class="text-4xl font-serif font-bold mt-1 text-brown uppercase leading-none">{{ $product['name'] }}</h3>
+                        <span class="text-gold font-bold text-[10px] uppercase tracking-[0.3em]">{{ ucfirst($product->category) }}</span>
+                        <h3 class="text-4xl font-serif font-bold mt-1 text-brown uppercase leading-none">{{ $product->name }}</h3>
                     </div>
 
                     <div class="space-y-3 mb-8 text-left">
-                        @foreach($product['prices'] as $p)
-                        <div class="flex justify-between items-center bg-white/50 px-4 py-2 rounded-xl border border-brown/5">
-                            <span class="text-xs font-bold text-brown-light uppercase tracking-widest">{{ $p['size'] }}</span>
-                            <span class="text-sm font-black text-brown italic">Rp {{ $p['price'] }}</span>
+                         <div class="flex justify-between items-center bg-white/50 px-4 py-2 rounded-xl border border-brown/5">
+                            <span class="text-xs font-bold text-brown-light uppercase tracking-widest">{{ $product->weight_kg }} Kg</span>
+                            <span class="text-sm font-black text-brown italic">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                         </div>
-                        @endforeach
                     </div>
                     
                     {{-- LOGIKA PRODUK: Tombol Pesan --}}
                     @if(session()->has('user_id'))
-                        <a href="https://wa.me/+6282118189789" target="_blank" class="block w-full py-4 bg-brown text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-gold transition-colors duration-300 shadow-lg text-center">
+                        <a href="https://wa.me/+6282118189789?text=Halo%20Bufet%20Coffee,%20saya%20ingin%20memesan%20{{ urlencode($product->name) }}" target="_blank" class="block w-full py-4 bg-brown text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-gold transition-colors duration-300 shadow-lg text-center">
                             Pesan Sekarang
                         </a>
                     @else
@@ -182,6 +189,11 @@
                     @endif
                 </div>
                 @endforeach
+                @else
+                    <div class="col-span-1 md:col-span-3 text-center py-12">
+                        <p class="text-brown/60 font-serif italic text-xl">Belum ada produk yang tersedia saat ini.</p>
+                    </div>
+                @endif
             </div>
         </div>
         <div class="mt-16 text-center w-full flex justify-center">
@@ -194,13 +206,32 @@
     <section id="event" class="py-24 bg-cream px-6">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
             <div class="lg:w-1/2 w-full">
-                <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl group">
-                    <img src="{{ asset('images/event.jpeg') }}" alt="Event Bufet Coffee" class="w-full h-[450px] object-cover filter grayscale hover:grayscale-0 transition-all duration-700">
-                    <div class="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-6 text-center hover:bg-black/40 transition-colors">
-                        <span class="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider mb-4 shadow-lg transform rotate-[-5deg]">Telah Dilaksanakan</span>
-                        <h3 class="text-2xl md:text-4xl font-serif font-bold text-white uppercase leading-tight">Manual Brew Competition 2024</h3>
+                @if(isset($events) && count($events) > 0)
+                    <div class="grid grid-cols-2 gap-4">
+                        @foreach($events as $event)
+                        <div class="relative rounded-2xl overflow-hidden shadow-lg group h-48 sm:h-56"> <!-- Adjusted height for better aspect ratio -->
+                            @if($event->image)
+                                <img src="{{ asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            @else
+                                <div class="w-full h-full bg-brown/10 flex items-center justify-center">
+                                    <span class="text-brown/40 font-serif italic text-xs">No Image</span>
+                                </div>
+                            @endif
+                            <div class="absolute inset-0 bg-black/40 flex items-end justify-center p-4 transition-all duration-300 group-hover:bg-black/50">
+                                <h3 class="text-white font-serif font-bold text-center text-xs md:text-sm uppercase tracking-wider mb-2">{{ $event->title }}</h3>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
-                </div>
+                @else
+                    <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl group">
+                        <img src="{{ asset('images/event.jpeg') }}" alt="Event Bufet Coffee" class="w-full h-[450px] object-cover filter grayscale hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-6 text-center hover:bg-black/40 transition-colors">
+                            <span class="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider mb-4 shadow-lg transform rotate-[-5deg]">Telah Dilaksanakan</span>
+                            <h3 class="text-2xl md:text-4xl font-serif font-bold text-white uppercase leading-tight">Manual Brew Competition 2024</h3>
+                        </div>
+                    </div>
+                @endif
             </div>
             <div class="lg:w-1/2">
                 <h2 class="text-4xl font-serif font-bold text-brown mb-6 leading-tight">Nikmati Event Spesial di Bufet Coffee</h2>

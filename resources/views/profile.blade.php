@@ -32,18 +32,16 @@
             </a>
             
             <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
-                <a href="{{ url('/#hero') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="{{ url('/about') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">About</a>
-                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Produk</a>
-                <a href="{{ url('/#event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
+                <a href="{{ url('/tentang') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Tentang</a>
+                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Menu</a>
+                <a href="{{ url('/event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
             </div>
 
-            <form action="{{ url('/logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-2.5 rounded-full font-bold hover:bg-red-500 hover:border-red-500 transition duration-300 text-xs uppercase tracking-widest">
-                    Logout
-                </button>
-            </form>
+            <a href="{{ url('/') }}" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-2.5 rounded-full font-bold hover:bg-gold hover:border-gold transition duration-300 text-xs uppercase tracking-widest">
+                ← Kembali
+            </a>
         </div>
     </nav>
 
@@ -57,6 +55,15 @@
 
     <main class="flex-grow max-w-4xl mx-auto w-full px-6 -mt-20 relative z-20 pb-20">
         <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 md:p-12 border border-brown/5">
+            
+            {{-- Logout Form --}}
+            <div class="mb-8 text-right">
+                <form id="logout-form" action="/logout" method="POST">
+                    <button type="submit" class="px-8 py-4 bg-red-500 text-white border border-red-500 rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-red-600 hover:border-red-600 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95">
+                        Logout
+                    </button>
+                </form>
+            </div>
             
             {{-- Alert Success --}}
             @if (session('success'))
@@ -76,7 +83,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="/profile/update" class="space-y-8">
+            <form method="POST" action="/profile/update" id="profile-form" class="space-y-8">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -107,17 +114,23 @@
 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black uppercase tracking-[0.2em] text-brown/40 ml-1">Bio / Catatan Alamat</label>
-                    <textarea name="bio" rows="4" placeholder="Tulis bio atau detail alamat pengiriman kamu di sini..."
+                    <textarea name="bio" rows="4" maxlength="20" placeholder="Tulis bio atau detail alamat pengiriman kamu di sini..."
                               class="w-full bg-cream/50 border border-brown/10 rounded-2xl px-6 py-4 outline-none focus:border-gold focus:ring-1 focus:ring-gold transition duration-300 font-medium">{{ old('bio', $user->bio) }}</textarea>
                 </div>
 
-                <div class="pt-4">
-                    <button type="submit" 
-                            class="w-full md:w-auto px-12 py-4 bg-brown text-white rounded-full font-black uppercase text-xs tracking-[0.2em] hover:bg-gold transition-all duration-300 shadow-xl shadow-brown/20 hover:scale-105 active:scale-95">
-                        Simpan Perubahan
-                    </button>
+                <div class="pt-4 flex justify-center">
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="pt-4 flex justify-center">
+                    <div class="flex flex-col items-center space-y-4">
+                        <button type="submit" form="profile-form"
+                                class="px-12 py-4 bg-brown text-white rounded-full font-black uppercase text-xs tracking-[0.2em] hover:bg-gold transition-all duration-300 shadow-xl shadow-brown/20 hover:scale-105 active:scale-95">
+                            Simpan Perubahan
+                        </button>
+                    </div>
                 </div>
-            </form>
+
+                    </div>
+                </div>
         </div>
     </main>
 

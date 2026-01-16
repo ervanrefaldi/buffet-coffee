@@ -30,23 +30,17 @@
             </a>
             
             <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
-                <a href="{{ url('/#hero') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="{{ url('/about') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">About</a>
-                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Produk</a>
+                <a href="{{ url('/') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
+                <a href="{{ url('/tentang') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Tentang</a>
+                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Menu</a>
                 <a href="{{ url('/event') }}" class="text-gold border-b-2 border-gold pb-1 text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
             </div>
 
             <div class="flex items-center">
-                @if(session()->has('user_id'))
-                    <a href="{{ url('/profile') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest">
-                        Profile
-                    </a>
-                @else
-                    <div class="flex items-center gap-6">
-                        <a href="{{ url('/login') }}" class="text-white hover:text-gold transition text-xs font-bold uppercase tracking-widest">Login</a>
-                        <a href="{{ url('/register') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest">Register</a>
-                    </div>
-                @endif
+                <a href="{{ url('/') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest">
+                    ← Kembali
+                </a>
             </div>
         </div>
     </nav>
@@ -71,7 +65,7 @@
                 <div class="bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-brown/5 border border-brown/5 group flex flex-col transition-all duration-500 hover:shadow-2xl">
                     <div class="h-80 overflow-hidden relative">
                         @if($event->image)
-                            <img src="{{ asset('storage/events/'.$event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                            <img src="{{ asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         @else
                             <div class="w-full h-full bg-brown/5 flex items-center justify-center">
                                 <span class="text-brown/20 font-serif text-4xl italic">Bufet Event</span>

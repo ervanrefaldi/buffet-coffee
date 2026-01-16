@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class OwnerProductController extends Controller
+{
+    public function index()
+    {
+        $products = Product::orderBy('created_at', 'desc')->paginate(10);
+        return view('owner.menu.index', compact('products'));
+    }
+
+    public function create()
+    {
+        return view('owner.menu.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:100',
+            'category'    => 'required|in:biji,bubuk',
+            'price'       => 'required|numeric|min:0',
+            'weight_kg'   => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'image'       => 'required|image|mimes:jpeg,png,jpg|max:200'
+        ], [
+            'image.max' => 'Ukuran gambar maksimal 200KB.'
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images/products'), $filename);
+            $imagePath = 'images/products/' . $filename;
+        }
+
+        Product::create([
+            'name'        => $request->name,
+            'category'    => $request->category,
+            'price'       => $request->price,
+            'weight_kg'   => $request->weight_kg,
+            'description' => $request->description,
+            'image'       => $imagePath
+        ]);
+
+        return redirect()->route('menu.index')->with('success', 'Produk berhasil ditambahkan.');
+    }
+
+    public function edit($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('owner.menu.edit', compact('product'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'name'        => 'required|string|max:100',
+            'category'    => 'required|in:biji,bubuk',
+            'price'       => 'required|numeric|min:0',
+            'weight_kg'   => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:200'
+        ], [
+            'image.max' => 'Ukuran gambar maksimal 200KB.'
+        ]);
+
+        $data = $request->except(['image']);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
+            }
+
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images/products'), $filename);
+            $data['image'] = 'images/products/' . $filename;
+        }
+
+        $product->update($data);
+
+        return redirect()->route('menu.index')->with('success', 'Produk berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
+        
+        if ($product->image && file_exists(public_path($product->image))) {
+            unlink(public_path($product->image));
+        }
+
+        $product->delete();
+
+        return redirect()->route('menu.index')->with('success', 'Produk berhasil dihapus.');
+    }
+}

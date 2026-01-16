@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('weight_kg', 10, 2);
-            $table->integer('stock');
+
 
             // Kategori produk
             $table->enum('category', ['biji', 'bubuk']);

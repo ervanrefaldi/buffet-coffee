@@ -30,23 +30,17 @@
             </a>
             
             <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
-                <a href="{{ url('/#hero') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="{{ url('/about') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">About</a>
-                <a href="{{ url('/produk') }}" class="text-gold border-b-2 border-gold pb-1 text-sm uppercase tracking-widest">Produk</a>
-                <a href="{{ url('/#event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
+                <a href="{{ url('/tentang') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Tentang</a>
+                <a href="{{ url('/produk') }}" class="text-gold border-b-2 border-gold pb-1 text-sm uppercase tracking-widest">Menu</a>
+                <a href="{{ url('/event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
+                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
             </div>
 
             <div class="flex items-center">
-                @if(session()->has('user_id'))
-                    <a href="{{ url('/profile') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest">
-                        Profile
-                    </a>
-                @else
-                    <div class="flex items-center gap-6">
-                        <a href="{{ url('/login') }}" class="text-white hover:text-gold transition text-xs font-bold uppercase tracking-widest">Login</a>
-                        <a href="{{ url('/register') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest">Register</a>
-                    </div>
-                @endif
+                <a href="{{ url('/') }}" class="bg-gold text-white px-8 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest">
+                    ← Kembali
+                </a>
             </div>
         </div>
     </nav>
@@ -67,27 +61,15 @@
         $userName = session('user')->name;
     }
 
-    $sections = [
-        'Bubuk Kopi' => [
-            ['id' => 'bubuk_wine', 'name' => 'WINE (Bubuk)', 'img' => 'p1.png', 'type' => 'contain', 'prices' => [['s' => '200gr', 'p' => '120.000'], ['s' => '500gr', 'p' => '200.000'], ['s' => '1kg', 'p' => '350.000']]],
-            ['id' => 'bubuk_natural', 'name' => 'NATURAL (Bubuk)', 'img' => 'p2.png', 'type' => 'contain', 'prices' => [['s' => '200gr', 'p' => '100.000'], ['s' => '500gr', 'p' => '180.000'], ['s' => '1kg', 'p' => '300.000']]],
-            ['id' => 'bubuk_honey', 'name' => 'HONEY (Bubuk)', 'img' => 'p3.png', 'type' => 'contain', 'prices' => [['s' => '200gr', 'p' => '95.000'], ['s' => '500gr', 'p' => '170.000'], ['s' => '1kg', 'p' => '300.000']]],
-            ['id' => 'bubuk_washed', 'name' => 'FULL WASHED (Bubuk)', 'img' => 'p4.png', 'type' => 'contain', 'prices' => [['s' => '200gr', 'p' => '90.000'], ['s' => '500gr', 'p' => '170.000'], ['s' => '1kg', 'p' => '300.000']]],
-        ],
-        'Biji Kopi' => [
-            ['id' => 'biji_wine', 'name' => 'WINE (Biji)', 'img' => 'kopi8.jpeg', 'type' => 'cover', 'prices' => [['s' => '200gr', 'p' => '120.000'], ['s' => '500gr', 'p' => '200.000'], ['s' => '1kg', 'p' => '350.000']]],
-            ['id' => 'biji_natural', 'name' => 'NATURAL (Biji)', 'img' => 'kopi9.jpeg', 'type' => 'cover', 'prices' => [['s' => '200gr', 'p' => '100.000'], ['s' => '500gr', 'p' => '180.000'], ['s' => '1kg', 'p' => '300.000']]],
-            ['id' => 'biji_honey', 'name' => 'HONEY (Biji)', 'img' => 'kopi10.jpeg', 'type' => 'cover', 'prices' => [['s' => '200gr', 'p' => '95.000'], ['s' => '500gr', 'p' => '170.000'], ['s' => '1kg', 'p' => '300.000']]],
-            ['id' => 'biji_washed', 'name' => 'FULL WASHED (Biji)', 'img' => 'kopi7.jpeg', 'type' => 'cover', 'prices' => [['s' => '200gr', 'p' => '90.000'], ['s' => '500gr', 'p' => '170.000'], ['s' => '1kg', 'p' => '300.000']]],
-        ]
-    ];
+    // Group products by category
+    $sections = $products->groupBy('category');
     @endphp
 
     <main class="max-w-7xl mx-auto px-6 py-20">
-        @foreach($sections as $title => $items)
+        @forelse($sections as $category => $items)
         <section class="mb-24">
             <div class="flex items-center gap-6 mb-12">
-                <h2 class="text-3xl font-serif font-bold text-brown uppercase whitespace-nowrap">{{ $title }}</h2>
+                <h2 class="text-3xl font-serif font-bold text-brown uppercase whitespace-nowrap">{{ $category == 'biji' ? 'Biji Kopi' : 'Bubuk Kopi' }}</h2>
                 <div class="h-px w-full bg-gold/20"></div>
             </div>
 
@@ -95,32 +77,35 @@
                 @foreach($items as $item)
                 <div class="group bg-white rounded-[2.5rem] p-8 shadow-sm border border-brown/5 flex flex-col items-center">
                     <div class="h-52 w-full flex items-center justify-center mb-6 overflow-hidden rounded-2xl bg-cream/30">
-                        <img src="{{ asset('images/' . $item['img']) }}" 
-                             class="{{ $item['type'] == 'cover' ? 'w-full h-full object-cover' : 'max-h-[80%] object-contain' }} group-hover:scale-110 transition duration-500">
+                        @if($item->image)
+                            <img src="{{ asset($item->image) }}" 
+                                 class="max-h-[80%] object-contain group-hover:scale-110 transition duration-500">
+                        @else
+                            <div class="flex flex-col items-center justify-center text-brown/40">
+                                <span class="text-4xl mb-2">☕</span>
+                                <span class="text-xs uppercase font-bold">No Image</span>
+                            </div>
+                        @endif
                     </div>
                     
-                    <h3 class="text-xl font-serif font-bold mb-4 text-center">{{ $item['name'] }}</h3>
+                    <h3 class="text-xl font-serif font-bold mb-4 text-center">{{ $item->name }}</h3>
                     
                     <div class="w-full mb-4">
-                        <label class="text-[9px] uppercase font-bold text-brown/40 block mb-2 text-center">Pilih Gramasi</label>
-                        <select onchange="updatePrice('{{ $item['id'] }}', this, '{{ $userName }}')" 
-                                class="w-full bg-cream border border-brown/10 rounded-xl px-4 py-2.5 text-xs font-bold text-brown outline-none focus:border-gold transition">
-                            @foreach($item['prices'] as $opt)
-                                <option value="{{ $opt['p'] }}" data-size="{{ $opt['s'] }}">{{ $opt['s'] }}</option>
-                            @endforeach
-                        </select>
+                        <label class="text-[9px] uppercase font-bold text-brown/40 block mb-2 text-center">Detail Produk</label>
+                        <div class="text-center">
+                             <span class="text-xs font-bold text-brown">{{ $item->weight_kg }} Kg</span>
+                        </div>
                     </div>
 
                     <div class="mb-8 text-center">
-                        <span id="price-{{ $item['id'] }}" class="text-2xl font-black text-gold">Rp {{ $item['prices'][0]['p'] }}</span>
+                        <span class="text-2xl font-black text-gold">Rp {{ number_format($item->price, 0, ',', '.') }}</span>
                     </div>
 
                     @if(session()->has('user_id'))
                         @php
-                            $initialMsg = "Halo Bufet Coffee, saya ingin memesan\nNama: {$userName}\nProduk: {$item['name']}\nJumlah: {$item['prices'][0]['s']}";
+                            $initialMsg = "Halo Bufet Coffee, saya ingin memesan\nNama: {$userName}\nProduk: {$item->name}\nJumlah: 1 Pcs";
                         @endphp
-                        <a id="link-{{ $item['id'] }}" 
-                           href="https://wa.me/{{ $waNumber }}?text={{ rawurlencode($initialMsg) }}" 
+                        <a href="https://wa.me/{{ $waNumber }}?text={{ rawurlencode($initialMsg) }}" 
                            target="_blank" 
                            class="w-full py-4 bg-brown text-white text-center rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all shadow-lg">
                            Pesan Sekarang
@@ -134,7 +119,14 @@
                 @endforeach
             </div>
         </section>
-        @endforeach
+        @empty
+        <section class="mb-24 text-center">
+            <div class="py-20 bg-cream/30 rounded-[3rem]">
+                <h3 class="text-2xl font-serif text-brown/60 italic mb-4">Belum ada produk yang tersedia saat ini.</h3>
+                <p class="text-sm text-brown/40 uppercase tracking-widest">Silakan cek kembali nanti</p>
+            </div>
+        </section>
+        @endforelse
     </main>
 
     <footer class="bg-[#2C1E17] text-cream pt-20 pb-12 mt-20">

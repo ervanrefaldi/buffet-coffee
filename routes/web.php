@@ -9,13 +9,25 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 
 require __DIR__.'/auth.php';
 
+
 /*
 |--------------------------------------------------------------------------
 | HOME
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return view('index');
+    // Ambil event yang sedang aktif ATAU akan datang (Upcoming)
+    // Batasi 4 event untuk tampilan home
+    $events = DB::table('events')
+        ->where('end_date', '>=', date('Y-m-d')) 
+        ->orderBy('start_date', 'asc')
+        ->limit(4)
+        ->get();
+
+    // Ambil semua produk
+    $products = \App\Models\Product::orderBy('created_at', 'desc')->get();
+
+    return view('index', compact('events', 'products'));
 });
 
 /*
@@ -39,6 +51,20 @@ Route::get('/login', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+
+/*
+|--------------------------------------------------------------------------
+| FORGOT PASSWORD
+|--------------------------------------------------------------------------
+*/
+use App\Http\Controllers\ForgotPasswordController;
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('forgot-password');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendCode'])->name('send-code');
+Route::get('/verify-code', [ForgotPasswordController::class, 'showVerifyForm'])->name('verify-code');
+Route::post('/verify-code', [ForgotPasswordController::class, 'verifyCode'])->name('verify-code.post');
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset-password');
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset-password.post');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +98,7 @@ Route::post('/profile/update', function (Request $request) {
         'name'  => ['required', 'regex:/^[a-zA-Z\s]+$/'],
         'email' => ['required', 'email'],
         'phone' => ['required', 'numeric'],
-        'bio'   => ['nullable'],
+        'bio'   => ['nullable', 'max:20'],
     ], [
         'name.required'  => 'Nama wajib diisi.',
         'name.regex'     => 'Nama hanya boleh huruf.',
@@ -80,6 +106,7 @@ Route::post('/profile/update', function (Request $request) {
         'email.email'    => 'Format email tidak valid.',
         'phone.required' => 'Nomor telepon wajib diisi.',
         'phone.numeric'  => 'Nomor telepon hanya boleh angka.',
+        'bio.max'        => 'Bio maksimal 20 karakter.',
     ]);
 
     // CEK EMAIL UNIK (KECUALI MILIK SENDIRI)
@@ -121,7 +148,8 @@ Route::post('/profile/update', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 Route::post('/logout', function () {
-    session()->flush();
+    session()->invalidate();
+    session()->regenerateToken();
     return redirect('/')->with('success', 'Berhasil logout.');
 });
 
@@ -160,16 +188,31 @@ Route::get('/checkout', function () {
 | OWNER ONLY
 |--------------------------------------------------------------------------
 */
-Route::get('/admin', function () {
+Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
     if (!session()->has('user_id')) {
-        return redirect('/login');
+        return redirect('/login')->with('error', 'Silakan login sebagai owner.');
     }
-
     if (session('user_role') !== 'owner') {
-        abort(403);
+        abort(403, 'Akses ditolak. Halaman ini khusus untuk Owner.');
     }
+    return $next($request);
+}], function () {
+    
+    // Dashboard
+    Route::get('/dashboard', function () {
+        return view('owner.dashboard');
+    });
 
-    return 'Dashboard Owner';
+    // Fitur: Kelola Event
+    Route::resource('/event', \App\Http\Controllers\OwnerEventController::class);
+
+    // Placeholder Routes for other features
+    // Fitur: Kelola Menu
+    Route::resource('/menu', \App\Http\Controllers\OwnerProductController::class);
+    Route::get('/laporan', function () { return view('owner.laporan.index'); }); // Temporary
+    Route::get('/admin', function () { return view('owner.admin.index'); });  // Temporary
+
+    // Setup real routes for CRUD here
 });
 
 /*
@@ -186,10 +229,9 @@ Route::get('/tentang', [PageController::class, 'about']);
 */
 Route::get('/event', function () {
 
-    // Ambil hanya event yang masih aktif (berdasarkan tanggal)
+    // Ambil event yang sedang aktif ATAU akan datang (Upcoming)
     $events = DB::table('events')
-        ->where('start_date', '<=', date('Y-m-d'))
-        ->where('end_date', '>=', date('Y-m-d'))
+        ->where('end_date', '>=', date('Y-m-d')) 
         ->orderBy('start_date', 'asc')
         ->get();
 
@@ -202,7 +244,17 @@ Route::get('/event', function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/produk', function () {
-    return view('pages.produk');
+    $products = \App\Models\Product::orderBy('category')->orderBy('name')->get();
+    return view('pages.produk', compact('products'));
+});
+
+/*
+|--------------------------------------------------------------------------
+| MEMBERSHIP
+|--------------------------------------------------------------------------
+*/
+Route::get('/membership', function () {
+    return view('membership');
 });
 
 /*

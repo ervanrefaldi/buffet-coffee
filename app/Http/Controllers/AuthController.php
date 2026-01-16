@@ -71,7 +71,12 @@ class AuthController extends Controller
         'user_role'  => $user->role,
     ]);
 
-    // redirect ke home
+    // Role-based Redirect
+    if ($user->role === 'owner') {
+        return redirect('/owner/dashboard');
+    }
+
+    // redirect ke home (untuk user biasa / membership)
     return redirect('/');
 }
 
