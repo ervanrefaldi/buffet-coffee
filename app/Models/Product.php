@@ -17,11 +17,23 @@ class Product extends Model
         'products_id',
         'name',
         'description',
-        'price',
-        'weight_kg',
+        'stock',       // Shared stock in Kg
+        'price_200g',  // Variant prices
+        'price_500g',
+        'price_1kg',
         'category',
         'image',
     ];
+
+    public function getPriceByVariant($variant)
+    {
+        return match($variant) {
+            '200g' => $this->price_200g,
+            '500g' => $this->price_500g,
+            '1kg' => $this->price_1kg,
+            default => $this->price_200g,
+        };
+    }
 
     protected static function boot()
     {

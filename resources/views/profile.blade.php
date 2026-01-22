@@ -25,25 +25,7 @@
 </head>
 <body class="bg-cream font-sans text-brown min-h-screen flex flex-col">
 
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-            <a href="{{ url('/#hero') }}" class="flex items-center">
-                <img src="{{ asset('images/logo.png') }}" alt="Bufet Coffee" id="nav-logo" class="h-12 w-auto brightness-0 invert transition-all duration-500">
-            </a>
-            
-            <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
-                <a href="{{ url('/') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="{{ url('/tentang') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Tentang</a>
-                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Menu</a>
-                <a href="{{ url('/event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
-                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
-            </div>
-
-            <a href="{{ url('/') }}" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-2.5 rounded-full font-bold hover:bg-gold hover:border-gold transition duration-300 text-xs uppercase tracking-widest">
-                ← Kembali
-            </a>
-        </div>
-    </nav>
+    @include('partials.navbar')
 
     <header class="relative h-[40vh] flex items-center justify-center overflow-hidden">
         <img src="{{ asset('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover brightness-50">
@@ -119,86 +101,28 @@
                 </div>
 
                 <div class="pt-4 flex justify-center">
-                    <div class="flex flex-col items-center space-y-4">
-                        <div class="pt-4 flex justify-center">
-                    <div class="flex flex-col items-center space-y-4">
-                        <button type="submit" form="profile-form"
+                    <div class="flex flex-col items-center space-y-6">
+                        <button type="submit"
                                 class="px-12 py-4 bg-brown text-white rounded-full font-black uppercase text-xs tracking-[0.2em] hover:bg-gold transition-all duration-300 shadow-xl shadow-brown/20 hover:scale-105 active:scale-95">
                             Simpan Perubahan
                         </button>
-                    </div>
-                </div>
 
+                        <div class="flex items-center justify-center pt-6">
+                            <a href="/orders" class="group flex flex-col items-center gap-2">
+                                <div class="h-14 w-14 bg-cream border border-brown/10 rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                                </div>
+                                <span class="text-[9px] font-black uppercase tracking-[0.2em] text-brown/60 group-hover:text-gold transition-colors">Riwayat Pesanan</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
+            </form>
         </div>
     </main>
 
-    <footer class="bg-[#2C1E17] text-cream pt-20 pb-12 mt-20">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16 border-b border-cream/10 pb-16">
-            
-            <div class="text-left">
-                <h4 class="font-serif font-bold text-xl mb-6 text-gold uppercase tracking-wider">Roastery</h4>
-                <p class="text-sm leading-relaxed opacity-80 italic mb-4">
-                    Kp. Pasirmulya No.27 RT04/17 Desa Margamulya,<br>
-                    Pangalengan, Kabupaten Bandung Selatan, Jawa Barat 40378
-                </p>
-                <a href="https://maps.google.com/?cid=16583891243001731647&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" class="text-[10px] font-black uppercase tracking-widest border-b border-gold/50 pb-1 hover:text-gold transition">
-                    Lihat di Google Maps
-                </a>
-            </div>
 
-            <div class="text-center">
-                <img src="{{ asset('images/logo.png') }}" class="h-12 w-auto mx-auto mb-6 brightness-0 invert opacity-50">
-                <div class="flex justify-center gap-8">
-                    <a href="https://instagram.com/bufet.coffee" target="_blank" class="group flex flex-col items-center">
-                        <span class="text-xs font-bold uppercase tracking-widest group-hover:text-gold transition">Instagram</span>
-                        <span class="text-[10px] opacity-40 group-hover:opacity-100 transition">@bufet.coffee</span>
-                    </a>
-                    <a href="https://wa.me/6282118189789" target="_blank" class="group flex flex-col items-center">
-                        <span class="text-xs font-bold uppercase tracking-widest group-hover:text-gold transition">WhatsApp</span>
-                        <span class="text-[10px] opacity-40 group-hover:opacity-100 transition">+62 821 1818 9789</span>
-                    </a>
-                </div>
-            </div>
 
-            <div class="text-right">
-                <h4 class="font-serif font-bold text-xl mb-6 text-gold uppercase tracking-wider">Navigasi</h4>
-                <div class="flex flex-col gap-3 text-xs font-bold uppercase tracking-widest">
-                    <a href="{{ url('/#hero') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">Home</a>
-                    <a href="{{ url('/about') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">About Us</a>
-                    <a href="{{ url('/#produk') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">Katalog Produk</a>
-                    <a href="{{ url('/#event') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">Event & Promo</a>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="text-center">
-            <p class="text-[10px] uppercase tracking-[0.5em] opacity-40">© 2026 BUFET COFFEE ROASTERY</p>
-        </div>
-    </div>
-</footer>
-
-    <script>
-        window.onscroll = function() {
-            const nav = document.getElementById('navbar');
-            const logo = document.getElementById('nav-logo');
-            const links = document.getElementById('nav-links');
-            if (window.pageYOffset > 50) {
-                nav.classList.add('bg-white', 'shadow-md', 'py-4');
-                nav.classList.remove('py-6');
-                logo.classList.remove('brightness-0', 'invert');
-                links.classList.replace('text-white', 'text-brown');
-            } else {
-                nav.classList.remove('bg-white', 'shadow-md', 'py-4');
-                nav.classList.add('py-6');
-                logo.classList.add('brightness-0', 'invert');
-                links.classList.replace('text-brown', 'text-white');
-            }
-        };
-    </script>
-
+    @include('partials.footer')
 </body>
 </html>

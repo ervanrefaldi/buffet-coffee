@@ -84,7 +84,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-brown/60">Password</label>
-                            <a href="/forgot-password" class="text-[10px] font-bold text-gold uppercase tracking-tighter hover:text-brown transition">Lupa password?</a>
+                            <a href="{{ route('forgot-password') }}" class="text-[10px] font-bold text-gold uppercase tracking-tighter hover:text-brown transition">Lupa password?</a>
                         </div>
                         <input 
                             type="password" 

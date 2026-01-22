@@ -40,6 +40,14 @@
                     @error('end_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
             </div>
+            
+            <!-- Instagram Link -->
+            <div>
+                <label for="instagram_link" class="block text-sm font-medium text-gray-700">Link Instagram (Opsional)</label>
+                <input type="url" name="instagram_link" id="instagram_link" value="{{ old('instagram_link') }}" placeholder="https://www.instagram.com/p/..."
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
+                @error('instagram_link') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
 
             <!-- Gambar -->
             <div>
@@ -55,7 +63,7 @@
                                 <input id="image" name="image" type="file" class="sr-only" required>
                             </label>
                         </div>
-                        <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 200KB</p>
+                        <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
                     </div>
                 </div>
                 @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -85,8 +93,8 @@
             const file = this.files[0];
             const fileSizeKB = file.size / 1024;
             
-            if (fileSizeKB > 200) {
-                feedbackMsg.textContent = "Ukuran file terlalu besar (" + fileSizeKB.toFixed(2) + " KB). Maksimal 200KB.";
+            if (fileSizeKB > 1024) {
+                feedbackMsg.textContent = "Ukuran file terlalu besar (" + fileSizeKB.toFixed(2) + " KB). Maksimal 1MB.";
                 feedbackMsg.classList.remove('text-green-600');
                 feedbackMsg.classList.add('text-red-600');
                 this.value = ''; // Reset input

@@ -37,7 +37,7 @@ Route::get('/', function () {
 */
 Route::get('/register', function () {
     return view('auth.register');
-});
+})->name('register');
 
 Route::post('/register', [AuthController::class, 'store']);
 
@@ -48,7 +48,7 @@ Route::post('/register', [AuthController::class, 'store']);
 */
 Route::get('/login', function () {
     return view('auth.login');
-});
+})->name('login');
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -65,6 +65,7 @@ Route::get('/verify-code', [ForgotPasswordController::class, 'showVerifyForm'])-
 Route::post('/verify-code', [ForgotPasswordController::class, 'verifyCode'])->name('verify-code.post');
 Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('reset-password');
 Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset-password.post');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +88,9 @@ Route::get('/profile', function () {
 
     return view('profile', compact('user'));
 });
+
+Route::get('/orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('user.orders.index');
+Route::get('/orders/{id}/invoice', [\App\Http\Controllers\UserOrderController::class, 'invoice'])->name('user.orders.invoice');
 
 Route::post('/profile/update', function (Request $request) {
     if (!session()->has('user_id')) {
@@ -148,6 +152,7 @@ Route::post('/profile/update', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 Route::post('/logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
     session()->invalidate();
     session()->regenerateToken();
     return redirect('/')->with('success', 'Berhasil logout.');
@@ -165,15 +170,22 @@ Route::get('/verify-email', EmailVerificationPromptController::class)
 /*
 |--------------------------------------------------------------------------
 | USER ONLY
+ */
+    // Add unified user routes here
+
+/*
+|--------------------------------------------------------------------------
+| CART SYSTEM
 |--------------------------------------------------------------------------
 */
-Route::get('/cart', function () {
-    if (!session()->has('user_id')) {
-        return redirect('/login');
-    }
+Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'store'])->name('cart.store');
+Route::post('/cart/update/{id}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/delete/{id}', [\App\Http\Controllers\CartController::class, 'destroy'])->name('cart.destroy');
 
-    return 'Halaman Cart (user only)';
-});
+Route::get('/cart/checkout', [\App\Http\Controllers\PaymentController::class, 'cartCheckoutPage'])->name('checkout.cart');
+Route::post('/cart/checkout/process', [\App\Http\Controllers\PaymentController::class, 'processCartCheckout'])->name('checkout.cart.process');
+
 
 Route::get('/checkout', function () {
     if (!session()->has('user_id')) {
@@ -190,18 +202,16 @@ Route::get('/checkout', function () {
 */
 Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
     if (!session()->has('user_id')) {
-        return redirect('/login')->with('error', 'Silakan login sebagai owner.');
+        return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
     }
-    if (session('user_role') !== 'owner') {
-        abort(403, 'Akses ditolak. Halaman ini khusus untuk Owner.');
+    if (!in_array(session('user_role'), ['owner', 'admin'])) {
+        abort(403, 'Akses ditolak. Halaman ini khusus untuk Owner dan Admin.');
     }
     return $next($request);
 }], function () {
     
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('owner.dashboard');
-    });
+    Route::get('/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('owner.dashboard');
 
     // Fitur: Kelola Event
     Route::resource('/event', \App\Http\Controllers\OwnerEventController::class);
@@ -209,11 +219,40 @@ Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
     // Placeholder Routes for other features
     // Fitur: Kelola Menu
     Route::resource('/menu', \App\Http\Controllers\OwnerProductController::class);
-    Route::get('/laporan', function () { return view('owner.laporan.index'); }); // Temporary
-    Route::get('/admin', function () { return view('owner.admin.index'); });  // Temporary
+    Route::get('/orders', [\App\Http\Controllers\OwnerOrderController::class, 'index'])->name('owner.orders.index');
+    Route::get('/orders/{id}', [\App\Http\Controllers\OwnerOrderController::class, 'show'])->name('owner.orders.show');
+    Route::post('/orders/{id}/status', [\App\Http\Controllers\OwnerOrderController::class, 'updateStatus'])->name('owner.orders.updateStatus');
+    Route::delete('/orders/{id}', [\App\Http\Controllers\OwnerOrderController::class, 'destroy'])->name('owner.orders.destroy');
+    
+    // Fitur: Kelola Transaksi
+    Route::get('/transactions', [\App\Http\Controllers\OwnerTransactionController::class, 'index'])->name('owner.transactions.index');
+    Route::get('/transactions/{id}', [\App\Http\Controllers\OwnerTransactionController::class, 'show'])->name('owner.transactions.show');
+    Route::post('/transactions/{id}/status', [\App\Http\Controllers\OwnerTransactionController::class, 'updateStatus'])->name('owner.transactions.updateStatus');
+    Route::delete('/transactions/{id}', [\App\Http\Controllers\OwnerTransactionController::class, 'destroy'])->name('owner.transactions.destroy');
 
-    // Setup real routes for CRUD here
+    Route::get('/laporan', [\App\Http\Controllers\OwnerReportController::class, 'index'])->name('owner.laporan.index');
+    Route::get('/laporan/export/excel', [\App\Http\Controllers\OwnerReportController::class, 'exportExcel'])->name('owner.laporan.export.excel');
+    Route::get('/laporan/export/word', [\App\Http\Controllers\OwnerReportController::class, 'exportWord'])->name('owner.laporan.export.word');
+    
+    // Khusus Master Owner (untuk mengelola staf/admin)
+    Route::group(['middleware' => function ($request, $next) {
+        if (session('user_email') !== 'owner@bufet.com') {
+            abort(403, 'Hanya Master Owner yang dapat mengelola Admin.');
+        }
+        return $next($request);
+    }], function() {
+        Route::resource('/admin', \App\Http\Controllers\OwnerAdminController::class)->names('admin');
+    });
 });
+
+/*
+|--------------------------------------------------------------------------
+| TRANSAKSI / CHECKOUT
+|--------------------------------------------------------------------------
+*/
+Route::get('/menu/{id}/checkout', [\App\Http\Controllers\MenuController::class, 'checkout'])->name('menu.checkout');
+Route::post('/checkout', [\App\Http\Controllers\PaymentController::class, 'checkout'])->name('checkout.process');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -240,12 +279,12 @@ Route::get('/event', function () {
 
 /*
 |--------------------------------------------------------------------------
-| PRODUK
+| PRODUK / MENU
 |--------------------------------------------------------------------------
 */
-Route::get('/produk', function () {
+Route::get('/menu', function () {
     $products = \App\Models\Product::orderBy('category')->orderBy('name')->get();
-    return view('pages.produk', compact('products'));
+    return view('pages.menu', compact('products'));
 });
 
 /*

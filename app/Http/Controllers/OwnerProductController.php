@@ -24,12 +24,14 @@ class OwnerProductController extends Controller
         $request->validate([
             'name'        => 'required|string|max:100',
             'category'    => 'required|in:biji,bubuk',
-            'price'       => 'required|numeric|min:0',
-            'weight_kg'   => 'required|numeric|min:0',
+            'stock'       => 'required|numeric|min:0',
+            'price_200g'  => 'required|numeric|min:0',
+            'price_500g'  => 'required|numeric|min:0',
+            'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg|max:200'
+            'image'       => 'required|image|mimes:jpeg,png,jpg|max:1024'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 200KB.'
+            'image.max' => 'Ukuran gambar maksimal 1MB.'
         ]);
 
         $imagePath = null;
@@ -43,8 +45,10 @@ class OwnerProductController extends Controller
         Product::create([
             'name'        => $request->name,
             'category'    => $request->category,
-            'price'       => $request->price,
-            'weight_kg'   => $request->weight_kg,
+            'stock'       => $request->stock,
+            'price_200g'  => $request->price_200g,
+            'price_500g'  => $request->price_500g,
+            'price_1kg'   => $request->price_1kg,
             'description' => $request->description,
             'image'       => $imagePath
         ]);
@@ -65,12 +69,14 @@ class OwnerProductController extends Controller
         $request->validate([
             'name'        => 'required|string|max:100',
             'category'    => 'required|in:biji,bubuk',
-            'price'       => 'required|numeric|min:0',
-            'weight_kg'   => 'required|numeric|min:0',
+            'stock'       => 'required|numeric|min:0',
+            'price_200g'  => 'required|numeric|min:0',
+            'price_500g'  => 'required|numeric|min:0',
+            'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:200'
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:1024'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 200KB.'
+            'image.max' => 'Ukuran gambar maksimal 1MB.'
         ]);
 
         $data = $request->except(['image']);

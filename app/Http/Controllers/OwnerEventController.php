@@ -34,11 +34,12 @@ class OwnerEventController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'       => 'required|max:150',
-            'description' => 'required',
-            'image'       => 'required|image|mimes:jpeg,png,jpg,gif|max:200',
-            'start_date'  => 'required|date',
-            'end_date'    => 'required|date|after_or_equal:start_date',
+            'title'          => 'required|max:150',
+            'description'    => 'required',
+            'image'          => 'required|image|mimes:jpeg,png,jpg,gif|max:1024',
+            'start_date'     => 'required|date',
+            'end_date'       => 'required|date|after_or_equal:start_date',
+            'instagram_link' => 'nullable|url',
         ], [
             'image.required'    => 'Gambar event wajib diupload.',
             'image.image'       => 'File harus berupa gambar.',
@@ -56,13 +57,14 @@ class OwnerEventController extends Controller
         }
 
         DB::table('events')->insert([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'image'       => $imagePath,
-            'start_date'  => $request->start_date,
-            'end_date'    => $request->end_date,
-            'created_at'  => now(),
-            'updated_at'  => now(),
+            'title'          => $request->title,
+            'description'    => $request->description,
+            'image'          => $imagePath,
+            'start_date'     => $request->start_date,
+            'end_date'       => $request->end_date,
+            'instagram_link' => $request->instagram_link,
+            'created_at'     => now(),
+            'updated_at'     => now(),
         ]);
 
         return redirect('/owner/event')->with('success', 'Event berhasil ditambahkan.');
@@ -88,11 +90,12 @@ class OwnerEventController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title'       => 'required|max:150',
-            'description' => 'required',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'start_date'  => 'required|date',
-            'end_date'    => 'required|date|after_or_equal:start_date',
+            'title'          => 'required|max:150',
+            'description'    => 'required',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:1024',
+            'start_date'     => 'required|date',
+            'end_date'       => 'required|date|after_or_equal:start_date',
+            'instagram_link' => 'nullable|url',
         ]);
 
         $event = DB::table('events')->where('events_id', $id)->first();
@@ -117,12 +120,13 @@ class OwnerEventController extends Controller
         }
 
         DB::table('events')->where('events_id', $id)->update([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'image'       => $imagePath,
-            'start_date'  => $request->start_date,
-            'end_date'    => $request->end_date,
-            'updated_at'  => now(),
+            'title'          => $request->title,
+            'description'    => $request->description,
+            'image'          => $imagePath,
+            'start_date'     => $request->start_date,
+            'end_date'       => $request->end_date,
+            'instagram_link' => $request->instagram_link,
+            'updated_at'     => now(),
         ]);
 
         return redirect('/owner/event')->with('success', 'Event berhasil diperbarui.');

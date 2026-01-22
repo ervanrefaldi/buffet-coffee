@@ -27,20 +27,57 @@
                 @error('category') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Harga & Berat -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700">Harga (Rp)</label>
-                    <input type="number" name="price" id="price" value="{{ old('price') }}" required min="0"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
-                    @error('price') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
+            <!-- Stok -->
+            <div>
+                <label for="stock" class="block text-sm font-medium text-gray-700">Stok (Kg)</label>
+                <input type="number" step="0.01" name="stock" id="stock" value="{{ old('stock') }}" required min="0" placeholder="Contoh: 10.5"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
+                @error('stock') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
 
-                <div>
-                    <label for="weight_kg" class="block text-sm font-medium text-gray-700">Total Berat (Kg)</label>
-                    <input type="number" step="0.01" name="weight_kg" id="weight_kg" value="{{ old('weight_kg') }}" required min="0" placeholder="0.2, 1"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
-                    @error('weight_kg') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <!-- Varian Harga (200gr, 500gr, 1kg) -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 class="text-sm font-medium text-gray-700 mb-4 border-b pb-2">Varian Harga</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 200 Gram -->
+                    <div>
+                        <label for="price_200g" class="block text-xs font-medium text-gray-500 mb-1">Harga 200 Gram</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">Rp</span>
+                            </div>
+                            <input type="number" name="price_200g" id="price_200g" value="{{ old('price_200g') }}" required min="0"
+                                class="pl-12 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
+                        </div>
+                        @error('price_200g') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- 500 Gram -->
+                    <div>
+                        <label for="price_500g" class="block text-xs font-medium text-gray-500 mb-1">Harga 500 Gram</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">Rp</span>
+                            </div>
+                            <input type="number" name="price_500g" id="price_500g" value="{{ old('price_500g') }}" required min="0"
+                                class="pl-12 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
+                        </div>
+                        @error('price_500g') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- 1 Kg -->
+                    <div>
+                        <label for="price_1kg" class="block text-xs font-medium text-gray-500 mb-1">Harga 1 Kg</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">Rp</span>
+                            </div>
+                            <input type="number" name="price_1kg" id="price_1kg" value="{{ old('price_1kg') }}" required min="0"
+                                class="pl-12 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
+                        </div>
+                        @error('price_1kg') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
                 </div>
             </div>
 
@@ -66,7 +103,7 @@
                                 <input id="image" name="image" type="file" class="sr-only" required>
                             </label>
                         </div>
-                        <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 200KB</p>
+                        <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
                     </div>
                 </div>
                 @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -85,26 +122,83 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/index.js"></script>
 <script>
     const imageInput = document.getElementById('image');
-    const feedbackMsg = document.createElement('p');
-    feedbackMsg.className = "text-xs mt-1 font-medium";
-    imageInput.parentElement.parentElement.appendChild(feedbackMsg);
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Create UI Feedback Elements
+    const dropzone = imageInput.closest('.border-dashed');
+    const dropzoneContent = dropzone.querySelector('div');
+    
+    // Loading Template
+    const loadingUI = `
+        <div id="ai-loading" class="flex flex-col items-center justify-center space-y-4 py-4">
+            <div class="relative w-16 h-16">
+                <div class="absolute inset-0 border-4 border-amber-100 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-amber-600 rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <div class="space-y-1">
+                <p class="text-sm font-bold text-amber-900 uppercase tracking-widest">AI Sedang Bekerja</p>
+                <p class="text-[10px] text-amber-600/70 font-medium">Menghapus background foto...</p>
+            </div>
+        </div>
+    `;
 
-    imageInput.addEventListener('change', function() {
+    imageInput.addEventListener('change', async function() {
         if (this.files && this.files[0]) {
             const file = this.files[0];
-            const fileSizeKB = file.size / 1024;
             
-            if (fileSizeKB > 200) {
-                feedbackMsg.textContent = "Ukuran file terlalu besar (" + fileSizeKB.toFixed(2) + " KB). Maksimal 200KB.";
-                feedbackMsg.classList.remove('text-green-600');
-                feedbackMsg.classList.add('text-red-600');
-                this.value = ''; // Reset input
-            } else {
-                feedbackMsg.textContent = "Ukuran file sesuai (" + fileSizeKB.toFixed(2) + " KB).";
-                feedbackMsg.classList.remove('text-red-600');
-                feedbackMsg.classList.add('text-green-600');
+            // Validate size before AI processing
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit for processing
+                alert("Ukuran file terlalu besar untuk diproses AI (Maks 5MB).");
+                this.value = '';
+                return;
+            }
+
+            // Show Loading UI
+            const originalContent = dropzoneContent.innerHTML;
+            dropzoneContent.innerHTML = loadingUI;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                // RUN AI BACKGROUND REMOVAL
+                const blob = await imglyRemoveBackground(file, {
+                    publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/',
+                    progress: (item, progress) => {
+                        console.log(`AI Processing ${item}: ${Math.round(progress * 100)}%`);
+                    }
+                });
+
+                // Create a new File object from the blob
+                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + "_transparent.png", {
+                    type: "image/png"
+                });
+
+                // Update Input with processed file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(newFile);
+                this.files = dataTransfer.files;
+
+                // Success Preview UI
+                dropzoneContent.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <img src="${URL.createObjectURL(blob)}" class="h-32 w-auto mb-2 drop-shadow-lg rounded-lg border-2 border-amber-500/20">
+                        <p class="text-xs font-bold text-green-600">✨ Background Berhasil Dihapus!</p>
+                        <p class="text-[10px] text-gray-400 mt-1">Siap tayang dengan tampilan premium.</p>
+                        <button type="button" onclick="window.location.reload()" class="mt-2 text-red-500 hover:underline text-[10px] font-bold uppercase">Ganti Foto</button>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error("AI Background Removal Error:", error);
+                alert("Gagal memproses gambar. Silakan coba lagi atau gunakan foto lain.");
+                dropzoneContent.innerHTML = originalContent;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
     });

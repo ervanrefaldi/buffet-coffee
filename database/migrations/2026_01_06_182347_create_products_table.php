@@ -16,11 +16,16 @@ return new class extends Migration {
             // Data produk
             $table->string('name', 100);
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->decimal('weight_kg', 10, 2);
+            
+            // Stok (Shared across variants) in Kg
+            $table->decimal('stock', 10, 2)->default(0);
 
+            // Harga per varian berat
+            $table->decimal('price_200g', 10, 2);
+            $table->decimal('price_500g', 10, 2);
+            $table->decimal('price_1kg', 10, 2);
 
-            // Kategori produk
+            // Kategori produk (Jenis Kopi)
             $table->enum('category', ['biji', 'bubuk']);
 
             // ⬅⬅⬅ INI PENTING

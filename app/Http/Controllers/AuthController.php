@@ -62,7 +62,9 @@ class AuthController extends Controller
     }
 
     // === INI BAGIAN PALING PENTING ===
-    // SIMPAN DATA USER KE SESSION
+    // SIMPAN DATA USER KE SESSION & SYNC DENGAN AUTH LARAVEL
+    \Illuminate\Support\Facades\Auth::loginUsingId($user->users_id);
+
     session([
         'user_id'    => $user->users_id,
         'user_name'  => $user->name,
@@ -72,7 +74,7 @@ class AuthController extends Controller
     ]);
 
     // Role-based Redirect
-    if ($user->role === 'owner') {
+    if (in_array($user->role, ['owner', 'admin'])) {
         return redirect('/owner/dashboard');
     }
 

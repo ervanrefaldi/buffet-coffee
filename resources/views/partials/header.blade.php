@@ -3,7 +3,7 @@
 
     <span style="margin-left:30px;">
         <a href="/">Home</a> |
-        <a href="/tentang">Tentang</a> |
+        <a href="/tentang">About</a> |
         <a href="/menu">Produk</a> |
         <a href="/event">Event</a>
     </span>

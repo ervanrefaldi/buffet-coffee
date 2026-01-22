@@ -38,39 +38,7 @@
 </head>
 <body class="bg-cream font-sans text-brown">
 
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-            <a href="/" class="flex items-center">
-                <img src="{{ asset('images/logo.png') }}" alt="Bufet Coffee" id="nav-logo" class="h-12 w-auto brightness-0 invert transition-all duration-500">
-            </a>
-            <div class="hidden md:flex space-x-10 text-white font-medium" id="nav-links">
-                <a href="#hero" class="hover:text-gold transition text-sm uppercase tracking-widest">Home</a>
-                <a href="{{ url('/tentang') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Tentang</a>
-                <a href="{{ url('/produk') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Menu</a>
-                <a href="{{ url('/event') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Event</a>
-                <a href="{{ url('/membership') }}" class="hover:text-gold transition text-sm uppercase tracking-widest">Membership</a>
-            </div>
-
-            {{-- LOGIKA NAVBAR: Login/Register atau Profile --}}
-            @if(session()->has('user_id'))
-                <a href="{{ url('/profile') }}" class="bg-gold text-white px-6 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center flex items-center space-x-2">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>Profile</span>
-                </a>
-            @else
-                <div class="hidden md:flex space-x-4">
-                    <a href="{{ url('/login') }}" class="bg-gold text-white px-6 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
-                        Login
-                    </a>
-                    <a href="{{ url('/register') }}" class="bg-gold text-white px-6 py-2.5 rounded-full font-bold hover:bg-white hover:text-brown transition duration-300 shadow-lg text-xs uppercase tracking-widest text-center">
-                        Register
-                    </a>
-                </div>
-            @endif
-        </div>
-    </nav>
+    @include('partials.navbar')
 
     <section id="hero" class="relative h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0">
@@ -145,171 +113,205 @@
         </div>
     </section>
 
-    <section id="produk" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <span class="text-gold font-bold tracking-widest uppercase text-sm">Signature Beans</span>
-            <h2 class="text-5xl font-serif font-bold mt-2 mb-16 text-brown">Produk Kami</h2>
+    <section id="produk" class="py-32 bg-[#FDF8F5] relative overflow-hidden">
+        {{-- Elegant subtle bg decoration --}}
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-brown/5 rounded-full blur-[120px] -mr-48 -mt-48"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-28">
+                <span class="text-brown font-black tracking-[0.6em] uppercase text-[10px] mb-4 block opacity-40">The Craftsmanship</span>
+                <h2 class="text-5xl md:text-7xl font-serif font-bold text-brown tracking-tighter mb-8 leading-none">Produk Kami</h2>
+                <div class="w-20 h-1 bg-brown mx-auto rounded-full opacity-10"></div>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
                 @if($products->count() > 0)
                 @foreach($products as $product)
-                <div class="group bg-cream rounded-[2.5rem] p-8 shadow-xl border border-transparent hover:border-gold/20 transition-all duration-500">
-                    <div class="rounded-[2rem] overflow-hidden mb-8 h-72 bg-white flex items-center justify-center p-6 shadow-inner">
-                        @if($product->image)
-                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-700">
-                        @else
-                            <div class="flex flex-col items-center justify-center text-gray-400">
-                                <span class="text-4xl">☕</span>
-                                <span class="text-xs mt-2">No Image</span>
+                <div class="group h-full flex flex-col">
+                    {{-- THE CARD: Dark Brown Primary Color --}}
+                    <div class="relative bg-brown-dark rounded-[3rem] p-10 flex flex-col items-center flex-grow transition-all duration-700 hover:shadow-[0_50px_100px_-20px_rgba(44,30,23,0.3)] hover:-translate-y-3 overflow-hidden border border-brown-light/10">
+                        
+                        {{-- Glossy finish on hover --}}
+                        <div class="absolute inset-0 bg-gradient-to-tr from-brown to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-700"></div>
+
+                        {{-- Image Container: STRICT FIXED HEIGHT for Aligment --}}
+                        <div class="w-full h-72 flex items-center justify-center mb-10 relative">
+                            {{-- Image Glow --}}
+                            <div class="absolute w-40 h-40 bg-gold/10 rounded-full blur-3xl scale-0 group-hover:scale-150 transition-transform duration-1000"></div>
+                            
+                            @if($product->image)
+                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" 
+                                     class="relative z-10 max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)] group-hover:scale-110 transition-transform duration-700">
+                            @else
+                                <div class="relative z-10 flex flex-col items-center justify-center text-gold/20">
+                                    <span class="text-8xl opacity-10">☕</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Content Area: Strictly Aligned At Bottom --}}
+                        <div class="w-full text-center mt-auto">
+                            <span class="text-gold font-bold text-[9px] uppercase tracking-[0.5em] mb-3 block opacity-60">{{ $product->category == 'biji' ? 'Signature Bean' : 'Premium Powder' }}</span>
+                            <h3 class="text-2xl md:text-3xl font-serif font-black text-white uppercase tracking-tight mb-8 leading-tight">
+                                {{ $product->name }}
+                            </h3>
+                            
+                            <div class="pt-6 border-t border-white/10 w-full flex justify-center">
+                                <a href="{{ url('/menu') }}" class="group/btn inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-gold hover:text-white transition-all duration-300">
+                                    <span>Lihat Detail</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform transition-transform duration-300 group-hover/btn:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </a>
                             </div>
-                        @endif
-                    </div>
-
-                    <div class="text-center mb-6">
-                        <span class="text-gold font-bold text-[10px] uppercase tracking-[0.3em]">{{ ucfirst($product->category) }}</span>
-                        <h3 class="text-4xl font-serif font-bold mt-1 text-brown uppercase leading-none">{{ $product->name }}</h3>
-                    </div>
-
-                    <div class="space-y-3 mb-8 text-left">
-                         <div class="flex justify-between items-center bg-white/50 px-4 py-2 rounded-xl border border-brown/5">
-                            <span class="text-xs font-bold text-brown-light uppercase tracking-widest">{{ $product->weight_kg }} Kg</span>
-                            <span class="text-sm font-black text-brown italic">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                         </div>
                     </div>
-                    
-                    {{-- LOGIKA PRODUK: Tombol Pesan --}}
-                    @if(session()->has('user_id'))
-                        <a href="https://wa.me/+6282118189789?text=Halo%20Bufet%20Coffee,%20saya%20ingin%20memesan%20{{ urlencode($product->name) }}" target="_blank" class="block w-full py-4 bg-brown text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-gold transition-colors duration-300 shadow-lg text-center">
-                            Pesan Sekarang
-                        </a>
-                    @else
-                        <a href="{{ url('/login') }}" class="block w-full py-4 bg-brown text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-gold transition-colors duration-300 shadow-lg text-center">
-                            Pesan Sekarang
-                        </a>
-                    @endif
                 </div>
                 @endforeach
                 @else
-                    <div class="col-span-1 md:col-span-3 text-center py-12">
-                        <p class="text-brown/60 font-serif italic text-xl">Belum ada produk yang tersedia saat ini.</p>
+                    <div class="col-span-full py-40 bg-brown/5 rounded-[3rem] border-2 border-dashed border-brown/10 flex flex-col items-center">
+                        <span class="text-5xl mb-6 opacity-20">☕</span>
+                        <p class="text-brown/40 font-serif italic text-2xl">Kopi terbaik sedang dipersiapkan...</p>
                     </div>
                 @endif
             </div>
         </div>
-        <div class="mt-16 text-center w-full flex justify-center">
-            <a href="{{ url('/produk') }}" class="inline-block bg-white text-brown border-2 border-brown px-12 py-4 rounded-full font-black uppercase text-xs tracking-[0.3em] hover:bg-brown hover:text-white transition-all duration-300 shadow-xl shadow-brown/10">
-                Selengkapnya
+
+        <div class="mt-32 text-center">
+            <a href="{{ url('/menu') }}" class="group relative inline-flex items-center justify-center px-20 py-6 overflow-hidden font-black text-white rounded-full transition-all duration-500 bg-brown shadow-2xl hover:shadow-brown/40 transform hover:-translate-y-1">
+                <div class="absolute inset-0 bg-gold translate-y-full transition-transform duration-500 group-hover:translate-y-0"></div>
+                <span class="relative z-10 uppercase text-[11px] tracking-[0.5em]">Katalog Selengkapnya</span>
             </a>
         </div>
     </section>
 
-    <section id="event" class="py-24 bg-cream px-6">
-        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
-            <div class="lg:w-1/2 w-full">
-                @if(isset($events) && count($events) > 0)
-                    <div class="grid grid-cols-2 gap-4">
-                        @foreach($events as $event)
-                        <div class="relative rounded-2xl overflow-hidden shadow-lg group h-48 sm:h-56"> <!-- Adjusted height for better aspect ratio -->
-                            @if($event->image)
-                                <img src="{{ asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                            @else
-                                <div class="w-full h-full bg-brown/10 flex items-center justify-center">
-                                    <span class="text-brown/40 font-serif italic text-xs">No Image</span>
-                                </div>
-                            @endif
-                            <div class="absolute inset-0 bg-black/40 flex items-end justify-center p-4 transition-all duration-300 group-hover:bg-black/50">
-                                <h3 class="text-white font-serif font-bold text-center text-xs md:text-sm uppercase tracking-wider mb-2">{{ $event->title }}</h3>
+    {{-- Section: Menuai Langkah & Meracik Kolaborasi (Always Visible) --}}
+    <section id="history" class="py-32 bg-[#FAF9F6] px-6 relative overflow-hidden">
+        {{-- Artistic Decoration --}}
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-brown/10"></div>
+
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-24 max-w-4xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-brown tracking-tighter mb-6 uppercase">Menuai Langkah & Meracik Kolaborasi</h2>
+                <p class="text-brown/60 text-lg md:text-xl font-medium leading-relaxed italic">
+                    Menuai Langkah dan Meracik Kolaborasi merekam perjalanan event kopi melalui langkah-langkah yang telah ditempuh dan kolaborasi yang terjalin dalam setiap momen.
+                </p>
+                <div class="w-20 h-1 bg-gold/40 mx-auto mt-8 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                {{-- Historical Item 1: Javaphile Cupping --}}
+                <div class="group">
+                    <a href="https://www.instagram.com/p/DKr9XctT0Q_/?igsh=NGV1cTVib3A0M3l3" target="_blank" class="block relative rounded-[2rem] overflow-hidden shadow-xl mb-8 aspect-[4/5] bg-white border border-brown/5">
+                        <img src="{{ asset('images/event/javaphile-cupping.png') }}" alt="Javaphile Cupping Experience" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110">
+                        <div class="absolute top-6 left-6">
+                            <span class="bg-white/90 backdrop-blur-md text-brown px-4 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest shadow-sm">10 Juni 2025</span>
+                        </div>
+                        {{-- Instagram Overlay Icon --}}
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                            <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                             </div>
                         </div>
-                        @endforeach
+                    </a>
+                    <div class="text-center md:text-left px-4">
+                        <h3 class="text-lg font-serif font-black text-brown uppercase mb-1 tracking-wider leading-none">Javaphile Cupping</h3>
+                        <p class="text-[10px] font-bold text-brown/40 uppercase tracking-[0.2em]">Kawitan Coffee x Bufet Coffee</p>
                     </div>
-                @else
-                    <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl group">
-                        <img src="{{ asset('images/event.jpeg') }}" alt="Event Bufet Coffee" class="w-full h-[450px] object-cover filter grayscale hover:grayscale-0 transition-all duration-700">
-                        <div class="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-6 text-center hover:bg-black/40 transition-colors">
-                            <span class="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider mb-4 shadow-lg transform rotate-[-5deg]">Telah Dilaksanakan</span>
-                            <h3 class="text-2xl md:text-4xl font-serif font-bold text-white uppercase leading-tight">Manual Brew Competition 2024</h3>
+                </div>
+
+                {{-- Historical Item 2: Eskalasi x EMH --}}
+                <div class="group">
+                    <a href="https://www.instagram.com/p/DB0ciVYyDjI/?igsh=MXcxcHM3OTlmMWVrZQ==" target="_blank" class="block relative rounded-[2rem] overflow-hidden shadow-xl mb-8 aspect-[4/5] bg-white border border-brown/5">
+                        <img src="{{ asset('images/event/eskalasi-emh.png') }}" alt="Eskalasi x EMH Bakeshop" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110">
+                        <div class="absolute top-6 left-6">
+                            <span class="bg-white/90 backdrop-blur-md text-brown px-4 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest shadow-sm">2024</span>
                         </div>
+                        {{-- Instagram Overlay Icon --}}
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                            <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="text-center md:text-left px-4">
+                        <h3 class="text-lg font-serif font-black text-brown uppercase mb-1 tracking-wider leading-none">Eskalasi x EMH</h3>
+                        <p class="text-[10px] font-bold text-brown/40 uppercase tracking-[0.2em]">Filter & Espresso Based</p>
                     </div>
-                @endif
-            </div>
-            <div class="lg:w-1/2">
-                <h2 class="text-4xl font-serif font-bold text-brown mb-6 leading-tight">Nikmati Event Spesial di Bufet Coffee</h2>
-                <p class="text-lg text-brown/70 leading-relaxed mb-8">Ikuti berbagai event menarik mulai dari workshop barista hingga promo akhir pekan yang seru.</p>
-                <a href="{{ url('/event') }}" class="inline-block bg-brown text-white px-10 py-4 rounded-full hover:bg-gold transition shadow-xl font-black uppercase text-xs tracking-widest">
-                    Lihat Event
-                </a>
+                </div>
+
+                {{-- Historical Item 3: Javaphile Brewing --}}
+                <div class="group">
+                    <a href="https://www.instagram.com/reel/DO52XZREZUz/?igsh=MWE0ZXBkMzNkZnViMA==" target="_blank" class="block relative rounded-[2rem] overflow-hidden shadow-xl mb-8 aspect-[4/5] bg-white border border-brown/5">
+                        <img src="{{ asset('images/event/javaphile-pangalengan.png') }}" alt="Javaphile Brewing Session" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110">
+                        <div class="absolute top-6 left-6">
+                            <span class="bg-white/90 backdrop-blur-md text-brown px-4 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest shadow-sm">2024</span>
+                        </div>
+                        {{-- Instagram Overlay Icon --}}
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                            <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="text-center md:text-left px-4">
+                        <h3 class="text-lg font-serif font-black text-brown uppercase mb-1 tracking-wider leading-none">Javaphile x Pangalengan</h3>
+                        <p class="text-[10px] font-bold text-brown/40 uppercase tracking-[0.2em]">Brewing & Quality Control</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <footer class="bg-[#2C1E17] text-cream pt-20 pb-12 mt-20">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16 border-b border-cream/10 pb-16">
-            
-            <div class="text-left">
-                <h4 class="font-serif font-bold text-xl mb-6 text-gold uppercase tracking-wider">Roastery</h4>
-                <p class="text-sm leading-relaxed opacity-80 italic mb-4">
-                    Kp. Pasirmulya No.27 RT04/17 Desa Margamulya,<br>
-                    Pangalengan, Kabupaten Bandung Selatan, Jawa Barat 40378
-                </p>
-                <a href="https://maps.google.com/?cid=16583891243001731647&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" class="text-[10px] font-black uppercase tracking-widest border-b border-gold/50 pb-1 hover:text-gold transition">
-                    Lihat di Google Maps
-                </a>
-            </div>
-
-            <div class="text-center">
-                <img src="{{ asset('images/logo.png') }}" class="h-12 w-auto mx-auto mb-6 brightness-0 invert opacity-50">
-                <div class="flex justify-center gap-8">
-                    <a href="https://instagram.com/bufet.coffee" target="_blank" class="group flex flex-col items-center">
-                        <span class="text-xs font-bold uppercase tracking-widest group-hover:text-gold transition">Instagram</span>
-                        <span class="text-[10px] opacity-40 group-hover:opacity-100 transition">@bufet.coffee</span>
-                    </a>
-                    <a href="https://wa.me/6282118189789" target="_blank" class="group flex flex-col items-center">
-                        <span class="text-xs font-bold uppercase tracking-widest group-hover:text-gold transition">WhatsApp</span>
-                        <span class="text-[10px] opacity-40 group-hover:opacity-100 transition">+62 821 1818 9789</span>
+    {{-- Section: Active Events (Conditional) --}}
+    @if(isset($events) && count($events) > 0)
+    <section id="event" class="py-32 bg-white px-6 relative overflow-hidden border-t border-brown/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row items-center gap-20">
+                <div class="lg:w-1/2 w-full">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        @foreach($events as $event)
+                        @if($event->instagram_link)
+                            <a href="{{ $event->instagram_link }}" target="_blank" class="relative group rounded-[2.5rem] overflow-hidden shadow-2xl h-80 block">
+                        @else
+                            <div class="relative group rounded-[2.5rem] overflow-hidden shadow-2xl h-80">
+                        @endif
+                            @if($event->image)
+                                <img src="{{ asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            @else
+                                <div class="w-full h-full bg-brown/5 flex items-center justify-center text-brown/20 italic text-sm">No Image</div>
+                            @endif
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 transform transition-all duration-500 group-hover:via-black/40">
+                                <span class="text-gold font-black uppercase text-[9px] tracking-[0.3em] mb-2">New Event</span>
+                                <h3 class="text-white font-serif font-bold text-xl leading-tight">{{ $event->title }}</h3>
+                                @if($event->instagram_link)
+                                    <div class="mt-4 flex items-center gap-2 text-gold text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span>Lihat di Instagram</span>
+                                        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                    </div>
+                                @endif
+                            </div>
+                        @if($event->instagram_link)
+                            </a>
+                        @else
+                            </div>
+                        @endif
+                        @endforeach
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                    <span class="text-gold font-black tracking-[0.5em] uppercase text-[10px] mb-4 block">Be Part of It</span>
+                    <h2 class="text-5xl md:text-6xl font-serif font-bold text-brown mb-8 leading-tight tracking-tighter">Event Spesial<br>Bersama Kami</h2>
+                    <p class="text-lg text-brown/60 leading-relaxed mb-10 font-medium">Ikuti berbagai kegiatan seru mulai dari kompetisi barista, workshop seduh manual, hingga peluncuran varietas biji kopi terbaru.</p>
+                    <a href="{{ url('/event') }}" class="group relative inline-flex items-center justify-center px-12 py-5 overflow-hidden font-black text-white rounded-full transition-all duration-500 bg-brown shadow-xl hover:shadow-brown/20">
+                        <span class="relative z-10 uppercase text-[10px] tracking-[0.4em]">Lihat Detail Event</span>
                     </a>
                 </div>
             </div>
-
-            <div class="text-right">
-                <h4 class="font-serif font-bold text-xl mb-6 text-gold uppercase tracking-wider">Navigasi</h4>
-                <div class="flex flex-col gap-3 text-xs font-bold uppercase tracking-widest">
-                    <a href="{{ url('/#hero') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">Home</a>
-                    <a href="{{ url('/about') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">About Us</a>
-                    <a href="{{ url('/#produk') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">Katalog Produk</a>
-                    <a href="{{ url('/#event') }}" class="opacity-60 hover:opacity-100 hover:text-gold transition">Event & Promo</a>
-                </div>
-            </div>
-
         </div>
+    </section>
+    @endif
 
-        <div class="text-center">
-            <p class="text-[10px] uppercase tracking-[0.5em] opacity-40">© 2026 BUFET COFFEE ROASTERY</p>
-        </div>
-    </div>
-</footer>
-
-    <script>
-        const navbar = document.getElementById('navbar');
-        const navLogo = document.getElementById('nav-logo');
-        const links = document.getElementById('nav-links');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                navbar.classList.add('bg-white', 'shadow-2xl', 'py-4');
-                navbar.classList.remove('bg-transparent', 'py-6');
-                navLogo.classList.remove('brightness-0', 'invert');
-                navLogo.classList.add('h-10'); 
-                links.classList.replace('text-white', 'text-brown');
-            } else {
-                navbar.classList.add('bg-transparent', 'py-6');
-                navbar.classList.remove('bg-white', 'shadow-2xl', 'py-4');
-                navLogo.classList.add('brightness-0', 'invert');
-                navLogo.classList.remove('h-10');
-                links.classList.replace('text-brown', 'text-white');
-            }
-        });
-    </script>
+    @include('partials.footer')
 </body>
 </html> 
