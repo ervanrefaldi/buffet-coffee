@@ -103,6 +103,8 @@ jobs:
             --set-env-vars "DB_USERNAME=${{ secrets.DB_USERNAME }}" \
             --set-env-vars "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
             --set-env-vars "SESSION_DRIVER=database" \
+            --set-env-vars "SESSION_SECURE_COOKIE=true" \
+            --set-env-vars "SESSION_SAME_SITE=lax" \
             --set-env-vars "CACHE_STORE=database" \
             --set-env-vars "RUN_MIGRATIONS=false" \
             --set-env-vars "MAIL_MAILER=smtp" \
