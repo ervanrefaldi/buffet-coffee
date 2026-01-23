@@ -29,11 +29,22 @@
                     <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $trx->order->user->name ?? '-' }}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ $trx->order->user->phone ?? '-' }}</td>
                     <td class="px-6 py-4">
-                        @if(($trx->order->user->membership ?? '') === 'membership')
-                            <span class="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[10px] font-bold uppercase tracking-wider">Member</span>
-                        @else
-                            <span class="px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider">Non-Member</span>
-                        @endif
+                        @php
+                            $user = $trx->order->user ?? null;
+                            $status = 'Pelanggan';
+                            $badgeClass = 'bg-gray-100 text-gray-600';
+
+                            if ($user) {
+                                if ($user->role === 'owner') {
+                                    $status = 'Owner';
+                                    $badgeClass = 'bg-amber-100 text-amber-700';
+                                } elseif ($user->membership === 'membership') {
+                                    $status = 'Member';
+                                    $badgeClass = 'bg-purple-100 text-purple-700';
+                                }
+                            }
+                        @endphp
+                        <span class="px-2 py-0.5 rounded-md {{ $badgeClass }} text-[10px] font-bold uppercase tracking-wider">{{ $status }}</span>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ $trx->created_at->format('d M Y, H:i') }}</td>
                     <td class="px-6 py-4 text-sm text-gray-600 uppercase">{{ $trx->payment_method ?? 'Unknown' }}</td>
@@ -172,11 +183,14 @@
                 document.getElementById('modalAmount').innerText = formatRupiah(trx.order.total_price);
                 
                 const membershipEl = document.getElementById('modalMembership');
-                if (trx.order.user && trx.order.user.membership === 'membership') {
+                if (trx.order.user && trx.order.user.role === 'owner') {
+                    membershipEl.innerText = 'OWNER';
+                    membershipEl.className = 'text-sm font-bold text-amber-700';
+                } else if (trx.order.user && trx.order.user.membership === 'membership') {
                     membershipEl.innerText = 'MEMBER';
                     membershipEl.className = 'text-sm font-bold text-purple-700';
                 } else {
-                    membershipEl.innerText = 'NON-MEMBER';
+                    membershipEl.innerText = 'PELANGGAN';
                     membershipEl.className = 'text-sm font-bold text-gray-600';
                 }
                 

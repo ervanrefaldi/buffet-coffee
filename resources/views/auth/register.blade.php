@@ -62,7 +62,7 @@
                             value="{{ old('name') }}"
                             required
                             pattern="[A-Za-z\s]+"
-                            title="Nama hanya boleh berisi huruf dan spasi"
+                            title="Nama hanya boleh berisi huruf and spasi"
                             class="w-full px-6 py-4 bg-cream border-transparent focus:border-gold focus:bg-white focus:ring-0 rounded-2xl transition-all duration-300 text-sm font-medium outline-none"
                         >
                         @error('name')

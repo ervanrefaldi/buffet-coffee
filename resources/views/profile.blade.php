@@ -41,6 +41,7 @@
             {{-- Logout Form --}}
             <div class="mb-8 text-right">
                 <form id="logout-form" action="/logout" method="POST">
+                    @csrf
                     <button type="submit" class="px-8 py-4 bg-red-500 text-white border border-red-500 rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-red-600 hover:border-red-600 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95">
                         Logout
                     </button>
@@ -89,14 +90,14 @@
 
                     <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-[0.2em] text-brown/40 ml-1">Status Member</label>
-                        <input type="text" value="{{ ucfirst($user->role) }}" readonly
+                        <input type="text" value="{{ $user->membership === 'membership' ? 'MEMBER' : 'PELANGGAN' }}" readonly
                                class="w-full bg-brown/5 border border-brown/5 rounded-2xl px-6 py-4 font-black text-gold uppercase tracking-widest cursor-not-allowed">
                     </div>
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black uppercase tracking-[0.2em] text-brown/40 ml-1">Bio / Catatan Alamat</label>
-                    <textarea name="bio" rows="4" maxlength="20" placeholder="Tulis bio atau detail alamat pengiriman kamu di sini..."
+                    <textarea name="bio" rows="4" maxlength="50" placeholder="Tulis bio atau detail alamat pengiriman kamu di sini..."
                               class="w-full bg-cream/50 border border-brown/10 rounded-2xl px-6 py-4 outline-none focus:border-gold focus:ring-1 focus:ring-gold transition duration-300 font-medium">{{ old('bio', $user->bio) }}</textarea>
                 </div>
 
@@ -120,8 +121,6 @@
             </form>
         </div>
     </main>
-
-
 
     @include('partials.footer')
 </body>

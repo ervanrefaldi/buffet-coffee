@@ -94,7 +94,7 @@ class OwnerReportController extends Controller
                     $trx->transaction_code,
                     $trx->created_at->format('d M Y, H:i'),
                     $trx->order->user->name ?? 'Guest',
-                    strtoupper($trx->order->user->role ?? 'user'),
+                    strtoupper($trx->order->user->membership ?? 'regular'),
                     $trx->order->total_price ?? 0,
                     strtoupper($trx->status)
                 ));
@@ -164,7 +164,7 @@ class OwnerReportController extends Controller
                         <td>{$trx->transaction_code}</td>
                         <td>" . $trx->created_at->format('d M Y, H:i') . "</td>
                         <td>" . ($trx->order->user->name ?? 'Guest') . "</td>
-                        <td>" . strtoupper($trx->order->user->role ?? 'user') . "</td>
+                        <td>" . strtoupper($trx->order->user->membership ?? 'regular') . "</td>
                         <td>Rp " . number_format($trx->order->total_price ?? 0, 0, ',', '.') . "</td>
                         <td>" . strtoupper($trx->status) . "</td>
                     </tr>";

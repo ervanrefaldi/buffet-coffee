@@ -186,12 +186,23 @@
                                     <td class="px-6 py-4 text-xs text-gray-600">{{ date('d M Y, H:i', strtotime($trx->created_at)) }}</td>
                                     <td class="px-6 py-4 text-xs font-medium text-gray-900">{{ $trx->order->user->name ?? 'Guest' }}</td>
                                     <td class="px-6 py-4 text-xs">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase
-                                            @if(($trx->order->user->role ?? 'user') == 'member') bg-gold/10 text-gold border border-gold/20
-                                            @elseif(($trx->order->user->role ?? 'user') == 'owner') bg-red-100 text-red-700 border border-red-200
-                                            @else text-gray-400
-                                            @endif">
-                                            {{ $trx->order->user->role ?? 'user' }}
+                                        @php
+                                            $userLapor = $trx->order->user ?? null;
+                                            $statusLapor = 'Pelanggan';
+                                            $badgeClassLapor = 'text-gray-400';
+
+                                            if ($userLapor) {
+                                                if ($userLapor->role === 'owner') {
+                                                    $statusLapor = 'Owner';
+                                                    $badgeClassLapor = 'bg-red-100 text-red-700 border border-red-200';
+                                                } elseif ($userLapor->membership === 'membership') {
+                                                    $statusLapor = 'Member';
+                                                    $badgeClassLapor = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+                                                }
+                                            }
+                                        @endphp
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $badgeClassLapor }}">
+                                            {{ $statusLapor }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-xs font-black text-gray-900">Rp {{ number_format($trx->order->total_price ?? 0, 0, ',', '.') }}</td>

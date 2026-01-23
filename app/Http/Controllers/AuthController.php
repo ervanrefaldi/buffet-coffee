@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -42,44 +43,42 @@ class AuthController extends Controller
      * LOGIN
      */
     public function login(Request $request)
-{
-    // validasi input
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
-
-    // ambil user dari database
-    $user = DB::table('users')
-        ->where('email', $request->email)
-        ->first();
-
-    // cek user & password
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return back()->withErrors([
-            'email' => 'Email atau password salah.'
+    {
+        // validasi input
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
+
+        // ambil user dari database
+        $user = DB::table('users')
+            ->where('email', $request->email)
+            ->first();
+
+        // cek user & password
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'email' => 'Email atau password salah.'
+            ]);
+        }
+
+        // SIMPAN DATA USER KE SESSION & SYNC DENGAN AUTH LARAVEL
+        Auth::loginUsingId($user->users_id);
+
+        session([
+            'user_id'    => $user->users_id,
+            'user_name'  => $user->name,
+            'user_email' => $user->email,
+            'user_phone' => $user->phone,
+            'user_role'  => $user->role,
+            'user_membership' => $user->membership ?? 'regular',
+        ]);
+
+        // Role-based Redirect
+        if (in_array($user->role, ['owner', 'admin'])) {
+            return redirect('/owner/dashboard');
+        }
+
+        return redirect('/');
     }
-
-    // === INI BAGIAN PALING PENTING ===
-    // SIMPAN DATA USER KE SESSION & SYNC DENGAN AUTH LARAVEL
-    \Illuminate\Support\Facades\Auth::loginUsingId($user->users_id);
-
-    session([
-        'user_id'    => $user->users_id,
-        'user_name'  => $user->name,
-        'user_email' => $user->email,
-        'user_phone' => $user->phone,
-        'user_role'  => $user->role,
-    ]);
-
-    // Role-based Redirect
-    if (in_array($user->role, ['owner', 'admin'])) {
-        return redirect('/owner/dashboard');
-    }
-
-    // redirect ke home (untuk user biasa / membership)
-    return redirect('/');
-}
-
 }

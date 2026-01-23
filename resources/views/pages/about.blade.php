@@ -66,7 +66,7 @@
                         Dari kebun inilah perjalanan kopi dimulai, mulai dari perawatan tanaman, panen, hingga proses pasca panen yang membentuk karakter rasa di setiap biji kopi. Mengusung konsep sebagai sebuah “wadah”, kami menghadirkan berbagai macam proses pasca panen sehingga setiap pecinta kopi dapat menikmati karakter rasa yang berbeda.
                     </p>
                     <p class="text-lg text-brown/80 text-justify font-serif italic text-gold">
-                        "Kami percaya bahwa setiap proses memiliki cerita, dan setiap cangkir kopi membawa pengalaman yang unik."
+                        "Kami percaya bahwa setiap proses memiliki cerita, and setiap cangkir kopi membawa pengalaman yang unik."
                     </p>
                 </div>
             </div>
@@ -128,7 +128,7 @@
 
         <section class="max-w-4xl mx-auto text-center">
             <p class="text-xl text-brown/80 leading-relaxed italic font-serif">
-                "Bufet Coffee memulai perjalanannya pada 12 Agustus 2018. Sejak awal berdiri, kami berkomitmen menghadirkan kopi dengan beragam proses pasca panen—mulai dari Natural, Honey, Full Washed, hingga Wine Process—serta terus berkembang dengan tetap menjaga kualitas, konsistensi, dan identitas rasa dari kebun hingga ke cangkir."
+                "Bufet Coffee memulai perjalanannya pada 12 Agustus 2018. Sejak awal berdiri, kami berkomitmen menghadirkan kopi dengan beragam proses pasca panen—mulai dari Natural, Honey, Full Washed, hingga Wine Process—serta terus berkembang dengan tetap menjaga kualitas, konsistensi, and identitas rasa dari kebun hingga ke cangkir."
             </p>
         </section>
 
@@ -162,7 +162,7 @@
             </div>
 
             <div class="px-4 pb-3">
-                <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1 text-right">56 posts</p>
+                <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1 text-right">5 post</p>
                 <div class="text-[11px] leading-tight text-gray-600">
                     <p class="font-bold">Product/service</p>
                     <p>sedia kopi yaaa</p>

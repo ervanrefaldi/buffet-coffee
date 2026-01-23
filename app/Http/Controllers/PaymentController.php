@@ -109,7 +109,10 @@ class PaymentController extends Controller
 
             // Upgrade Membership Logic
             if (session('user_role') === 'pelanggan' && $totalWeight >= 100) {
-                DB::table('users')->where('users_id', $userId)->update(['role' => 'membership']);
+                DB::table('users')->where('users_id', $userId)->update([
+                    'role' => 'membership',
+                    'membership' => 'membership'
+                ]);
                 session(['user_role' => 'membership']);
             }
         });
@@ -237,7 +240,12 @@ class PaymentController extends Controller
         $today = date('Ymd');
         $prefix = "ORD-{$today}-";
         $lastOrder = DB::table('orders')->where('order_code', 'like', "{$prefix}%")->orderBy('order_code', 'desc')->first();
-        $nextSequence = $lastOrder ? ((int) end(explode('-', $lastOrder->order_code)) + 1) : 1;
+        
+        $nextSequence = 1;
+        if ($lastOrder) {
+            $parts = explode('-', $lastOrder->order_code);
+            $nextSequence = (int) end($parts) + 1;
+        }
         $orderCode = $prefix . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
 
         // --- 4. DATABASE TRANSACTIONS ---
@@ -272,7 +280,10 @@ class PaymentController extends Controller
 
             // Upgrade Membership
             if (session('user_role') === 'pelanggan' && $totalWeight >= 100) {
-                DB::table('users')->where('users_id', $userId)->update(['role' => 'membership']);
+                DB::table('users')->where('users_id', $userId)->update([
+                    'role' => 'membership',
+                    'membership' => 'membership'
+                ]);
                 session(['user_role' => 'membership']);
             }
         });

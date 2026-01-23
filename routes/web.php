@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\ForgotPasswordController;
 
 require __DIR__.'/auth.php';
-
 
 /*
 |--------------------------------------------------------------------------
@@ -57,8 +57,6 @@ Route::post('/login', [AuthController::class, 'login']);
 | FORGOT PASSWORD
 |--------------------------------------------------------------------------
 */
-use App\Http\Controllers\ForgotPasswordController;
-
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('forgot-password');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendCode'])->name('send-code');
 Route::get('/verify-code', [ForgotPasswordController::class, 'showVerifyForm'])->name('verify-code');
@@ -170,8 +168,8 @@ Route::get('/verify-email', EmailVerificationPromptController::class)
 /*
 |--------------------------------------------------------------------------
 | USER ONLY
- */
-    // Add unified user routes here
+|--------------------------------------------------------------------------
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -186,7 +184,6 @@ Route::delete('/cart/delete/{id}', [\App\Http\Controllers\CartController::class,
 Route::get('/cart/checkout', [\App\Http\Controllers\PaymentController::class, 'cartCheckoutPage'])->name('checkout.cart');
 Route::post('/cart/checkout/process', [\App\Http\Controllers\PaymentController::class, 'processCartCheckout'])->name('checkout.cart.process');
 
-
 Route::get('/checkout', function () {
     if (!session()->has('user_id')) {
         return redirect('/login');
@@ -200,15 +197,7 @@ Route::get('/checkout', function () {
 | OWNER ONLY
 |--------------------------------------------------------------------------
 */
-Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
-    if (!session()->has('user_id')) {
-        return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
-    }
-    if (!in_array(session('user_role'), ['owner', 'admin'])) {
-        abort(403, 'Akses ditolak. Halaman ini khusus untuk Owner dan Admin.');
-    }
-    return $next($request);
-}], function () {
+Route::middleware(\App\Http\Middleware\EnsureOwnerOrAdmin::class)->prefix('owner')->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('owner.dashboard');
@@ -216,7 +205,6 @@ Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
     // Fitur: Kelola Event
     Route::resource('/event', \App\Http\Controllers\OwnerEventController::class);
 
-    // Placeholder Routes for other features
     // Fitur: Kelola Menu
     Route::resource('/menu', \App\Http\Controllers\OwnerProductController::class);
     Route::get('/orders', [\App\Http\Controllers\OwnerOrderController::class, 'index'])->name('owner.orders.index');
@@ -235,12 +223,7 @@ Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
     Route::get('/laporan/export/word', [\App\Http\Controllers\OwnerReportController::class, 'exportWord'])->name('owner.laporan.export.word');
     
     // Khusus Master Owner (untuk mengelola staf/admin)
-    Route::group(['middleware' => function ($request, $next) {
-        if (session('user_email') !== 'owner@bufet.com') {
-            abort(403, 'Hanya Master Owner yang dapat mengelola Admin.');
-        }
-        return $next($request);
-    }], function() {
+    Route::middleware(\App\Http\Middleware\EnsureMasterOwner::class)->group(function() {
         Route::resource('/admin', \App\Http\Controllers\OwnerAdminController::class)->names('admin');
     });
 });
@@ -252,7 +235,6 @@ Route::group(['prefix' => 'owner', 'middleware' => function ($request, $next) {
 */
 Route::get('/menu/{id}/checkout', [\App\Http\Controllers\MenuController::class, 'checkout'])->name('menu.checkout');
 Route::post('/checkout', [\App\Http\Controllers\PaymentController::class, 'checkout'])->name('checkout.process');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -267,7 +249,6 @@ Route::get('/tentang', [PageController::class, 'about']);
 |--------------------------------------------------------------------------
 */
 Route::get('/event', function () {
-
     // Ambil event yang sedang aktif ATAU akan datang (Upcoming)
     $events = DB::table('events')
         ->where('end_date', '>=', date('Y-m-d')) 

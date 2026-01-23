@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class OwnerProductController extends Controller
 {
@@ -21,6 +22,9 @@ class OwnerProductController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Menu Store Attempt', $request->all());
+        Log::info('Menu Store Files', $request->allFiles());
+        
         $request->validate([
             'name'        => 'required|string|max:100',
             'category'    => 'required|in:biji,bubuk',
@@ -29,9 +33,9 @@ class OwnerProductController extends Controller
             'price_500g'  => 'required|numeric|min:0',
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg|max:1024'
+            'image'       => 'required|image|mimes:jpeg,png,jpg|max:5120'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 1MB.'
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
         $imagePath = null;
@@ -74,9 +78,9 @@ class OwnerProductController extends Controller
             'price_500g'  => 'required|numeric|min:0',
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:1024'
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 1MB.'
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
         $data = $request->except(['image']);
