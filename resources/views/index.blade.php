@@ -39,6 +39,7 @@
 <body class="bg-cream font-sans text-brown">
 
     @include('partials.navbar')
+    @include('partials.flash_message')
 
     <section id="hero" class="relative h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0">

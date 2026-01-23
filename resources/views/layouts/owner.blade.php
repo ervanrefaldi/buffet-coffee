@@ -108,12 +108,7 @@
                 </div>
             </header>
 
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r-lg shadow-sm" role="alert">
-                    <p class="font-bold">Berhasil</p>
-                    <p>{{ session('success') }}</p>
-                </div>
-            @endif
+            @include('partials.flash_message')
 
             @yield('content')
         </div>

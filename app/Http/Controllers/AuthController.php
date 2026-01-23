@@ -74,11 +74,21 @@ class AuthController extends Controller
             'user_membership' => $user->membership ?? 'regular',
         ]);
 
-        // Role-based Redirect
-        if (in_array($user->role, ['owner', 'admin'])) {
-            return redirect('/owner/dashboard');
+        // Role-based Redirect & Welcome Message
+        $role = strtolower(trim($user->role));
+
+        // 1. OWNER / ADMIN -> Dashboard Owner
+        if ($role === 'owner' || $role === 'admin') {
+            return redirect()->route('owner.dashboard')->with('success', 'Selamat datang kembali, Owner!');
         }
 
-        return redirect('/');
+        // 2. MEMBER -> Home (Cek kolom membership)
+        $membership = strtolower(trim($user->membership ?? ''));
+        if ($membership && $membership !== 'regular' && $membership !== 'none') {
+             return redirect('/')->with('success', 'Selamat datang kembali, Member ' . $user->name . '!');
+        }
+
+        // 3. PELANGGAN (Default) -> Home
+        return redirect('/')->with('success', 'Selamat datang kembali, ' . $user->name . '!');
     }
 }
