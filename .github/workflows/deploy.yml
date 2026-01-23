@@ -106,7 +106,7 @@ jobs:
             --set-env-vars "SESSION_SECURE_COOKIE=true" \
             --set-env-vars "SESSION_SAME_SITE=lax" \
             --set-env-vars "CACHE_STORE=database" \
-            --set-env-vars "RUN_MIGRATIONS=false" \
+            --set-env-vars "RUN_MIGRATIONS=true" \
             --set-env-vars "MAIL_MAILER=smtp" \
             --set-env-vars "MAIL_HOST=smtp.gmail.com" \
             --set-env-vars "MAIL_PORT=465" \
