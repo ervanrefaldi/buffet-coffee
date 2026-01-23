@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Mail\ResetPasswordOTP;
 
 class ForgotPasswordController extends Controller
 {
@@ -47,10 +48,7 @@ class ForgotPasswordController extends Controller
 
         // Kirim Email
         try {
-            Mail::raw("Halo,\n\nKami menerima permintaan untuk mereset password akun Anda.\n\nKode verifikasi Anda adalah: $code\n\nMasukkan kode ini di website untuk melanjutkan proses reset password. Kode ini akan kadaluarsa dalam 10 menit.\n\nJika Anda tidak merasa melakukan permintaan ini, silakan abaikan email ini.", function ($message) use ($email) {
-                $message->to($email)
-                        ->subject('Kode Verifikasi Reset Password - Bufet Coffee');
-            });
+            Mail::to($email)->send(new ResetPasswordOTP($code));
         } catch (\Exception $e) {
             // Jika gagal kirim email (misal di localhost tanpa SMTP), sistem tetap lanjut ke halaman verifikasi
             // User bisa cek kode di file storage/logs/laravel.log
