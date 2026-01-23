@@ -39,8 +39,8 @@
                 </a>
 
                 <!-- Profile Link -->
-                <a href="{{ url('/profile') }}" class="hidden md:flex items-center gap-3 group">
-                    <div class="text-right">
+                <a href="{{ url('/profile') }}" class="flex items-center gap-3 group">
+                    <div class="text-right hidden md:block">
                         <p class="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-gold transition mb-0.5" id="nav-profile-name">
                             {{ session('user_name') }}
                         </p>

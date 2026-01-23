@@ -52,9 +52,14 @@
                 BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
             </h1>
             
-            <p class="text-xl md:text-2xl max-w-2xl mx-auto opacity-0 animate-fade-up font-light tracking-wide text-cream/90" style="animation-delay: 0.3s; animation-fill-mode: forwards;">
                 Menyajikan cita rasa kopi premium yang diproses dari kebun terbaik di seluruh Indonesia.
             </p>
+
+            @if(session()->has('user_id'))
+            <div class="mt-6 animate-fade-up opacity-0 text-gold font-serif italic text-xl md:text-2xl" style="animation-delay: 0.5s; animation-fill-mode: forwards;">
+                Halo, {{ session('user_name') }}!
+            </div>
+            @endif
             
             <div class="mt-12 animate-fade-up opacity-0" style="animation-delay: 0.6s; animation-fill-mode: forwards;">
                 <a href="#produk" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-white hover:text-brown transition-all font-bold uppercase text-xs tracking-[0.2em] shadow-2xl">
