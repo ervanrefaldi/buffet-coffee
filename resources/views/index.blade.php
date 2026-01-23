@@ -48,7 +48,7 @@
         </div>
 
         <div class="relative z-10 text-center text-white px-4">
-            <h1 class="text-6xl md:text-8xl font-serif font-black mb-6 animate-fade-up tracking-tighter">
+            <h1 class="text-4xl md:text-8xl font-serif font-black mb-6 animate-fade-up tracking-tighter">
                 BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
             </h1>
             
