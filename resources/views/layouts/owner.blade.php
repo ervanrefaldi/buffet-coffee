@@ -14,8 +14,11 @@
 <body class="bg-gray-50 text-gray-800">
 
 <div class="flex h-screen overflow-hidden">
+    <!-- Overlay for mobile -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
+    <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 fixed inset-y-0 left-0 z-30 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col">
         <div class="h-16 flex items-center px-6 border-b border-gray-200">
             <span class="text-xl font-bold text-amber-700 tracking-wider">BUFET <span class="text-gray-600">OWNER</span></span>
         </div>
@@ -83,9 +86,9 @@
     <!-- Content -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
         <!-- Header Mobile (only visible on small screens) -->
-        <header class="md:hidden h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4">
+        <header class="md:hidden h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10 relative">
             <span class="font-bold text-lg text-amber-700">BUFET OWNER</span>
-            <button class="text-gray-600 focus:outline-none">
+            <button id="mobile-menu-button" class="text-gray-600 focus:outline-none p-2 rounded-md hover:bg-gray-100">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </header>
@@ -116,5 +119,56 @@
 </div>
 
     @yield('scripts')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            let isSidebarOpen = false;
+
+            function toggleSidebar() {
+                isSidebarOpen = !isSidebarOpen;
+                if (isSidebarOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden', 'opacity-0');
+                    // Small delay to allow display:block to apply before opacity transition
+                    setTimeout(() => {
+                        overlay.classList.add('opacity-100');
+                    }, 10);
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('opacity-0');
+                    // Wait for transition to finish before hiding
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 300);
+                }
+            }
+
+            mobileMenuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleSidebar();
+            });
+
+            overlay.addEventListener('click', function() {
+                toggleSidebar();
+            });
+
+            // Close sidebar when clicking a link (optional, good for single page feel but standard navs reload anyway)
+            // But if it's SPA-like or just good UX:
+            const sidebarLinks = sidebar.querySelectorAll('a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                     // Only close on mobile
+                    if (window.innerWidth < 768) {
+                        // We rely on page reload usually, but if it was an anchor link:
+                        // toggleSidebar();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
