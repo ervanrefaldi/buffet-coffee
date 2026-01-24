@@ -77,9 +77,18 @@ class OwnerOrderController extends Controller
 
     public function destroy($id)
     {
-        $order = Order::where('orders_id', $id)->firstOrFail();
+        $order = Order::with(['items', 'transaction'])->where('orders_id', $id)->firstOrFail();
+        
+        // Manually delete related data to ensure clean hard delete
+        // (Just in case DB cascade is not configured)
+        $order->items()->delete();
+        
+        if ($order->transaction) {
+            $order->transaction->delete();
+        }
+
         $order->delete();
 
-        return back()->with('success', 'Pesanan berhasil dihapus.');
+        return back()->with('success', 'Pesanan dan data terkait berhasil dihapus permanen.');
     }
 }
