@@ -61,35 +61,62 @@
             @endif
 
             <!-- Mobile Menu Toggle -->
-            <button class="md:hidden text-white relative z-50 transition-colors duration-300" id="mobile-menu-toggle">
-                <svg id="menu-icon-open" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                <svg id="menu-icon-close" class="w-8 h-8 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button class="md:hidden text-white relative z-50 transition-colors duration-300 focus:outline-none" id="mobile-menu-toggle">
+                <svg id="menu-icon-open" class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                <svg id="menu-icon-close" class="w-8 h-8 hidden drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
     </div>
 
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="fixed inset-0 bg-brown/95 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-500 ease-in-out md:hidden flex flex-col items-center justify-center">
-        <div class="flex flex-col space-y-8 text-center">
-            <a href="{{ url('/') }}" class="mobile-link text-3xl font-serif font-bold text-white hover:text-gold transition-colors duration-300">Home</a>
-            <a href="{{ url('/tentang') }}" class="mobile-link text-3xl font-serif font-bold text-white hover:text-gold transition-colors duration-300">About</a>
-            <a href="{{ url('/menu') }}" class="mobile-link text-3xl font-serif font-bold text-white hover:text-gold transition-colors duration-300">Menu</a>
-            <a href="{{ url('/event') }}" class="mobile-link text-3xl font-serif font-bold text-white hover:text-gold transition-colors duration-300">Event</a>
-            <a href="{{ url('/membership') }}" class="mobile-link text-3xl font-serif font-bold text-white hover:text-gold transition-colors duration-300">Membership</a>
-            
-            @if(!session()->has('user_id'))
-                <div class="pt-8">
-                    <a href="{{ url('/login') }}" class="bg-gold text-white px-10 py-3 rounded-full font-bold uppercase tracking-widest hover:bg-white hover:text-brown transition duration-300 shadow-xl">
-                        Login
-                    </a>
+    <!-- Mobile Menu Container -->
+    <div id="mobile-menu-container" class="fixed inset-0 z-40 hidden md:hidden">
+        <!-- Overlay (Click to close) -->
+        <div id="mobile-menu-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        
+        <!-- Sidebar Panel -->
+        <div id="mobile-menu-panel" class="absolute top-0 right-0 w-72 h-full bg-[#4A3427] shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+            <!-- Decorative Pattern -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[#C5A358]/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+
+            <div class="p-8 flex flex-col h-full relative z-10">
+                <!-- Header inside Menu -->
+                <div class="flex items-center justify-between mb-12">
+                     <span class="text-white font-serif font-bold text-xl tracking-wider">MENU</span>
+                     <!-- Close button is handled by the toggle outside, but we can add one here if needed, 
+                          but typically the toggle button z-index is high enough. 
+                          However, for this design, the toggle button is in the navbar. 
+                          Let's ensure the toggle button changes color or we add a close button here.
+                     -->
                 </div>
-            @else
-                <div class="pt-8 flex flex-col items-center gap-4">
-                     <a href="{{ url('/profile') }}" class="text-white/60 text-sm font-bold uppercase tracking-widest hover:text-gold">
-                        Profile
-                    </a>
+
+                <!-- Links -->
+                <div class="flex flex-col space-y-6">
+                    <a href="{{ url('/') }}" class="mobile-link text-xl font-serif font-bold text-white/80 hover:text-[#C5A358] hover:pl-2 transition-all duration-300 border-b border-white/5 pb-4">Home</a>
+                    <a href="{{ url('/tentang') }}" class="mobile-link text-xl font-serif font-bold text-white/80 hover:text-[#C5A358] hover:pl-2 transition-all duration-300 border-b border-white/5 pb-4">About</a>
+                    <a href="{{ url('/menu') }}" class="mobile-link text-xl font-serif font-bold text-white/80 hover:text-[#C5A358] hover:pl-2 transition-all duration-300 border-b border-white/5 pb-4">Menu</a>
+                    <a href="{{ url('/event') }}" class="mobile-link text-xl font-serif font-bold text-white/80 hover:text-[#C5A358] hover:pl-2 transition-all duration-300 border-b border-white/5 pb-4">Event</a>
+                    <a href="{{ url('/membership') }}" class="mobile-link text-xl font-serif font-bold text-white/80 hover:text-[#C5A358] hover:pl-2 transition-all duration-300 border-b border-white/5 pb-4">Membership</a>
                 </div>
-            @endif
+
+                <!-- Auth / Profile -->
+                <div class="mt-auto pt-8">
+                    @if(!session()->has('user_id'))
+                        <a href="{{ url('/login') }}" class="block w-full text-center bg-[#C5A358] text-white py-3 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-[#4A3427] transition-all shadow-lg">
+                            Login
+                        </a>
+                    @else
+                        <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <div class="w-10 h-10 rounded-full bg-[#C5A358] flex items-center justify-center text-white font-bold">
+                                {{ substr(session('user_name'), 0, 1) }}
+                            </div>
+                            <div class="overflow-hidden">
+                                <p class="text-white text-sm font-bold truncate">{{ session('user_name') }}</p>
+                                <a href="{{ url('/profile') }}" class="text-[#C5A358] text-[10px] uppercase font-bold tracking-widest hover:text-white transition-colors">View Profile</a>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </nav>
@@ -101,105 +128,133 @@
         const links = document.getElementById('nav-links');
         const profileName = document.getElementById('nav-profile-name');
         const cartBtn = document.getElementById('nav-cart-btn');
+        
+        // Mobile Menu Elements
         const mobileToggle = document.getElementById('mobile-menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuContainer = document.getElementById('mobile-menu-container');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
         const menuIconOpen = document.getElementById('menu-icon-open');
         const menuIconClose = document.getElementById('menu-icon-close');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
+        
         let isMenuOpen = false;
 
-        // Toggle Mobile Menu
-        mobileToggle.addEventListener('click', () => {
+        function toggleMenu() {
             isMenuOpen = !isMenuOpen;
+            
             if (isMenuOpen) {
-                mobileMenu.classList.remove('translate-x-full');
-                mobileMenu.classList.add('translate-x-0');
+                // Open Menu
+                mobileMenuContainer.classList.remove('hidden');
+                
+                // Animate In
+                setTimeout(() => {
+                    mobileMenuOverlay.classList.remove('opacity-0');
+                    mobileMenuPanel.classList.remove('translate-x-full');
+                }, 10);
+
+                // Icon State
                 menuIconOpen.classList.add('hidden');
                 menuIconClose.classList.remove('hidden');
-                // Force toggle button to be white when menu is open
-                mobileToggle.classList.remove('text-brown');
-                mobileToggle.classList.add('text-white'); 
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
+                
+                // Button Color (Always white when open on dark bg)
+                mobileToggle.classList.remove('text-[#4A3427]'); // remove brown
+                mobileToggle.classList.add('text-white');
+                
+                document.body.style.overflow = 'hidden';
             } else {
-                mobileMenu.classList.add('translate-x-full');
-                mobileMenu.classList.remove('translate-x-0');
+                // Close Menu
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenuPanel.classList.add('translate-x-full');
+                
+                // Wait for animation
+                setTimeout(() => {
+                    mobileMenuContainer.classList.add('hidden');
+                }, 300);
+
+                // Icon State
                 menuIconOpen.classList.remove('hidden');
                 menuIconClose.classList.add('hidden');
-                document.body.style.overflow = ''; // Restore scrolling
                 
-                // Restore color based on scroll
-                if (window.pageYOffset > 50) {
-                     mobileToggle.classList.add('text-brown');
-                     mobileToggle.classList.remove('text-white');
-                }
+                document.body.style.overflow = '';
+                
+                // Restore Button Color based on scroll
+                checkScroll();
             }
+        }
+
+        mobileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
         });
 
-        // Close menu when a link is clicked
-        mobileLinks.forEach(link => {
+        mobileMenuOverlay.addEventListener('click', () => {
+            toggleMenu();
+        });
+
+        // Close when clicking a link
+        document.querySelectorAll('.mobile-link').forEach(link => {
             link.addEventListener('click', () => {
-                isMenuOpen = false;
-                mobileMenu.classList.add('translate-x-full');
-                mobileMenu.classList.remove('translate-x-0');
-                menuIconOpen.classList.remove('hidden');
-                menuIconClose.classList.add('hidden');
-                document.body.style.overflow = '';
+                if(isMenuOpen) toggleMenu();
             });
         });
 
         // Scroll Effect
-        window.addEventListener('scroll', function() {
+        function checkScroll() {
             if (window.pageYOffset > 50) {
-                nav.classList.add('bg-white/90', 'backdrop-blur-xl', 'shadow-2xl', 'py-4', 'border-b', 'border-brown/5');
+                nav.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-lg', 'py-4');
                 nav.classList.remove('py-6');
                 logo.classList.remove('brightness-0', 'invert');
+                
                 if(links) {
                     links.classList.remove('text-white');
-                    links.classList.add('text-brown');
+                    links.classList.add('text-[#4A3427]');
                 }
                 if(profileName) {
                     profileName.classList.remove('text-white/40');
-                    profileName.classList.add('text-brown/40');
+                    profileName.classList.add('text-[#4A3427]/40');
                 }
                 if(cartBtn) {
                     cartBtn.classList.remove('text-white');
-                    cartBtn.classList.add('text-brown');
+                    cartBtn.classList.add('text-[#4A3427]');
                 }
-                if(mobileToggle && !isMenuOpen) { // Only change color if menu is closed
+                
+                // Toggle Button Color (only if menu is CLOSED)
+                if (mobileToggle && !isMenuOpen) {
                     mobileToggle.classList.remove('text-white');
-                    mobileToggle.classList.add('text-brown');
+                    mobileToggle.classList.add('text-[#4A3427]');
+                    // If using drop-shadow on white bg, maybe reduce it or keep it
                 }
+
             } else {
-                nav.classList.remove('bg-white/90', 'backdrop-blur-xl', 'shadow-2xl', 'py-4', 'border-b', 'border-brown/5');
+                nav.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-lg', 'py-4');
                 nav.classList.add('py-6');
                 
                 @if(isset($navDark) && $navDark)
-                    // Maintain dark state if navDark is true
+                    // Page forces dark mode (like About Us)
                     logo.classList.remove('brightness-0', 'invert');
-                    if(links) {
-                        links.classList.remove('text-white');
-                        links.classList.add('text-brown');
+                    // Ensure text is brown/dark
+                    if(links) { links.classList.remove('text-white'); links.classList.add('text-[#4A3427]'); }
+                     if (mobileToggle && !isMenuOpen) {
+                        mobileToggle.classList.remove('text-white');
+                        mobileToggle.classList.add('text-[#4A3427]');
                     }
                 @else
+                    // Transparent/Hero mode
                     logo.classList.add('brightness-0', 'invert');
-                    if(links) {
-                        links.classList.add('text-white');
-                        links.classList.remove('text-brown');
-                    }
-                    if(profileName) {
-                        profileName.classList.add('text-white/40');
-                        profileName.classList.remove('text-brown/40');
-                    }
-                    if(cartBtn) {
-                        cartBtn.classList.add('text-white');
-                        cartBtn.classList.remove('text-brown');
-                    }
-                    if(mobileToggle && !isMenuOpen) {
+                    if(links) { links.classList.add('text-white'); links.classList.remove('text-[#4A3427]'); }
+                    if(profileName) { profileName.classList.add('text-white/40'); profileName.classList.remove('text-[#4A3427]/40'); }
+                    if(cartBtn) { cartBtn.classList.add('text-white'); cartBtn.classList.remove('text-[#4A3427]'); }
+                    
+                    if (mobileToggle && !isMenuOpen) {
                         mobileToggle.classList.add('text-white');
-                        mobileToggle.classList.remove('text-brown');
+                        mobileToggle.classList.remove('text-[#4A3427]');
                     }
                 @endif
             }
-        });
+        }
+
+        window.addEventListener('scroll', checkScroll);
+        // Initial check
+        checkScroll();
     });
 </script>
