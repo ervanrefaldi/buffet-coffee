@@ -90,7 +90,7 @@
 
                     <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-[0.2em] text-brown/40 ml-1">Status Member</label>
-                        <input type="text" value="{{ $user->membership === 'membership' ? 'MEMBER' : 'PELANGGAN' }}" readonly
+                        <input type="text" value="{{ strtoupper($user->role) }}" readonly
                                class="w-full bg-brown/5 border border-brown/5 rounded-2xl px-6 py-4 font-black text-gold uppercase tracking-widest cursor-not-allowed">
                     </div>
                 </div>
