@@ -40,8 +40,9 @@ class OwnerTransactionController extends Controller
     public function destroy($id)
     {
         $transaction = Transaction::where('transactions_id', $id)->firstOrFail();
+        // Since Transaction model doesn't use SoftDeletes, this is a hard delete.
         $transaction->delete();
 
-        return back()->with('success', 'Transaksi berhasil dihapus.');
+        return back()->with('success', 'Transaksi berhasil dihapus permanen dari database.');
     }
 }

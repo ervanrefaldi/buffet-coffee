@@ -103,8 +103,31 @@ class OwnerAdminController extends Controller
                     ->where('role', 'owner')
                     ->where('email', '!=', 'owner@bufet.com')
                     ->firstOrFail();
+
+        // Manual Cascade Delete untuk memastikan data bersih di DB
+        
+        // 1. Hapus transaksi terkait user ini (jika ada)
+        // (Biasanya owner tidak transaksi, tapi untuk jaga-jaga)
+        DB::table('transactions')
+            ->join('orders', 'transactions.orders_id', '=', 'orders.orders_id')
+            ->where('orders.user_id', $admin->users_id)
+            ->delete();
+
+        // 2. Hapus item order terkait
+        DB::table('order_items')
+            ->join('orders', 'order_items.orders_id', '=', 'orders.orders_id')
+            ->where('orders.user_id', $admin->users_id)
+            ->delete();
+
+        // 3. Hapus order
+        DB::table('orders')->where('user_id', $admin->users_id)->delete();
+
+        // 4. Hapus cart
+        DB::table('carts')->where('user_id', $admin->users_id)->delete();
+
+        // 5. Akhirnya hapus user
         $admin->delete();
 
-        return redirect()->route('admin.index')->with('success', 'Akun owner berhasil dihapus.');
+        return redirect()->route('admin.index')->with('success', 'Akun owner dan seluruh datanya berhasil dihapus permanen.');
     }
 }

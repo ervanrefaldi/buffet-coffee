@@ -89,6 +89,7 @@ Route::get('/profile', function () {
 
 Route::get('/orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('user.orders.index');
 Route::get('/orders/{id}/invoice', [\App\Http\Controllers\UserOrderController::class, 'invoice'])->name('user.orders.invoice');
+Route::delete('/orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'destroy'])->name('user.orders.destroy');
 
 Route::post('/profile/update', function (Request $request) {
     if (!session()->has('user_id')) {

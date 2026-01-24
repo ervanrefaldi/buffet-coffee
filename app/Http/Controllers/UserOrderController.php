@@ -42,4 +42,28 @@ class UserOrderController extends Controller
 
         return view('user.orders.invoice', compact('order'));
     }
+
+    public function destroy($id)
+    {
+        if (!session()->has('user_id')) {
+            return redirect('/login');
+        }
+
+        $order = Order::where('orders_id', $id)
+            ->where('user_id', session('user_id'))
+            ->firstOrFail();
+
+        // Hanya pesanan 'menunggu_pembayaran' yang bisa dibatalkan user
+        if ($order->status !== 'menunggu_pembayaran') {
+            return back()->with('error', 'Pesanan yang sudah dibayar/diproses tidak dapat dibatalkan.');
+        }
+
+        // Hapus item pesanan terkait
+        $order->items()->delete();
+        
+        // Hapus pesanan utama
+        $order->delete();
+
+        return back()->with('success', 'Pesanan berhasil dibatalkan dan dihapus.');
+    }
 }

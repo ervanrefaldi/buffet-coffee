@@ -115,9 +115,19 @@
                                     @endif
                                     
                                     @if($order->status == 'menunggu_pembayaran')
-                                        <a href="https://wa.me/6282118189789" target="_blank" class="px-6 py-2 bg-amber-50 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest border border-amber-100 hover:bg-amber-100 transition-colors">
-                                            Bayar Sekarang
-                                        </a>
+                                        <div class="flex gap-2">
+                                            <form action="{{ route('user.orders.destroy', $order->orders_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Data akan dihapus permanen.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-6 py-2 bg-red-50 text-red-700 rounded-full text-[9px] font-black uppercase tracking-widest border border-red-100 hover:bg-red-100 transition-colors">
+                                                    Batalkan
+                                                </button>
+                                            </form>
+                                            
+                                            <a href="https://wa.me/6282118189789" target="_blank" class="px-6 py-2 bg-amber-50 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest border border-amber-100 hover:bg-amber-100 transition-colors">
+                                                Bayar Sekarang
+                                            </a>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
