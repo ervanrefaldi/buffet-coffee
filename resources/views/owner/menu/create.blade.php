@@ -105,18 +105,22 @@
                 <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Foto Produk</label>
                 
                 <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors relative">
+                    
+                    <!-- Container Preview (Konten akan diganti JS) -->
                     <div class="space-y-1 text-center" id="upload-preview">
                         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <div class="flex text-sm text-gray-600 justify-center">
-                            <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
+                            <span class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
                                 <span>Upload a file</span>
-                                <input id="image" name="image" type="file" class="sr-only" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
-                            </label>
+                            </span>
                         </div>
                         <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
                     </div>
+
+                    <!-- Input Actual (Hidden but exists!) -->
+                    <input id="image" name="image" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
                 </div>
                 @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
@@ -137,23 +141,26 @@
 <script>
     function previewImage(input) {
         const previewContainer = document.getElementById('upload-preview');
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            
-            // Validate size (Warning Only)
+        const file = input.files[0];
+
+        if (file) {
+            // Validate size (1MB) - Strict Client Side
             if (file.size > 1024 * 1024) {
-                alert("Peringatan: Ukuran file lebih dari 1MB. Kemungkinan akan ditolak server.");
-                // We do NOT clear the input anymore. Let the server handle it/reject it so the user knows what happened.
+                alert("Maaf, ukuran file terlalu besar! Maksimal 1MB.");
+                input.value = ""; // Reset input
+                resetPreview();   // Reset UI
+                return;
             }
 
             const reader = new FileReader();
             reader.onload = function(e) {
+                // Update UI Preview
                 previewContainer.innerHTML = `
                     <div class="flex flex-col items-center">
                         <img src="${e.target.result}" class="h-40 w-auto mb-3 rounded-lg shadow-md object-contain border border-gray-200">
                         <p class="text-xs font-bold text-green-600">Foto Siap Upload</p>
                         <p class="text-[10px] text-gray-400">${file.name}</p>
-                        <button type="button" onclick="resetUpload()" class="mt-2 text-red-500 hover:text-red-700 text-xs font-medium underline">Ganti Foto</button>
+                        <p class="text-[10px] text-amber-600 font-bold mt-1">Klik area ini lagi untuk ganti foto</p>
                     </div>
                 `;
             }
@@ -161,18 +168,16 @@
         }
     }
 
-    function resetUpload() {
-        const input = document.getElementById('image');
-        input.value = "";
-        document.getElementById('upload-preview').innerHTML = `
+    function resetPreview() {
+        const previewContainer = document.getElementById('upload-preview');
+        previewContainer.innerHTML = `
             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <div class="flex text-sm text-gray-600 justify-center">
-                <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
+                <span class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
                     <span>Upload a file</span>
-                    <input id="image" name="image" type="file" class="sr-only" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
-                </label>
+                </span>
             </div>
             <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
         `;
