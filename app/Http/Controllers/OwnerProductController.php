@@ -76,7 +76,6 @@ class OwnerProductController extends Controller
         $product = Product::findOrFail($id);
 
         // Detect POST Size Violation (Cek field mandatory 'name')
-        // Jika 'name' hilang, berarti POST data didrop server karena file terlalu besar
         if (!$request->has('name')) {
              return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres foto di bawah 5MB.'])->withInput();
         }
