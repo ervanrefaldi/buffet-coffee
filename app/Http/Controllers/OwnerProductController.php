@@ -93,6 +93,12 @@ class OwnerProductController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
+            
+            // Ensure directory exists (Important for new deployments)
+            if (!file_exists(public_path('images/products'))) {
+                mkdir(public_path('images/products'), 0755, true);
+            }
+
             $file->move(public_path('images/products'), $filename);
             $data['image'] = 'images/products/' . $filename;
 

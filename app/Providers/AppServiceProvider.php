@@ -11,11 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // PENTING: Fix untuk Shared Hosting (cPanel)
-        // Mengecek apakah folder public_html ada di luar folder project
-        if (file_exists(base_path('../public_html'))) {
+        // PENTING: Universal Fix untuk Shared Hosting & Localhost
+        // Menggunakan DOCUMENT_ROOT server untuk menentukan folder public yang sebenarnya
+        if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
             $this->app->bind('path.public', function() {
-                return base_path('../public_html');
+                return $_SERVER['DOCUMENT_ROOT'];
             });
         }
     }

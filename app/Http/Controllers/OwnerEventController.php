@@ -92,15 +92,20 @@ class OwnerEventController extends Controller
 
         // Cek jika ada upload gambar baru
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            
+            if (!file_exists(public_path('images/events'))) {
+                mkdir(public_path('images/events'), 0755, true);
+            }
+
+            $file->move(public_path('images/events'), $filename);
+            $data['image'] = 'images/events/' . $filename;
+
+            // Hapus gambar lama HANYA jika upload sukses
             if ($event->image && file_exists(public_path($event->image))) {
                 unlink(public_path($event->image));
             }
-
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/events'), $filename);
-            $data['image'] = 'images/events/' . $filename;
         }
 
         $event->update($data);
