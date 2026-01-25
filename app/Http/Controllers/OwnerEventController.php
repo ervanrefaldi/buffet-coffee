@@ -46,14 +46,14 @@ class OwnerEventController extends Controller
             'end_date.after_or_equal' => 'Tanggal selesai harus sama atau setelah tanggal mulai.',
         ]);
 
-        // Handle File Upload
+        // Handle File Upload - Direct to Public
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Simpan ke storage/app/public/events
-            $path = $file->storeAs('events', $filename, 'public'); 
-            $imagePath = 'storage/' . $path;
+            // Move directly to public/images/events
+            $file->move(public_path('images/events'), $filename); 
+            $imagePath = 'images/events/' . $filename;
         }
 
         DB::table('events')->insert([
@@ -107,16 +107,15 @@ class OwnerEventController extends Controller
         
         // Cek jika ada upload gambar baru
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($event->image) {
-                $oldPath = str_replace('storage/', '', $event->image);
-                Storage::disk('public')->delete($oldPath);
+            // Hapus gambar lama jika ada dan ada di public folder
+            if ($event->image && file_exists(public_path($event->image))) {
+                unlink(public_path($event->image));
             }
 
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('events', $filename, 'public');
-            $imagePath = 'storage/' . $path;
+            $file->move(public_path('images/events'), $filename);
+            $imagePath = 'images/events/' . $filename;
         }
 
         DB::table('events')->where('events_id', $id)->update([
@@ -141,9 +140,8 @@ class OwnerEventController extends Controller
         
         if ($event) {
             // Hapus gambar
-            if ($event->image) {
-                $oldPath = str_replace('storage/', '', $event->image);
-                Storage::disk('public')->delete($oldPath);
+            if ($event->image && file_exists(public_path($event->image))) {
+                unlink(public_path($event->image));
             }
             
             DB::table('events')->where('events_id', $id)->delete();
