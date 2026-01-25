@@ -23,6 +23,8 @@ return new class extends Migration {
                 SET role_code = '02';
             ELSEIF NEW.role = 'membership' THEN
                 SET role_code = '03';
+            ELSEIF NEW.role = 'admin' THEN
+                SET role_code = '04';
             END IF;
 
             -- Ambil tanggal dari created_at (DDMMYY)

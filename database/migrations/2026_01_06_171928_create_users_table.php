@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->string('email', 100)->unique();
             $table->string('password', 255); // HASH password
             $table->string('phone', 20)->nullable();
-            $table->enum('role', ['owner', 'pelanggan', 'membership']);
+            $table->enum('role', ['owner', 'pelanggan', 'membership', 'admin']);
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();
         });
