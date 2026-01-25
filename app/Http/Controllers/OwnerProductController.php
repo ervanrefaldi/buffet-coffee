@@ -35,7 +35,11 @@ class OwnerProductController extends Controller
             'description' => 'required|string',
             'image'       => 'required|image|mimes:jpeg,png,jpg|max:1024'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 1MB.'
+            'image.required' => 'Foto produk wajib diupload. (Jika sudah pilih foto tapi masih error, ukuran file mungkin terlalu besar, max 1MB).',
+            'image.uploaded' => 'Gagal mengupload gambar. Ukuran file terlalu besar (Maksimal server 1MB-2MB).',
+            'image.max'      => 'Ukuran gambar tidak boleh lebih dari 1MB.',
+            'image.image'    => 'File harus berupa gambar.',
+            'image.mimes'    => 'Format harus jpg, jpeg, atau png.'
         ]);
         
         $imagePath = null;

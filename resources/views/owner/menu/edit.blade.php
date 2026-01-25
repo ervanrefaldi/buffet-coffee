@@ -147,11 +147,9 @@
         if (input.files && input.files[0]) {
             const file = input.files[0];
             
-            // Validate size (1MB)
+            // Validate size (Warning Only)
             if (file.size > 1024 * 1024) {
-                alert("Ukuran file terlalu besar! Maksimal 1MB.");
-                input.value = "";
-                return;
+                alert("Peringatan: Ukuran file lebih dari 1MB. Kemungkinan akan ditolak server.");
             }
 
             const reader = new FileReader();
