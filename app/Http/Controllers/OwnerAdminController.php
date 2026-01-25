@@ -26,34 +26,38 @@ class OwnerAdminController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'     => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
-            'email'    => ['required', 'email', 'unique:users,email', 'max:100'],
-            'password' => ['required', 'min:8'],
-            'phone'    => ['required', 'numeric'],
-            'role'     => ['required', 'in:owner,admin'],
-        ], [
-            'name.regex' => 'Nama tidak boleh mengandung angka.',
-            'name.max' => 'Nama maksimal 100 karakter.',
-            'email.unique' => 'Email sudah terdaftar.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'phone.numeric' => 'Nomor telepon hanya boleh angka.',
-            'role.required' => 'Role harus dipilih.',
-            'role.in' => 'Role harus owner atau admin.',
-        ]);
+        try {
+            $request->validate([
+                'name'     => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
+                'email'    => ['required', 'email', 'unique:users,email', 'max:100'],
+                'password' => ['required', 'min:8'],
+                'phone'    => ['required', 'numeric'],
+                'role'     => ['required', 'in:owner,admin'],
+            ], [
+                'name.regex' => 'Nama tidak boleh mengandung angka.',
+                'name.max' => 'Nama maksimal 100 karakter.',
+                'email.unique' => 'Email sudah terdaftar.',
+                'password.min' => 'Password minimal 8 karakter.',
+                'phone.numeric' => 'Nomor telepon hanya boleh angka.',
+                'role.required' => 'Role harus dipilih.',
+                'role.in' => 'Role harus owner atau admin.',
+            ]);
 
-        User::create([
-            'name'       => $request->name,
-            'email'      => $request->email,
-            'password'   => Hash::make($request->password),
-            'phone'      => $request->phone,
-            'role'       => $request->role,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            User::create([
+                'name'       => $request->name,
+                'email'      => $request->email,
+                'password'   => Hash::make($request->password),
+                'phone'      => $request->phone,
+                'role'       => $request->role,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        $roleLabel = $request->role === 'owner' ? 'owner' : 'admin';
-        return redirect()->route('admin.index')->with('success', "Akun {$roleLabel} berhasil dibuat.");
+            $roleLabel = $request->role === 'owner' ? 'owner' : 'admin';
+            return redirect()->route('admin.index')->with('success', "Akun {$roleLabel} berhasil dibuat.");
+        } catch (\Exception $e) {
+            dd($e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function edit($id)
