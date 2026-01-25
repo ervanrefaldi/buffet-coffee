@@ -93,7 +93,9 @@ class OwnerEventController extends Controller
         // Cek jika ada upload gambar baru
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
             if (!file_exists(public_path('images/events'))) {
                 mkdir(public_path('images/events'), 0755, true);

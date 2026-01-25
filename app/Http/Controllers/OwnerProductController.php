@@ -92,7 +92,10 @@ class OwnerProductController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            // Sanitize filename: time + slug of name + extension
+            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
             // Ensure directory exists (Important for new deployments)
             if (!file_exists(public_path('images/products'))) {
