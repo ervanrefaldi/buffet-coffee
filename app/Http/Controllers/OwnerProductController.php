@@ -119,3 +119,4 @@ class OwnerProductController extends Controller
         return response($product->image)
             ->header('Content-Type', 'image/jpeg'); // Default to jpeg, typically browsers handle mixed types fine
     }
+}
