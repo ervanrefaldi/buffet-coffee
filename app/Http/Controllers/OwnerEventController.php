@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class OwnerEventController extends Controller
@@ -13,10 +13,7 @@ class OwnerEventController extends Controller
      */
     public function index()
     {
-        $events = DB::table('events')
-            ->orderBy('start_date', 'asc')
-            ->get();
-
+        $events = Event::orderBy('start_date', 'asc')->get();
         return view('owner.event.index', compact('events'));
     }
 
@@ -41,30 +38,26 @@ class OwnerEventController extends Controller
             'end_date'       => 'required|date|after_or_equal:start_date',
             'instagram_link' => 'nullable|url',
         ], [
-            'image.required'    => 'Gambar event wajib diupload.',
+            'image.required'    => ' Gambar event wajib diupload.',
             'image.image'       => 'File harus berupa gambar.',
             'end_date.after_or_equal' => 'Tanggal selesai harus sama atau setelah tanggal mulai.',
         ]);
 
-        // Handle File Upload - Direct to Public
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Move directly to public/images/events
-            $file->move(public_path('images/events'), $filename); 
+            $file->move(public_path('images/events'), $filename);
             $imagePath = 'images/events/' . $filename;
         }
 
-        DB::table('events')->insert([
+        Event::create([
             'title'          => $request->title,
             'description'    => $request->description,
             'image'          => $imagePath,
             'start_date'     => $request->start_date,
             'end_date'       => $request->end_date,
             'instagram_link' => $request->instagram_link,
-            'created_at'     => now(),
-            'updated_at'     => now(),
         ]);
 
         return redirect('/owner/event')->with('success', 'Event berhasil ditambahkan.');
@@ -75,12 +68,7 @@ class OwnerEventController extends Controller
      */
     public function edit($id)
     {
-        $event = DB::table('events')->where('events_id', $id)->first();
-
-        if (!$event) {
-            return redirect('/owner/event')->with('error', 'Event tidak ditemukan.');
-        }
-
+        $event = Event::findOrFail($id);
         return view('owner.event.edit', compact('event'));
     }
 
@@ -98,16 +86,13 @@ class OwnerEventController extends Controller
             'instagram_link' => 'nullable|url',
         ]);
 
-        $event = DB::table('events')->where('events_id', $id)->first();
-        if (!$event) {
-            return back()->with('error', 'Event tidak ditemukan.');
-        }
-
-        $imagePath = $event->image;
+        $event = Event::findOrFail($id);
         
+        $data = $request->except(['image']);
+
         // Cek jika ada upload gambar baru
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada dan ada di public folder
+            // Hapus gambar lama jika ada
             if ($event->image && file_exists(public_path($event->image))) {
                 unlink(public_path($event->image));
             }
@@ -115,18 +100,10 @@ class OwnerEventController extends Controller
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('images/events'), $filename);
-            $imagePath = 'images/events/' . $filename;
+            $data['image'] = 'images/events/' . $filename;
         }
 
-        DB::table('events')->where('events_id', $id)->update([
-            'title'          => $request->title,
-            'description'    => $request->description,
-            'image'          => $imagePath,
-            'start_date'     => $request->start_date,
-            'end_date'       => $request->end_date,
-            'instagram_link' => $request->instagram_link,
-            'updated_at'     => now(),
-        ]);
+        $event->update($data);
 
         return redirect('/owner/event')->with('success', 'Event berhasil diperbarui.');
     }
@@ -136,18 +113,14 @@ class OwnerEventController extends Controller
      */
     public function destroy($id)
     {
-        $event = DB::table('events')->where('events_id', $id)->first();
+        $event = Event::findOrFail($id);
         
-        if ($event) {
-            // Hapus gambar
-            if ($event->image && file_exists(public_path($event->image))) {
-                unlink(public_path($event->image));
-            }
-            
-            DB::table('events')->where('events_id', $id)->delete();
-            return redirect('/owner/event')->with('success', 'Event berhasil dihapus.');
+        if ($event->image && file_exists(public_path($event->image))) {
+            unlink(public_path($event->image));
         }
         
-        return redirect('/owner/event')->with('error', 'Gagal menghapus event.');
+        $event->delete();
+
+        return redirect('/owner/event')->with('success', 'Event berhasil dihapus.');
     }
 }
