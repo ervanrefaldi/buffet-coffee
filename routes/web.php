@@ -208,7 +208,6 @@ Route::middleware(\App\Http\Middleware\EnsureOwnerOrAdmin::class)->prefix('owner
 
     // Fitur: Kelola Menu
     Route::resource('/menu', \App\Http\Controllers\OwnerProductController::class);
-    Route::get('/menu/image/{id}', [\App\Http\Controllers\OwnerProductController::class, 'showImage'])->name('menu.image');
     Route::get('/orders', [\App\Http\Controllers\OwnerOrderController::class, 'index'])->name('owner.orders.index');
     Route::get('/orders/{id}', [\App\Http\Controllers\OwnerOrderController::class, 'show'])->name('owner.orders.show');
     Route::post('/orders/{id}/status', [\App\Http\Controllers\OwnerOrderController::class, 'updateStatus'])->name('owner.orders.updateStatus');

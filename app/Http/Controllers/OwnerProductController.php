@@ -22,8 +22,11 @@ class OwnerProductController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Menu Store Attempt', $request->all());
-        
+        // Detect POST Size Violation
+        if (!$request->has('name')) {
+             return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres foto di bawah 5MB.'])->withInput();
+        }
+
         $request->validate([
             'name'        => 'required|string|max:100',
             'category'    => 'required|in:biji,bubuk',
@@ -33,13 +36,32 @@ class OwnerProductController extends Controller
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
             'image'       => 'required|image|mimes:jpeg,png,jpg|max:5120'
+        ], [
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
         
-        $imageData = null;
+        $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            // Read file content as binary string
-            $imageData = file_get_contents($file->getRealPath());
+            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
+            
+            // Multi-path strategy
+            $paths = [];
+            $paths[] = public_path('images/products');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
+            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/products');
+            $paths = array_unique($paths);
+
+            // Upload ke SEMUA lokasi
+            foreach ($paths as $path) {
+                if (!file_exists($path)) @mkdir($path, 0755, true);
+                @copy($file->getRealPath(), $path . '/' . $filename);
+                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
+            }
+
+            $imagePath = 'images/products/' . $filename;
         }
 
         Product::create([
@@ -50,7 +72,7 @@ class OwnerProductController extends Controller
             'price_500g'  => $request->price_500g,
             'price_1kg'   => $request->price_1kg,
             'description' => $request->description,
-            'image'       => $imageData // Store binary
+            'image'       => $imagePath
         ]);
 
         return redirect()->route('menu.index')->with('success', 'Produk berhasil ditambahkan.');
@@ -64,18 +86,12 @@ class OwnerProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        // DEBUG: Force Log Everything
-        error_log('DEBUG: ENTERING UPDATE METHOD for ID: ' . $id);
-        error_log('DEBUG: Request Method: ' . $request->method());
-        error_log('DEBUG: Content Length: ' . $request->header('Content-Length'));
-        error_log('DEBUG: Files count: ' . count($request->allFiles()));
-        if ($request->hasFile('image')) {
-             error_log('DEBUG: Image file is present. Size: ' . $request->file('image')->getSize());
-        } else {
-             error_log('DEBUG: Image file is MISSING in request bag.');
-        }
-
         $product = Product::findOrFail($id);
+
+        // Detect POST Size Violation
+        if (!$request->has('name')) {
+             return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres foto di bawah 5MB.'])->withInput();
+        }
 
         $request->validate([
             'name'        => 'required|string|max:100',
@@ -86,46 +102,44 @@ class OwnerProductController extends Controller
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+        ], [
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
-        $data = $request->except(['image', 'has_image_upload']);
+        $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            Log::info('Updating Product Image: File detected', ['name' => $file->getClientOriginalName(), 'size' => $file->getSize()]);
+            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
+            
+            // Multi-path strategy
+            $paths = [];
+            $paths[] = public_path('images/products');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
+            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/products');
+            $paths = array_unique($paths);
 
-            if (!$file->isValid()) {
-                Log::error('Updating Product Image: File invalid', ['error' => $file->getErrorMessage()]);
-                return back()->withErrors(['image' => 'Upload error: ' . $file->getErrorMessage()])->withInput();
+            // Upload ke SEMUA lokasi
+            foreach ($paths as $path) {
+                if (!file_exists($path)) @mkdir($path, 0755, true);
+                @copy($file->getRealPath(), $path . '/' . $filename);
+                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
             }
 
-            // Read binary
-            $imageData = file_get_contents($file->getRealPath());
-            
-            // Explicitly assign binary data
-            $product->image = $imageData;
-            
-            Log::info('Updating Product Image: Binary data assigned to model', ['length' => strlen($product->image)]);
-            error_log('DEBUG: Binary data assigned. Length: ' . strlen($product->image));
-        } else {
-            Log::info('Updating Product Image: No file detected in request');
+            $data['image'] = 'images/products/' . $filename;
+
+            // Hapus file lama di semua lokasi
+            if ($product->image) {
+                foreach ($paths as $path) {
+                    $oldFile = $path . '/' . basename($product->image);
+                    if (file_exists($oldFile)) @unlink($oldFile);
+                }
+            }
         }
 
-        // Fill other data
-        $product->fill($request->except(['image', 'has_image_upload']));
-
-        if ($product->isDirty('image')) {
-            Log::info('Updating Product Image: Model is dirty (image changed). Saving...');
-            error_log('DEBUG: Model is dirty. Saving...');
-        } else {
-            Log::info('Updating Product Image: Model is clean (image NOT changed).');
-            error_log('DEBUG: Model is clean.');
-        }
-
-        $saved = $product->save();
-        
-        Log::info('Updating Product Image: Save result', ['success' => $saved]);
-        error_log('DEBUG: Save result: ' . ($saved ? 'TRUE' : 'FALSE'));
+        $product->update($data);
 
         return redirect()->route('menu.index')->with('success', 'Produk berhasil diperbarui.');
     }
@@ -133,20 +147,24 @@ class OwnerProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        $product->delete();
-        return redirect()->route('menu.index')->with('success', 'Produk berhasil dihapus.');
-    }
-    
-    public function showImage($id)
-    {
-        $product = Product::findOrFail($id);
         
-        if (!$product->image) {
-            // Return 404 or default image? Let's return 404 so UI fallback handles it
-            return abort(404);
+        // Cleanup files
+        if ($product->image) {
+            $paths = [];
+            $paths[] = public_path('images/products');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
+            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/products');
+            $paths = array_unique($paths);
+
+            foreach ($paths as $path) {
+                $file = $path . '/' . basename($product->image);
+                if (file_exists($file)) @unlink($file);
+            }
         }
 
-        return response($product->image)
-            ->header('Content-Type', 'image/jpeg'); // Default to jpeg, typically browsers handle mixed types fine
+        $product->delete();
+
+        return redirect()->route('menu.index')->with('success', 'Produk berhasil dihapus.');
     }
 }
+

@@ -30,23 +30,28 @@ class OwnerEventController extends Controller
      */
     public function store(Request $request)
     {
+        // Detect POST Size Violation
+        if (!$request->has('title')) {
+            return back()->withErrors(['image' => 'Gagal: File terlau besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres file di bawah 5MB.'])->withInput();
+        }
+
         $request->validate([
             'title'          => 'required|max:150',
             'description'    => 'required',
-            'image'          => 'required|image|mimes:jpeg,png,jpg,gif|max:1024',
+            'image'          => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'start_date'     => 'required|date',
             'end_date'       => 'required|date|after_or_equal:start_date',
             'instagram_link' => 'nullable|url',
         ], [
-            'image.required'    => ' Gambar event wajib diupload.',
-            'image.image'       => 'File harus berupa gambar.',
-            'end_date.after_or_equal' => 'Tanggal selesai harus sama atau setelah tanggal mulai.',
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
             // Tentukan folder tujuan (Multi-path strategy)
             $paths = [];
@@ -91,20 +96,26 @@ class OwnerEventController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $event = Event::findOrFail($id);
+
+        // Detect POST Size Violation
+        if (!$request->has('title')) {
+             return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres file di bawah 5MB.'])->withInput();
+        }
+
         $request->validate([
             'title'          => 'required|max:150',
             'description'    => 'required',
-            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:1024',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'start_date'     => 'required|date',
             'end_date'       => 'required|date|after_or_equal:start_date',
             'instagram_link' => 'nullable|url',
+        ], [
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
-
-        $event = Event::findOrFail($id);
         
         $data = $request->except(['image']);
 
-        // Cek jika ada upload gambar baru
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -114,12 +125,8 @@ class OwnerEventController extends Controller
             // Tentukan folder tujuan (Multi-path strategy)
             $paths = [];
             $paths[] = public_path('images/events');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-                $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
-            }
-            if (file_exists(base_path('../public_html'))) {
-                $paths[] = base_path('../public_html/images/events');
-            }
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
             $paths = array_unique($paths);
 
             // Upload ke SEMUA lokasi
@@ -152,8 +159,18 @@ class OwnerEventController extends Controller
     {
         $event = Event::findOrFail($id);
         
-        if ($event->image && file_exists(public_path($event->image))) {
-            unlink(public_path($event->image));
+        // Cleanup files
+        if ($event->image) {
+            $paths = [];
+            $paths[] = public_path('images/events');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
+            $paths = array_unique($paths);
+
+            foreach ($paths as $path) {
+                $file = $path . '/' . basename($event->image);
+                if (file_exists($file)) @unlink($file);
+            }
         }
         
         $event->delete();
@@ -161,3 +178,4 @@ class OwnerEventController extends Controller
         return redirect('/owner/event')->with('success', 'Event berhasil dihapus.');
     }
 }
+
