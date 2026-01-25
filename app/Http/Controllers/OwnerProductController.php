@@ -64,11 +64,18 @@ class OwnerProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
-
-        if (!$request->has('name')) {
-             return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server).'])->withInput();
+        // DEBUG: Force Log Everything
+        error_log('DEBUG: ENTERING UPDATE METHOD for ID: ' . $id);
+        error_log('DEBUG: Request Method: ' . $request->method());
+        error_log('DEBUG: Content Length: ' . $request->header('Content-Length'));
+        error_log('DEBUG: Files count: ' . count($request->allFiles()));
+        if ($request->hasFile('image')) {
+             error_log('DEBUG: Image file is present. Size: ' . $request->file('image')->getSize());
+        } else {
+             error_log('DEBUG: Image file is MISSING in request bag.');
         }
+
+        $product = Product::findOrFail($id);
 
         $request->validate([
             'name'        => 'required|string|max:100',
