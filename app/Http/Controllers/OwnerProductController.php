@@ -94,13 +94,31 @@ class OwnerProductController extends Controller
 
             // Read binary
             $imageData = file_get_contents($file->getRealPath());
-            $data['image'] = $imageData;
-            Log::info('Updating Product Image: Binary data read', ['length' => strlen($imageData)]);
+            
+            // Explicitly assign binary data
+            $product->image = $imageData;
+            
+            Log::info('Updating Product Image: Binary data assigned to model', ['length' => strlen($product->image)]);
+            error_log('DEBUG: Binary data assigned. Length: ' . strlen($product->image));
         } else {
             Log::info('Updating Product Image: No file detected in request');
         }
 
-        $product->update($data);
+        // Fill other data
+        $product->fill($request->except(['image', 'has_image_upload']));
+
+        if ($product->isDirty('image')) {
+            Log::info('Updating Product Image: Model is dirty (image changed). Saving...');
+            error_log('DEBUG: Model is dirty. Saving...');
+        } else {
+            Log::info('Updating Product Image: Model is clean (image NOT changed).');
+            error_log('DEBUG: Model is clean.');
+        }
+
+        $saved = $product->save();
+        
+        Log::info('Updating Product Image: Save result', ['success' => $saved]);
+        error_log('DEBUG: Save result: ' . ($saved ? 'TRUE' : 'FALSE'));
 
         return redirect()->route('menu.index')->with('success', 'Produk berhasil diperbarui.');
     }
