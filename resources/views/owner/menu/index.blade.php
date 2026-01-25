@@ -25,7 +25,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 h-16 w-16">
                         @if($product->image)
-                            <img class="h-16 w-16 rounded-lg object-cover" src="{{ asset($product->image) }}" alt="">
+                            <img class="h-16 w-16 rounded-lg object-cover" src="{{ asset($product->image) }}?v={{ time() }}" alt="">
                         @else
                             <div class="h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
                                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +84,7 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10">
                                     @if($product->image)
-                                        <img class="h-10 w-10 rounded-full object-cover" src="{{ asset($product->image) }}" alt="">
+                                        <img class="h-10 w-10 rounded-full object-cover" src="{{ asset($product->image) }}?v={{ time() }}" alt="">
                                     @else
                                         <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

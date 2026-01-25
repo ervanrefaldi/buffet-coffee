@@ -88,7 +88,12 @@ class OwnerProductController extends Controller
             'image.max' => 'Ukuran gambar maksimal 1MB.'
         ]);
 
-        $data = $request->except(['image']);
+        $data = $request->except(['image', 'has_image_upload']);
+
+        // Check for Silent Upload Failure (File dropped by server due to size)
+        if ($request->input('has_image_upload') == '1' && !$request->hasFile('image')) {
+            return back()->withErrors(['image' => 'Gagal upload: File ditolak oleh server (Mungkin ukuran > 2MB). Silakan kecilkan ukuran foto.'])->withInput();
+        }
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
