@@ -146,8 +146,9 @@
                             <div class="absolute w-40 h-40 bg-gold/10 rounded-full blur-3xl scale-0 group-hover:scale-150 transition-transform duration-1000"></div>
                             
                             @if($product->image)
-                                <img src="{{ route('menu.image', $product->products_id) }}" alt="{{ $product->name }}" 
-                                     class="relative z-10 max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)] group-hover:scale-110 transition-transform duration-700">
+                                <img src="{{ asset($product->image) }}?v={{ strtotime($product->updated_at ?? $product->created_at) }}" alt="{{ $product->name }}" 
+                                     class="relative z-10 max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)] group-hover:scale-110 transition-transform duration-700"
+                                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             @else
                                 <div class="relative z-10 flex flex-col items-center justify-center text-gold/20">
                                     <span class="text-8xl opacity-10">☕</span>

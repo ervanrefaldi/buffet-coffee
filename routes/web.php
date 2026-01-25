@@ -268,9 +268,6 @@ Route::get('/menu', function () {
     return view('pages.menu', compact('products'));
 });
 
-// Image Route (Public)
-Route::get('/menu/image/{id}', [\App\Http\Controllers\OwnerProductController::class, 'showImage'])->name('menu.image');
-
 /*
 |--------------------------------------------------------------------------
 | MEMBERSHIP
