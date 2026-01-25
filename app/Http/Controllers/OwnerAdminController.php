@@ -42,6 +42,63 @@ class OwnerAdminController extends Controller
             'role.in' => 'Role harus owner atau admin.',
         ]);
 
+        try {
+            $this->createUser($request);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Self-healing: Catch Enum/Data Truncated error (Code 1265)
+            // or General Error (01000) related to role column
+            if (str_contains($e->getMessage(), "Data truncated for column 'role'") || $e->getCode() == '01000') {
+                
+                // 1. Attempt to FIX the database schema automatically
+                try {
+                    DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('owner', 'pelanggan', 'membership', 'admin') NOT NULL");
+                    
+                    // 2. Refresh the Trigger as well (important for ID generation)
+                    DB::unprepared("DROP TRIGGER IF EXISTS trg_users_generate_id");
+                    DB::unprepared("
+                        CREATE TRIGGER trg_users_generate_id
+                        BEFORE INSERT ON users
+                        FOR EACH ROW
+                        BEGIN
+                            DECLARE role_code CHAR(2);
+                            DECLARE date_code CHAR(6);
+                            DECLARE seq INT;
+                            DECLARE seq_formatted CHAR(3);
+
+                            IF NEW.role = 'owner' THEN SET role_code = '01';
+                            ELSEIF NEW.role = 'pelanggan' THEN SET role_code = '02';
+                            ELSEIF NEW.role = 'membership' THEN SET role_code = '03';
+                            ELSEIF NEW.role = 'admin' THEN SET role_code = '04';
+                            END IF;
+
+                            IF role_code IS NULL THEN SET role_code = 'XX'; END IF;
+                            IF NEW.created_at IS NULL THEN SET NEW.created_at = NOW(); END IF;
+
+                            SET date_code = DATE_FORMAT(NEW.created_at, '%d%m%y');
+                            SELECT COUNT(*) + 1 INTO seq FROM users WHERE role = NEW.role AND DATE(created_at) = DATE(NEW.created_at);
+                            SET seq_formatted = LPAD(seq, 3, '0');
+                            SET NEW.users_id = CONCAT('USR-', role_code, '-', date_code, '-', seq_formatted);
+                        END
+                    ");
+                    
+                    // 3. RETRY creating the user after fix
+                    $this->createUser($request);
+                    
+                } catch (\Exception $fixError) {
+                    // If auto-fix fails, fallback to standard error
+                    return back()->withInput()->withErrors(['email' => 'Gagal memperbaiki database otomatis: ' . $fixError->getMessage()]);
+                }
+            } else {
+                throw $e; // Rethrow if it's a different database error
+            }
+        }
+
+        $roleLabel = $request->role === 'owner' ? 'owner' : 'admin';
+        return redirect()->route('admin.index')->with('success', "Akun {$roleLabel} berhasil dibuat.");
+    }
+
+    private function createUser($request)
+    {
         User::create([
             'name'       => $request->name,
             'email'      => $request->email,
@@ -51,9 +108,6 @@ class OwnerAdminController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        $roleLabel = $request->role === 'owner' ? 'owner' : 'admin';
-        return redirect()->route('admin.index')->with('success', "Akun {$roleLabel} berhasil dibuat.");
     }
 
     public function edit($id)
