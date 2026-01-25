@@ -35,11 +35,20 @@
     <div class="absolute inset-0 bg-gradient-to-b from-brown-dark/60 via-transparent to-cream"></div>
     
     <div class="relative z-10 text-center px-6">
-        <span class="text-gold font-bold tracking-[0.5em] text-xs uppercase animate-fade-in">Exclusive Program</span>
-        <h1 class="text-6xl md:text-8xl font-serif font-bold text-white uppercase mt-4 mb-6 tracking-tighter drop-shadow-2xl">Membership</h1>
+        @if(session('user_role') === 'membership')
+            <span class="text-gold font-bold tracking-[0.5em] text-xs uppercase animate-fade-in block mb-2">Selamat Datang, {{ session('user_name') }}!</span>
+            <h1 class="text-6xl md:text-8xl font-serif font-bold text-white uppercase mt-4 mb-6 tracking-tighter drop-shadow-2xl">Member Eksklusif</h1>
+        @else
+            <span class="text-gold font-bold tracking-[0.5em] text-xs uppercase animate-fade-in">Exclusive Program</span>
+            <h1 class="text-6xl md:text-8xl font-serif font-bold text-white uppercase mt-4 mb-6 tracking-tighter drop-shadow-2xl">Membership</h1>
+        @endif
         <div class="h-1.5 w-32 bg-gold mx-auto mb-8 rounded-full"></div>
         <p class="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            Bergabunglah dengan komunitas eksklusif Bufet Coffee dan nikmati previlese serta keuntungan yang dirancang khusus untuk Anda.
+            @if(session('user_role') === 'membership')
+                Terima kasih telah menjadi bagian dari komunitas eksklusif Bufet Coffee. Nikmati seluruh previlese dan keuntungan yang telah kami siapkan khusus untuk Anda.
+            @else
+                Bergabunglah dengan komunitas eksklusif Bufet Coffee dan nikmati previlese serta keuntungan yang dirancang khusus untuk Anda.
+            @endif
         </p>
     </div>
 
@@ -132,7 +141,11 @@
 
         <!-- CTA Section -->
         <section class="text-center">
-            <h2 class="text-3xl font-serif font-bold text-brown mb-8 uppercase">Siap Menjadi Bagian Dari Kami?</h2>
+            @if(session('user_role') === 'membership')
+                <h2 class="text-3xl font-serif font-bold text-brown mb-8 uppercase">Selamat Berbelanja, Member!</h2>
+            @else
+                <h2 class="text-3xl font-serif font-bold text-brown mb-8 uppercase">Siap Menjadi Bagian Dari Kami?</h2>
+            @endif
             <a href="{{ url('/menu') }}" class="inline-block bg-brown text-white px-16 py-5 rounded-full font-black uppercase text-sm tracking-[0.3em] hover:bg-gold transition-all duration-300 shadow-2xl shadow-brown/30 hover:scale-105 active:scale-95">
                 Katalog Produk
             </a>
