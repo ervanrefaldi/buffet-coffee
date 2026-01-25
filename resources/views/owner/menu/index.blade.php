@@ -18,7 +18,55 @@
             </div>
         @endif
 
-        <div class="overflow-x-auto">
+        <!-- Mobile View (Cards) -->
+        <div class="grid grid-cols-1 gap-4 md:hidden">
+            @forelse($products as $product)
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col space-y-3">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0 h-16 w-16">
+                        @if($product->image)
+                            <img class="h-16 w-16 rounded-lg object-cover" src="{{ asset($product->image) }}" alt="">
+                        @else
+                            <div class="h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-base font-bold text-gray-900">{{ $product->name }}</div>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->category == 'biji' ? 'bg-amber-100 text-amber-800' : 'bg-brown-100 text-brown-800' }} mt-1">
+                            {{ $product->category == 'biji' ? 'Biji Kopi' : 'Bubuk Kopi' }}
+                        </span>
+                        <div class="text-sm text-gray-500 mt-1">Stok: {{ $product->stock }} Kg</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-3 rounded-md text-sm space-y-1">
+                    <div class="flex justify-between"><span>200g:</span> <span class="font-medium">Rp {{ number_format($product->price_200g, 0, ',', '.') }}</span></div>
+                    <div class="flex justify-between"><span>500g:</span> <span class="font-medium">Rp {{ number_format($product->price_500g, 0, ',', '.') }}</span></div>
+                    <div class="flex justify-between"><span>1kg:</span> <span class="font-medium">Rp {{ number_format($product->price_1kg, 0, ',', '.') }}</span></div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2 border-t border-gray-100">
+                    <a href="{{ route('menu.edit', $product->products_id) }}" class="flex-1 text-center bg-amber-50 text-amber-700 py-2 rounded-lg font-medium hover:bg-amber-100">Edit</a>
+                    <form action="{{ route('menu.destroy', $product->products_id) }}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus produk ini?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full bg-red-50 text-red-700 py-2 rounded-lg font-medium hover:bg-red-100">Hapus</button>
+                    </form>
+                </div>
+            </div>
+            @empty
+            <div class="bg-white p-8 text-center text-gray-500 rounded-lg border border-gray-200">
+                Belum ada produk.
+            </div>
+            @endforelse
+        </div>
+
+        <!-- Desktop View (Table) -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>

@@ -12,7 +12,46 @@
     </div>
 
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
-        <div class="overflow-x-auto">
+        <!-- Mobile View (Cards) -->
+        <div class="grid grid-cols-1 gap-6 md:hidden px-4 pb-4">
+            @forelse($events as $event)
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="h-40 w-full relative">
+                        <img src="{{ asset($event->image) }}" alt="Event" class="w-full h-full object-cover">
+                        @php
+                            $now = date('Y-m-d');
+                            $isActive = $event->start_date <= $now && $event->end_date >= $now;
+                        @endphp
+                        <span class="absolute top-2 right-2 px-2 py-1 text-xs font-bold rounded-full {{ $isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                            {{ $isActive ? 'Aktif' : 'Non-Aktif' }}
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-900 mb-1">{{ $event->title }}</h3>
+                        <p class="text-xs text-gray-500 mb-3">
+                            {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }} - {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y') }}
+                        </p>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ $event->description }}</p>
+                        
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                            <a href="/owner/event/{{ $event->events_id }}/edit" class="flex-1 text-center bg-indigo-50 text-indigo-700 py-2 rounded-lg font-medium text-sm mr-2 hover:bg-indigo-100 transition">Edit</a>
+                            <form action="/owner/event/{{ $event->events_id }}" method="POST" class="flex-1" onsubmit="return confirm('Apakah Anda yakin ingin menghapus event ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-full bg-red-50 text-red-700 py-2 rounded-lg font-medium text-sm hover:bg-red-100 transition">Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center py-10 text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
+                    Belum ada event.
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Desktop View (Table) -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
