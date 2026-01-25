@@ -48,18 +48,20 @@ class OwnerEventController extends Controller
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             
-            // Tentukan folder tujuan (Prioritas: Document Root Server)
-            $targetDir = public_path('images/events');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+            // Tentukan folder tujuan (Multi-path strategy)
+            $paths = [];
+            $paths[] = public_path('images/events');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
+            $paths = array_unique($paths);
+
+            // Upload ke SEMUA lokasi
+            foreach ($paths as $path) {
+                if (!file_exists($path)) @mkdir($path, 0755, true);
+                @copy($file->getRealPath(), $path . '/' . $filename);
+                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
             }
 
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0755, true);
-            }
-
-            $file->move($targetDir, $filename);
-            try { chmod($targetDir . '/' . $filename, 0644); } catch (\Exception $e) {}
             $imagePath = 'images/events/' . $filename;
         }
 
@@ -109,23 +111,32 @@ class OwnerEventController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
-            // Tentukan folder tujuan (Prioritas: Document Root Server)
-            $targetDir = public_path('images/events');
+            // Tentukan folder tujuan (Multi-path strategy)
+            $paths = [];
+            $paths[] = public_path('images/events');
             if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+                $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+            }
+            if (file_exists(base_path('../public_html'))) {
+                $paths[] = base_path('../public_html/images/events');
+            }
+            $paths = array_unique($paths);
+
+            // Upload ke SEMUA lokasi
+            foreach ($paths as $path) {
+                if (!file_exists($path)) @mkdir($path, 0755, true);
+                @copy($file->getRealPath(), $path . '/' . $filename);
+                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
             }
 
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0755, true);
-            }
-
-            $file->move($targetDir, $filename);
-            try { chmod($targetDir . '/' . $filename, 0644); } catch (\Exception $e) {}
             $data['image'] = 'images/events/' . $filename;
-
-            // Hapus gambar lama HANYA jika upload sukses
-            if ($event->image && file_exists(public_path($event->image))) {
-                unlink(public_path($event->image));
+            
+            // Hapus file lama di semua lokasi
+            if ($event->image) {
+                foreach ($paths as $path) {
+                    $oldFile = $path . '/' . basename($event->image);
+                    if (file_exists($oldFile)) @unlink($oldFile);
+                }
             }
         }
 

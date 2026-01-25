@@ -83,9 +83,9 @@ class OwnerProductController extends Controller
             'price_500g'  => 'required|numeric|min:0',
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:1024'
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 1MB.'
+            'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
         $data = $request->except(['image', 'has_image_upload']);
@@ -102,29 +102,48 @@ class OwnerProductController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
-            // Tentukan folder tujuan (Prioritas: Document Root Server)
-            $targetDir = public_path('images/products');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
-            }
-
-            // Ensure directory exists
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0755, true);
-            }
-
-            $file->move($targetDir, $filename);
+            // Tentukan beberapa kemungkinan lokasi folder public
+            $paths = [];
+            $paths[] = public_path('images/products'); // Lokasi default Laravel
             
-            // Fix Permissions
-            try {
-                chmod($targetDir . '/' . $filename, 0644);
-            } catch (\Exception $e) {}
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
+                $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products'; // Lokasi Server Web
+            }
+            
+            // Cek lokasi umum shared hosting (public_html)
+            $publicHtml = base_path('../public_html/images/products');
+            if (file_exists(base_path('../public_html'))) {
+                $paths[] = $publicHtml;
+            }
+
+            // Hapus duplikat path
+            $paths = array_unique($paths);
+
+            // Upload ke SEMUA lokasi yang ditemukan
+            foreach ($paths as $path) {
+                if (!file_exists($path)) {
+                    @mkdir($path, 0755, true);
+                }
+                
+                // Copy file (gunakan copy untuk multiple destinations)
+                @copy($file->getRealPath(), $path . '/' . $filename);
+                
+                // Fix Permissions
+                try {
+                    @chmod($path . '/' . $filename, 0644);
+                } catch (\Exception $e) {}
+            }
 
             $data['image'] = 'images/products/' . $filename;
 
-            // Only delete old image AFTER new one is uploaded and path is set
-            if ($product->image && file_exists(public_path($product->image))) {
-                unlink(public_path($product->image));
+            // Hapus file lama di semua lokasi
+            if ($product->image) {
+                foreach ($paths as $path) {
+                    $oldFile = $path . '/' . basename($product->image);
+                    if (file_exists($oldFile)) {
+                        @unlink($oldFile);
+                    }
+                }
             }
         }
 
