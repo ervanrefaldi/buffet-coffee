@@ -102,19 +102,23 @@ class OwnerProductController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
-            // Ensure directory exists (Important for new deployments)
-            if (!file_exists(public_path('images/products'))) {
-                mkdir(public_path('images/products'), 0755, true);
+            // Tentukan folder tujuan (Prioritas: Document Root Server)
+            $targetDir = public_path('images/products');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
+                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
             }
 
-            $file->move(public_path('images/products'), $filename);
-            
-            // Fix Permissions (Cegah file tidak terbaca)
-            try {
-                chmod(public_path('images/products/' . $filename), 0644);
-            } catch (\Exception $e) {
-                // Ignore permission error if not supported
+            // Ensure directory exists
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0755, true);
             }
+
+            $file->move($targetDir, $filename);
+            
+            // Fix Permissions
+            try {
+                chmod($targetDir . '/' . $filename, 0644);
+            } catch (\Exception $e) {}
 
             $data['image'] = 'images/products/' . $filename;
 

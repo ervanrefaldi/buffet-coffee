@@ -47,8 +47,19 @@ class OwnerEventController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/events'), $filename);
-            try { chmod(public_path('images/events/' . $filename), 0644); } catch (\Exception $e) {}
+            
+            // Tentukan folder tujuan (Prioritas: Document Root Server)
+            $targetDir = public_path('images/events');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
+                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+            }
+
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            $file->move($targetDir, $filename);
+            try { chmod($targetDir . '/' . $filename, 0644); } catch (\Exception $e) {}
             $imagePath = 'images/events/' . $filename;
         }
 
@@ -98,12 +109,18 @@ class OwnerEventController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
-            if (!file_exists(public_path('images/events'))) {
-                mkdir(public_path('images/events'), 0755, true);
+            // Tentukan folder tujuan (Prioritas: Document Root Server)
+            $targetDir = public_path('images/events');
+            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
+                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
             }
 
-            $file->move(public_path('images/events'), $filename);
-            try { chmod(public_path('images/events/' . $filename), 0644); } catch (\Exception $e) {}
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            $file->move($targetDir, $filename);
+            try { chmod($targetDir . '/' . $filename, 0644); } catch (\Exception $e) {}
             $data['image'] = 'images/events/' . $filename;
 
             // Hapus gambar lama HANYA jika upload sukses
