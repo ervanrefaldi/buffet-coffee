@@ -75,9 +75,10 @@ class OwnerProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        // Detect POST Size Violation (Payload too large causes empty request)
-        if (empty($request->all()) && empty($request->files->all())) {
-            return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Silakan kompres foto Anda.']);
+        // Detect POST Size Violation (Payload too large causes empty request body)
+        // If 'has_image_upload' (hidden input) is missing, it means PHP discarded $_POST
+        if (!$request->has('has_image_upload')) {
+             return back()->withErrors(['image' => 'Gagal: File foto terlalu besar (Melebihi batas ' . ini_get('post_max_size') . '). Mohon kompres foto di bawah 5MB.'])->withInput();
         }
 
         $request->validate([
