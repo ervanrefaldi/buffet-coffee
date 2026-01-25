@@ -74,7 +74,9 @@
                             <div class="absolute inset-0 bg-gradient-to-br from-cream to-transparent opacity-50"></div>
                             @if($item->image)
                                 <img src="{{ asset($item->image) }}" 
-                                     class="relative z-10 max-h-full object-contain transform transition duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_25px_45px_rgba(197,163,88,0.25)]">
+                                     alt="{{ $item->name }}"
+                                     class="relative z-10 w-full h-full object-contain transform transition duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_25px_45px_rgba(197,163,88,0.25)]"
+                                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'relative z-10 flex flex-col items-center justify-center text-brown/20 italic\'><span class=\'text-6xl mb-2\'>☕</span><span class=\'text-[10px] font-black uppercase tracking-widest\'>Image Error</span></div>';">
                             @else
                                 <div class="relative z-10 flex flex-col items-center justify-center text-brown/20 italic">
                                     <span class="text-6xl mb-2">☕</span>

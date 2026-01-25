@@ -91,15 +91,15 @@ class OwnerProductController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($product->image && file_exists(public_path($product->image))) {
-                unlink(public_path($product->image));
-            }
-
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('images/products'), $filename);
             $data['image'] = 'images/products/' . $filename;
+
+            // Only delete old image AFTER new one is uploaded and path is set
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
+            }
         }
 
         $product->update($data);
