@@ -206,9 +206,8 @@ Route::middleware(\App\Http\Middleware\EnsureOwnerOrAdmin::class)->prefix('owner
     // Fitur: Kelola Event
     Route::resource('/event', \App\Http\Controllers\OwnerEventController::class);
 
-    // Fitur: Kelola Menu
     Route::resource('/menu', \App\Http\Controllers\OwnerProductController::class);
-    Route::get('/menu/image/{id}', [\App\Http\Controllers\OwnerProductController::class, 'showImage'])->name('menu.image');
+    // Image route moved to public section
     Route::get('/orders', [\App\Http\Controllers\OwnerOrderController::class, 'index'])->name('owner.orders.index');
     Route::get('/orders/{id}', [\App\Http\Controllers\OwnerOrderController::class, 'show'])->name('owner.orders.show');
     Route::post('/orders/{id}/status', [\App\Http\Controllers\OwnerOrderController::class, 'updateStatus'])->name('owner.orders.updateStatus');
@@ -269,6 +268,9 @@ Route::get('/menu', function () {
     $products = \App\Models\Product::orderBy('category')->orderBy('name')->get();
     return view('pages.menu', compact('products'));
 });
+
+// Image Route (Public)
+Route::get('/menu/image/{id}', [\App\Http\Controllers\OwnerProductController::class, 'showImage'])->name('menu.image');
 
 /*
 |--------------------------------------------------------------------------
