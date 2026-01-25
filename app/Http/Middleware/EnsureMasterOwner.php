@@ -15,8 +15,8 @@ class EnsureMasterOwner
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session('user_email') !== 'owner@bufet.com') {
-            abort(403, 'Hanya Master Owner yang dapat mengelola Admin.');
+        if (session('user_role') !== 'owner') {
+            abort(403, 'Hanya Owner yang dapat mengelola akun Admin.');
         }
         return $next($request);
     }
