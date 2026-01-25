@@ -85,14 +85,19 @@ class OwnerProductController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
+            Log::info('Updating Product Image: File detected', ['name' => $file->getClientOriginalName(), 'size' => $file->getSize()]);
 
             if (!$file->isValid()) {
+                Log::error('Updating Product Image: File invalid', ['error' => $file->getErrorMessage()]);
                 return back()->withErrors(['image' => 'Upload error: ' . $file->getErrorMessage()])->withInput();
             }
 
             // Read binary
             $imageData = file_get_contents($file->getRealPath());
             $data['image'] = $imageData;
+            Log::info('Updating Product Image: Binary data read', ['length' => strlen($imageData)]);
+        } else {
+            Log::info('Updating Product Image: No file detected in request');
         }
 
         $product->update($data);
