@@ -120,14 +120,14 @@
                 @if($product->image)
                     <div class="mb-2">
                         <p class="text-xs text-gray-500 mb-1">Foto Saat Ini:</p>
-                        <img src="{{ route('menu.image', $product->products_id) }}?v={{ time() }}" class="h-24 w-24 object-cover rounded-md border border-gray-200">
+                        <img src="{{ asset($product->image) }}?v={{ time() }}" class="h-24 w-24 object-cover rounded-md border border-gray-200">
                     </div>
                 @endif
                 
-                <!-- Hidden File Input (Moved outside to prevent overwrite) -->
+                <!-- Hidden File Input (Triggered via JS) -->
                 <input id="image" name="image" type="file" class="sr-only" accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
 
-                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors relative" 
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors relative cursor-pointer" 
                      onclick="document.getElementById('image').click()">
                     
                     <div class="space-y-1 text-center" id="upload-preview">
@@ -137,11 +137,11 @@
                                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                             <div class="flex text-sm text-gray-600 justify-center">
-                                <span class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
-                                    <span>Ganti Foto (Opsional)</span>
+                                <span class="bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none">
+                                    <span>Ganti Foto (Wajib < 5MB)</span>
                                 </span>
                             </div>
-                            <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
+                            <p class="text-xs text-gray-500">PNG, JPG, JPEG (Max 1MB disarankan)</p>
                         </div>
                     </div>
                 </div>
@@ -164,14 +164,17 @@
 <script>
     function previewImage(input) {
         const previewContainer = document.getElementById('upload-preview');
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            
-            // Validate size (Warning Only)
-            if (file.size > 1024 * 1024) {
-                alert("Peringatan: Ukuran file lebih dari 1MB. Kemungkinan akan ditolak server.");
+        const file = input.files[0];
+ 
+        if (file) {
+            // Validate size (5MB) - Matches Backend
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Maaf, ukuran file terlalu besar! Maksimal 5MB.");
+                input.value = ""; 
+                resetUpload();
+                return;
             }
-
+ 
             const reader = new FileReader();
             reader.onload = function(e) {
                 previewContainer.innerHTML = `
@@ -179,35 +182,31 @@
                         <img src="${e.target.result}" class="h-40 w-auto mb-3 rounded-lg shadow-md object-contain border border-gray-200">
                         <p class="text-xs font-bold text-green-600">Foto Siap Upload</p>
                         <p class="text-[10px] text-gray-400">${file.name}</p>
-                        <button type="button" onclick="resetUpload()" class="mt-2 text-red-500 hover:text-red-700 text-xs font-medium underline">Ganti Foto</button>
+                        <button type="button" onclick="event.stopPropagation(); resetUpload()" class="mt-2 text-amber-600 hover:text-amber-700 text-xs font-bold underline">Ganti Foto</button>
                     </div>
                 `;
             }
             reader.readAsDataURL(file);
         }
     }
-
+ 
     function resetUpload() {
         const input = document.getElementById('image');
         input.value = "";
-        
-        // Restore default layout
-        document.getElementById('upload-preview').innerHTML = `
-            <div id="default-preview-content">
+        const previewContainer = document.getElementById('upload-preview');
+        previewContainer.innerHTML = `
+             <div id="default-preview-content">
                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <div class="flex text-sm text-gray-600 justify-center">
-                    <span class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
-                        <span>Ganti Foto (Opsional)</span>
+                    <span class="bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none">
+                        <span>Ganti Foto (Wajib < 5MB)</span>
                     </span>
                 </div>
-                <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
+                <p class="text-xs text-gray-500">PNG, JPG, JPEG (Max 1MB disarankan)</p>
             </div>
         `;
-        
-        // Stop propagation if inside the click container
-        if(event) event.stopPropagation();
     }
 </script>
 @endsection

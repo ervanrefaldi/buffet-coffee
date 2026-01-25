@@ -104,23 +104,23 @@
             <div>
                 <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Foto Produk</label>
                 
-                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors relative">
+                <!-- Hidden Actual Input -->
+                <input id="image" name="image" type="file" class="sr-only" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
+
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors relative cursor-pointer" 
+                     onclick="document.getElementById('image').click()">
                     
-                    <!-- Container Preview (Konten akan diganti JS) -->
                     <div class="space-y-1 text-center" id="upload-preview">
                         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <div class="flex text-sm text-gray-600 justify-center">
-                            <span class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
-                                <span>Upload a file</span>
+                            <span class="bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none">
+                                <span>Upload Foto Utama</span>
                             </span>
                         </div>
-                        <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
+                        <p class="text-xs text-gray-500">PNG, JPG, JPEG (Maksimal 5MB)</p>
                     </div>
-
-                    <!-- Input Actual (Hidden but exists!) -->
-                    <input id="image" name="image" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
                 </div>
                 @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
@@ -142,44 +142,45 @@
     function previewImage(input) {
         const previewContainer = document.getElementById('upload-preview');
         const file = input.files[0];
-
+ 
         if (file) {
-            // Validate size (1MB) - Strict Client Side
-            if (file.size > 1024 * 1024) {
-                alert("Maaf, ukuran file terlalu besar! Maksimal 1MB.");
-                input.value = ""; // Reset input
-                resetPreview();   // Reset UI
+            // Validate size (5MB) - Matches Backend
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Maaf, ukuran file terlalu besar! Maksimal 5MB.");
+                input.value = ""; 
+                resetPreview();
                 return;
             }
-
+ 
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Update UI Preview
                 previewContainer.innerHTML = `
                     <div class="flex flex-col items-center">
                         <img src="${e.target.result}" class="h-40 w-auto mb-3 rounded-lg shadow-md object-contain border border-gray-200">
                         <p class="text-xs font-bold text-green-600">Foto Siap Upload</p>
                         <p class="text-[10px] text-gray-400">${file.name}</p>
-                        <p class="text-[10px] text-amber-600 font-bold mt-1">Klik area ini lagi untuk ganti foto</p>
+                        <button type="button" onclick="event.stopPropagation(); resetPreview()" class="mt-2 text-amber-600 hover:text-amber-700 text-xs font-bold underline">Ganti Foto</button>
                     </div>
                 `;
             }
             reader.readAsDataURL(file);
         }
     }
-
+ 
     function resetPreview() {
+        const input = document.getElementById('image');
+        input.value = "";
         const previewContainer = document.getElementById('upload-preview');
         previewContainer.innerHTML = `
             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <div class="flex text-sm text-gray-600 justify-center">
-                <span class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
-                    <span>Upload a file</span>
+                <span class="bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none">
+                    <span>Upload Foto Utama</span>
                 </span>
             </div>
-            <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
+            <p class="text-xs text-gray-500">PNG, JPG, JPEG (Maksimal 5MB)</p>
         `;
     }
 </script>
