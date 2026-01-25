@@ -108,6 +108,14 @@ class OwnerProductController extends Controller
             }
 
             $file->move(public_path('images/products'), $filename);
+            
+            // Fix Permissions (Cegah file tidak terbaca)
+            try {
+                chmod(public_path('images/products/' . $filename), 0644);
+            } catch (\Exception $e) {
+                // Ignore permission error if not supported
+            }
+
             $data['image'] = 'images/products/' . $filename;
 
             // Only delete old image AFTER new one is uploaded and path is set

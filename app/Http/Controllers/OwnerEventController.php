@@ -48,6 +48,7 @@ class OwnerEventController extends Controller
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('images/events'), $filename);
+            try { chmod(public_path('images/events/' . $filename), 0644); } catch (\Exception $e) {}
             $imagePath = 'images/events/' . $filename;
         }
 
@@ -102,6 +103,7 @@ class OwnerEventController extends Controller
             }
 
             $file->move(public_path('images/events'), $filename);
+            try { chmod(public_path('images/events/' . $filename), 0644); } catch (\Exception $e) {}
             $data['image'] = 'images/events/' . $filename;
 
             // Hapus gambar lama HANYA jika upload sukses

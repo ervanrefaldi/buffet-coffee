@@ -11,13 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // PENTING: Universal Fix untuk Shared Hosting & Localhost
-        // Menggunakan DOCUMENT_ROOT server untuk menentukan folder public yang sebenarnya
-        if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-            $this->app->bind('path.public', function() {
-                return $_SERVER['DOCUMENT_ROOT'];
-            });
-        }
+        //
     }
 
     /**
