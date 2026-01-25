@@ -97,6 +97,11 @@ class OwnerProductController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
+
+            if (!$file->isValid()) {
+                return back()->withErrors(['image' => 'Upload error: ' . $file->getErrorMessage()])->withInput();
+            }
+
             $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;

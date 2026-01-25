@@ -40,6 +40,7 @@ COPY --from=node-builder /app/public/build ./public/build
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy configuration files
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/start.sh /start.sh
