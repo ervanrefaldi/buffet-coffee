@@ -75,6 +75,11 @@ class OwnerProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
+        // Detect POST Size Violation (Payload too large causes empty request)
+        if (empty($request->all()) && empty($request->files->all())) {
+            return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Silakan kompres foto Anda.']);
+        }
+
         $request->validate([
             'name'        => 'required|string|max:100',
             'category'    => 'required|in:biji,bubuk',
@@ -90,55 +95,54 @@ class OwnerProductController extends Controller
 
         $data = $request->except(['image', 'has_image_upload']);
 
-        // Check for Silent Upload Failure (File dropped by server due to size)
+        // Check for Silent Upload Failure (Input ada tapi File tidak sampai)
         if ($request->input('has_image_upload') == '1' && !$request->hasFile('image')) {
-            return back()->withErrors(['image' => 'Gagal upload: File ditolak oleh server (Mungkin ukuran > 2MB). Silakan kecilkan ukuran foto.'])->withInput();
+            return back()->withErrors(['image' => 'Gagal upload: File terdeteksi tapi ditolak server (Ukuran terlalu besar).'])->withInput();
         }
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            // Sanitize filename: time + slug of name + extension
             $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
             
-            // Tentukan beberapa kemungkinan lokasi folder public
-            $paths = [];
-            $paths[] = public_path('images/products'); // Lokasi default Laravel
-            
+            // STRTEGI BARU: Upload ke Primary Path dulu, baru copy ke yang lain
+            // Path Primary: DOCUMENT_ROOT (jika ada) atau public_path() default
+            $primaryPath = public_path('images/products');
             if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-                $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products'; // Lokasi Server Web
+                $primaryPath = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
             }
-            
-            // Cek lokasi umum shared hosting (public_html)
-            $publicHtml = base_path('../public_html/images/products');
+
+            // Path Sekunder: Lokasi lain yang mungkin valid (untuk backup/compatibility)
+            $backupPaths = [];
+            $backupPaths[] = public_path('images/products');
             if (file_exists(base_path('../public_html'))) {
-                $paths[] = $publicHtml;
+                $backupPaths[] = base_path('../public_html/images/products');
             }
+            // Remove primary from backup to avoid redundant copy
+            $backupPaths = array_unique(array_diff($backupPaths, [$primaryPath]));
 
-            // Hapus duplikat path
-            $paths = array_unique($paths);
+            // 1. Eksekusi MOVE ke Primary (Wajib Sukses)
+            if (!file_exists($primaryPath)) { @mkdir($primaryPath, 0755, true); }
+            
+            $file->move($primaryPath, $filename);
+            
+            // Fix Permission Primary
+            try { @chmod($primaryPath . '/' . $filename, 0644); } catch (\Exception $e) {}
 
-            // Upload ke SEMUA lokasi yang ditemukan
-            foreach ($paths as $path) {
-                if (!file_exists($path)) {
-                    @mkdir($path, 0755, true);
-                }
-                
-                // Copy file (gunakan copy untuk multiple destinations)
-                @copy($file->getRealPath(), $path . '/' . $filename);
-                
-                // Fix Permissions
-                try {
-                    @chmod($path . '/' . $filename, 0644);
-                } catch (\Exception $e) {}
+            // 2. Copy ke Backup Paths (Best Effort)
+            foreach ($backupPaths as $bPath) {
+                if (!file_exists($bPath)) { @mkdir($bPath, 0755, true); }
+                @copy($primaryPath . '/' . $filename, $bPath . '/' . $filename);
+                try { @chmod($bPath . '/' . $filename, 0644); } catch (\Exception $e) {}
             }
 
             $data['image'] = 'images/products/' . $filename;
 
-            // Hapus file lama di semua lokasi
+            // 3. Hapus gambar lama (Cleanup)
             if ($product->image) {
-                foreach ($paths as $path) {
+                $allPaths = array_merge([$primaryPath], $backupPaths);
+                foreach ($allPaths as $path) {
                     $oldFile = $path . '/' . basename($product->image);
                     if (file_exists($oldFile)) {
                         @unlink($oldFile);
