@@ -11,7 +11,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // PENTING: Fix untuk Shared Hosting (cPanel)
+        // Mengecek apakah folder public_html ada di luar folder project
+        if (file_exists(base_path('../public_html'))) {
+            $this->app->bind('path.public', function() {
+                return base_path('../public_html');
+            });
+        }
     }
 
     /**
