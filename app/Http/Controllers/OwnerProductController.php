@@ -33,12 +33,13 @@ class OwnerProductController extends Controller
             'price_500g'  => 'required|numeric|min:0',
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg|max:5120'
+            'image'       => 'required|image|mimes:jpeg,png,jpg|max:1024'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 5MB.'
+            'image.max' => 'Ukuran gambar maksimal 1MB.'
         ]);
-
+        
         $imagePath = null;
+        // Standard upload logic
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -78,9 +79,9 @@ class OwnerProductController extends Controller
             'price_500g'  => 'required|numeric|min:0',
             'price_1kg'   => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:1024'
         ], [
-            'image.max' => 'Ukuran gambar maksimal 5MB.'
+            'image.max' => 'Ukuran gambar maksimal 1MB.'
         ]);
 
         $data = $request->except(['image']);

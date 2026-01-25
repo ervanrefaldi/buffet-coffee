@@ -102,24 +102,17 @@
 
             <!-- Gambar -->
             <div>
-                <label for="image" class="block text-sm font-medium text-gray-700">Foto Produk</label>
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Foto Produk</label>
                 
-                <div class="flex items-center mb-2">
-                    <input type="checkbox" id="use_ai" name="use_ai" checked class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded transition">
-                    <label for="use_ai" class="ml-2 block text-xs text-gray-500 cursor-pointer">
-                        Hapus Background Otomatis (AI) <span class="text-amber-600 font-bold">(Beta)</span>
-                    </label>
-                </div>
-
-                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors">
-                    <div class="space-y-1 text-center">
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-amber-500 transition-colors relative">
+                    <div class="space-y-1 text-center" id="upload-preview">
                         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <div class="flex text-sm text-gray-600 justify-center">
                             <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
                                 <span>Upload a file</span>
-                                <input id="image" name="image" type="file" class="sr-only" required>
+                                <input id="image" name="image" type="file" class="sr-only" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
                             </label>
                         </div>
                         <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
@@ -141,101 +134,49 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/index.js"></script>
 <script>
-    const imageInput = document.getElementById('image');
-    const form = document.querySelector('form');
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    // Create UI Feedback Elements
-    const dropzone = imageInput.closest('.border-dashed');
-    const dropzoneContent = dropzone.querySelector('div');
-    
-    // Loading Template
-    const loadingUI = `
-        <div id="ai-loading" class="flex flex-col items-center justify-center space-y-4 py-4">
-            <div class="relative w-16 h-16">
-                <div class="absolute inset-0 border-4 border-amber-100 rounded-full"></div>
-                <div class="absolute inset-0 border-4 border-amber-600 rounded-full border-t-transparent animate-spin"></div>
-            </div>
-            <div class="space-y-1">
-                <p class="text-sm font-bold text-amber-900 uppercase tracking-widest">AI Sedang Bekerja</p>
-                <p class="text-[10px] text-amber-600/70 font-medium">Menghapus background foto...</p>
-            </div>
-        </div>
-    `;
-
-    imageInput.addEventListener('change', async function() {
-        const useAiCheckbox = document.getElementById('use_ai');
-        
-        if (this.files && this.files[0]) {
-            const file = this.files[0];
+    function previewImage(input) {
+        const previewContainer = document.getElementById('upload-preview');
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
             
-            // Validate size
-            if (file.size > 5 * 1024 * 1024) { 
-                alert("Ukuran file terlalu besar (Maks 5MB).");
-                this.value = '';
+            // Validate size (1MB)
+            if (file.size > 1024 * 1024) {
+                alert("Ukuran file terlalu besar! Maksimal 1MB.");
+                input.value = "";
                 return;
             }
 
-            // Skip AI if unchecked
-            if (!useAiCheckbox.checked) {
-                // Show simple preview for non-AI
-                const objectUrl = URL.createObjectURL(file);
-                dropzoneContent.innerHTML = `
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewContainer.innerHTML = `
                     <div class="flex flex-col items-center">
-                        <img src="${objectUrl}" class="h-32 w-auto mb-2 drop-shadow-lg rounded-lg border-2 border-gray-300">
-                        <p class="text-xs font-bold text-gray-600">Foto Siap Upload (Tanpa AI)</p>
-                        <button type="button" onclick="window.location.reload()" class="mt-2 text-red-500 hover:underline text-[10px] font-bold uppercase">Ganti Foto</button>
+                        <img src="${e.target.result}" class="h-40 w-auto mb-3 rounded-lg shadow-md object-contain border border-gray-200">
+                        <p class="text-xs font-bold text-green-600">Foto Siap Upload</p>
+                        <p class="text-[10px] text-gray-400">${file.name}</p>
+                        <button type="button" onclick="resetUpload()" class="mt-2 text-red-500 hover:text-red-700 text-xs font-medium underline">Ganti Foto</button>
                     </div>
                 `;
-                return;
             }
-
-            // Show Loading UI
-            const originalContent = dropzoneContent.innerHTML;
-            dropzoneContent.innerHTML = loadingUI;
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-            try {
-                // RUN AI BACKGROUND REMOVAL
-                const blob = await imglyRemoveBackground(file, {
-                    publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/',
-                    progress: (item, progress) => {
-                        console.log(`AI Processing ${item}: ${Math.round(progress * 100)}%`);
-                    }
-                });
-
-                // Create a new File object from the blob
-                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + "_transparent.png", {
-                    type: "image/png"
-                });
-
-                // Update Input with processed file
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(newFile);
-                this.files = dataTransfer.files;
-
-                // Success Preview UI
-                dropzoneContent.innerHTML = `
-                    <div class="flex flex-col items-center">
-                        <img src="${URL.createObjectURL(blob)}" class="h-32 w-auto mb-2 drop-shadow-lg rounded-lg border-2 border-amber-500/20">
-                        <p class="text-xs font-bold text-green-600">✨ Background Berhasil Dihapus!</p>
-                        <p class="text-[10px] text-gray-400 mt-1">Siap tayang dengan tampilan premium.</p>
-                        <button type="button" onclick="window.location.reload()" class="mt-2 text-red-500 hover:underline text-[10px] font-bold uppercase">Ganti Foto</button>
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error("AI Background Removal Error:", error);
-                alert("Gagal memproses gambar. Silakan coba lagi atau gunakan foto lain.");
-                dropzoneContent.innerHTML = originalContent;
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+            reader.readAsDataURL(file);
         }
-    });
+    }
+
+    function resetUpload() {
+        const input = document.getElementById('image');
+        input.value = "";
+        document.getElementById('upload-preview').innerHTML = `
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="flex text-sm text-gray-600 justify-center">
+                <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500">
+                    <span>Upload a file</span>
+                    <input id="image" name="image" type="file" class="sr-only" required accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this)">
+                </label>
+            </div>
+            <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 1MB</p>
+        `;
+    }
 </script>
 @endsection
