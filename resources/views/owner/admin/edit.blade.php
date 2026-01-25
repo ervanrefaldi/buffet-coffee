@@ -4,7 +4,7 @@
 @section('subtitle', 'Silakan perbarui data akun admin atau owner di bawah ini.')
 
 @section('content')
-    <div class="max-w-3xl bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+    <div class="max-w-3xl bg-white p-4 md:p-8 rounded-xl shadow-sm border border-gray-200">
         <form action="{{ route('admin.update', $admin->users_id) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')

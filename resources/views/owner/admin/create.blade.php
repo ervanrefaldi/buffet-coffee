@@ -4,7 +4,7 @@
 @section('subtitle', 'Silakan isi form di bawah ini untuk membuat akun admin atau owner baru.')
 
 @section('content')
-    <div class="max-w-3xl bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+    <div class="max-w-3xl bg-white p-4 md:p-8 rounded-xl shadow-sm border border-gray-200">
         <form action="{{ route('admin.store') }}" method="POST" class="space-y-6">
             @csrf
             

@@ -4,7 +4,7 @@
 @section('subtitle', 'Daftar semua akun admin dan owner yang dapat mengelola sistem.')
 
 @section('content')
-    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+    <div class="bg-white p-4 md:p-8 rounded-xl shadow-sm border border-gray-200">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-800">Daftar Admin & Owner</h2>
             <a href="{{ route('admin.create') }}" class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition shadow-sm text-sm font-medium">
