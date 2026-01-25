@@ -25,7 +25,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-lg overflow-hidden">
                         @if($product->image)
-                            <img class="h-full w-full object-cover" src="{{ route('menu.image', $product->products_id) }}?v={{ time() }}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <img class="h-full w-full object-cover" src="{{ asset($product->image) }}?v={{ time() }}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="hidden h-full w-full items-center justify-center text-gray-400">
                                 <span class="text-[8px] font-bold uppercase">No Img</span>
                             </div>
@@ -51,7 +51,7 @@
                     <div class="flex justify-between"><span>500g:</span> <span class="font-medium">Rp {{ number_format($product->price_500g, 0, ',', '.') }}</span></div>
                     <div class="flex justify-between"><span>1kg:</span> <span class="font-medium">Rp {{ number_format($product->price_1kg, 0, ',', '.') }}</span></div>
                 </div>
-
+ 
                 <div class="flex justify-end space-x-3 pt-2 border-t border-gray-100">
                     <a href="{{ route('menu.edit', $product->products_id) }}" class="flex-1 text-center bg-amber-50 text-amber-700 py-2 rounded-lg font-medium hover:bg-amber-100">Edit</a>
                     <form action="{{ route('menu.destroy', $product->products_id) }}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus produk ini?');">
@@ -67,7 +67,7 @@
             </div>
             @endforelse
         </div>
-
+ 
         <!-- Desktop View (Table) -->
         <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -87,7 +87,7 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full overflow-hidden">
                                     @if($product->image)
-                                        <img class="h-full w-full object-cover" src="{{ route('menu.image', $product->products_id) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default-kopi.jpg') }}';">
+                                        <img class="h-full w-full object-cover" src="{{ asset($product->image) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default-kopi.jpg') }}';">
                                     @else
                                         <div class="h-full w-full flex items-center justify-center text-gray-500">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
