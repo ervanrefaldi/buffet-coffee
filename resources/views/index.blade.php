@@ -138,7 +138,7 @@
                     <div class="relative bg-brown-dark rounded-[3rem] p-10 flex flex-col items-center flex-grow transition-all duration-700 hover:shadow-[0_50px_100px_-20px_rgba(44,30,23,0.3)] hover:-translate-y-3 overflow-hidden border border-brown-light/10">
                         
                         {{-- Glossy finish on hover --}}
-                        <div class="absolute inset-0 bg-gradient-to-tr from-brown to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-tr from-brown to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"></div>
 
                         {{-- Image Container: STRICT FIXED HEIGHT for Aligment --}}
                         <div class="w-full h-72 flex items-center justify-center mb-10 relative">
@@ -156,7 +156,7 @@
                         </div>
 
                         {{-- Content Area: Strictly Aligned At Bottom --}}
-                        <div class="w-full text-center mt-auto">
+                        <div class="w-full text-center mt-auto relative z-10">
                             <span class="text-gold font-bold text-[9px] uppercase tracking-[0.5em] mb-3 block opacity-60">{{ $product->category == 'biji' ? 'Signature Bean' : 'Premium Powder' }}</span>
                             <h3 class="text-2xl md:text-3xl font-serif font-black text-white uppercase tracking-tight mb-8 leading-tight">
                                 {{ $product->name }}
