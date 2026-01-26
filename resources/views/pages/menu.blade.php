@@ -24,8 +24,8 @@
 <body class="bg-cream font-sans text-brown">
 
     @include('partials.navbar')
-    <header class="relative h-80 flex items-center justify-center overflow-hidden">
-        <img src="{{ asset('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-50">
+    <header class="relative h-64 md:h-80 flex items-center justify-center overflow-hidden">
+        <img src="/{{ ('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-50">
         <div class="relative z-10 text-center text-white px-4">
             <h1 class="text-5xl md:text-6xl font-serif font-bold uppercase mt-2 tracking-tighter">Katalog Produk</h1>
         </div>
@@ -60,23 +60,23 @@
                     {{-- Decorative Blur --}}
                     <div class="absolute -inset-4 bg-gold/5 rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                     
-                    <div class="relative bg-white/40 backdrop-blur-sm rounded-[2.5rem] p-8 border border-brown/5 hover:border-gold/20 transition-all duration-500 flex flex-col h-full hover:shadow-2xl hover:shadow-gold/10">
+                    <div class="relative bg-white/40 backdrop-blur-sm rounded-[2.5rem] p-5 md:p-8 border border-brown/5 hover:border-gold/20 transition-all duration-500 flex flex-col h-full hover:shadow-2xl hover:shadow-gold/10">
                         
                         {{-- Stock Badge --}}
-                        <div class="absolute top-6 right-8 z-10">
-                            <span class="px-3 py-1 bg-brown text-[#FDF8F5] text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                        <div class="absolute top-4 right-4 md:top-6 md:right-8 z-10">
+                            <span class="px-3 py-1 bg-brown text-[#FDF8F5] text-[8px] md:text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">
                                 {{ $item->stock }} Kg Left
                             </span>
                         </div>
 
                         {{-- Elegant Image Presentation --}}
-                        <div class="relative aspect-square w-full mb-8 flex items-center justify-center p-6 bg-transparent rounded-3xl overflow-hidden">
+                        <div class="relative aspect-square w-full mb-6 md:mb-8 flex items-center justify-center p-4 md:p-6 bg-transparent rounded-3xl overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-br from-cream to-transparent opacity-50"></div>
                             @if($item->image)
-                                <img src="{{ asset($item->image) }}?v={{ strtotime($item->updated_at ?? $item->created_at) }}" 
+                                <img src="/{{ $item->image }}?v={{ strtotime($item->updated_at ?? $item->created_at) }}" 
                                      alt="{{ $item->name }}"
                                      class="relative z-10 w-full h-full object-contain transform transition duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_25px_45px_rgba(197,163,88,0.25)]"
-                                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'relative z-10 flex flex-col items-center justify-center text-brown/20 italic\'><span class=\'text-6xl mb-2\'>☕</span><span class=\'text-[10px] font-black uppercase tracking-widest\'>Image Error</span></div>';">
+                                     onerror="this.onerror=null; this.src='/images/logo.png'; this.classList.add('opacity-10','grayscale');">
                             @else
                                 <div class="relative z-10 flex flex-col items-center justify-center text-brown/20 italic">
                                     <span class="text-6xl mb-2">☕</span>
@@ -87,28 +87,28 @@
                         
                         {{-- Product Content --}}
                         <div class="flex flex-col flex-grow text-center">
-                            <h3 class="text-3xl font-serif font-bold text-brown mb-3 group-hover:text-gold transition-colors duration-300 leading-tight">
+                            <h3 class="text-2xl md:text-3xl font-serif font-bold text-brown mb-3 group-hover:text-gold transition-colors duration-300 leading-tight">
                                 {{ $item->name }}
                             </h3>
-                            <p class="text-xs text-brown/50 leading-relaxed px-4 mb-8 line-clamp-3 italic font-medium">
+                            <p class="text-[10px] md:text-xs text-brown/50 leading-relaxed px-2 md:px-4 mb-6 md:mb-8 line-clamp-3 italic font-medium">
                                 "{{ $item->description }}"
                             </p>
                             
                             {{-- Interactive Area --}}
-                            <div class="mt-auto pt-8 border-t border-brown/5 space-y-6">
-                                <div class="flex items-center justify-between px-2">
-                                    <div class="flex flex-col text-left">
+                            <div class="mt-auto pt-6 md:pt-8 border-t border-brown/5 space-y-6">
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+                                    <div class="flex flex-col text-center sm:text-left w-full sm:w-auto">
                                         <span class="text-[8px] font-black uppercase tracking-widest text-brown/30 mb-2">Select Size</span>
                                         <select onchange="updatePrice('{{ $item->products_id }}', this, '{{ $userName }}')" 
-                                                class="text-xs font-black text-brown bg-transparent border-none p-0 pr-8 focus:ring-0 cursor-pointer uppercase tracking-wider">
+                                                class="text-xs font-black text-brown bg-transparent border-none p-0 focus:ring-0 cursor-pointer uppercase tracking-wider text-center sm:text-left">
                                             <option value="{{ $item->price_200g }}" data-size="200 Gram">200 Gram</option>
                                             <option value="{{ $item->price_500g }}" data-size="500 Gram">500 Gram</option>
                                             <option value="{{ $item->price_1kg }}" data-size="1 Kg">1 Kg</option>
                                         </select>
                                     </div>
-                                    <div class="text-right">
+                                    <div class="text-center sm:text-right w-full sm:w-auto">
                                         <span class="text-[8px] font-black uppercase tracking-widest text-brown/30 mb-2 block">Price</span>
-                                        <div id="price-{{ $item->products_id }}" class="text-xl font-black text-gold italic">
+                                        <div id="price-{{ $item->products_id }}" class="text-lg md:text-xl font-black text-gold italic">
                                             Rp {{ number_format($item->price_200g, 0, ',', '.') }}
                                         </div>
                                     </div>
@@ -119,7 +119,7 @@
                                     @if(session()->has('user_id'))
                                         <a href="{{ route('menu.checkout', ['id' => $item->products_id]) }}?variant=200g" 
                                            id="link-{{ $item->products_id }}"
-                                           class="flex-1 py-4 bg-brown text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gold transition-all duration-300 shadow-xl shadow-brown/10 hover:shadow-gold/20 transform hover:-translate-y-1 text-center">
+                                           class="flex-1 py-3 md:py-4 bg-brown text-white rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gold transition-all duration-300 shadow-xl shadow-brown/10 hover:shadow-gold/20 transform hover:-translate-y-1 text-center flex items-center justify-center">
                                            Order Now
                                         </a>
                                         <button onclick="addToCart('{{ $item->products_id }}')" 
@@ -129,7 +129,7 @@
                                             </svg>
                                         </button>
                                     @else
-                                        <a href="{{ url('/login') }}" class="w-full py-4 border-2 border-brown/20 text-brown/60 text-center rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brown hover:text-white hover:border-brown transition-all duration-500">
+                                        <a href="{{ url('/login') }}" class="w-full py-3 md:py-4 border-2 border-brown/20 text-brown/60 text-center rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brown hover:text-white hover:border-brown transition-all duration-500">
                                              Login to Purchase
                                         </a>
                                     @endif

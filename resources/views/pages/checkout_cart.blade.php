@@ -25,21 +25,21 @@
 
     @include('partials.navbar')
 
-    <header class="relative h-64 flex items-center justify-center overflow-hidden">
-        <img src="{{ asset('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-50">
+    <header class="relative h-48 md:h-64 flex items-center justify-center overflow-hidden">
+        <img src="/{{ ('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-50">
         <div class="relative z-10 text-center text-white px-4">
             <h1 class="text-4xl md:text-5xl font-serif font-bold uppercase tracking-tighter">Konfirmasi Pesanan</h1>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-20">
-        <form action="{{ route('checkout.cart.process') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-16" target="_blank" onsubmit="setTimeout(() => window.location.href='/orders', 1000)">
+        <form action="{{ route('checkout.cart.process') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-16" target="_blank" onsubmit="setTimeout(() => window.location.href='/orders', 1000)">
             @csrf
             
             <!-- Left Side: Items & Form -->
             <div class="lg:col-span-2 space-y-12">
                 <!-- Order Details -->
-                <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-brown/5">
+                <div class="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-sm border border-brown/5">
                     <h2 class="text-2xl font-serif font-bold text-brown mb-8 uppercase tracking-tighter">Detail Item</h2>
                     <div class="space-y-6">
                         @php $grandTotal = 0; @endphp
@@ -50,8 +50,9 @@
                             $grandTotal += $subtotal;
                         @endphp
                         <div class="flex items-center gap-6 pb-6 border-b border-brown/5 last:border-0 last:pb-0">
-                            <div class="h-16 w-16 bg-cream/50 rounded-xl flex items-center justify-center overflow-hidden">
-                                <img src="{{ asset($item->product->image) }}" class="max-h-[85%] object-contain">
+                            <div class="h-16 w-16 bg-cream/50 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                                <img src="/{{ $item->product->image }}" class="max-h-[85%] object-contain"
+                                     onerror="this.onerror=null; this.src='/images/logo.png'; this.classList.add('opacity-10','grayscale');">
                             </div>
                             <div class="flex-grow">
                                 <h4 class="font-bold text-brown uppercase text-sm">{{ $item->product->name }}</h4>
@@ -66,7 +67,7 @@
                 </div>
 
                 <!-- Shipping Address -->
-                <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-brown/5">
+                <div class="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-sm border border-brown/5">
                     <h2 class="text-2xl font-serif font-bold text-brown mb-8 uppercase tracking-tighter">Alamat Pengiriman</h2>
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -89,7 +90,7 @@
 
             <!-- Right Side: Total & Submit -->
             <div class="lg:col-span-1">
-                <div class="bg-brown dark:bg-[#2C1E17] text-cream rounded-[3rem] p-10 shadow-2xl sticky top-32">
+                <div class="bg-brown dark:bg-[#2C1E17] text-cream rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-10 shadow-2xl sticky top-32">
                     <h2 class="text-2xl font-serif font-bold mb-8 uppercase tracking-tighter">Total Bayar</h2>
                     <div class="space-y-6 mb-10 pb-10 border-b border-white/10">
                         <div class="flex justify-between items-center text-sm">

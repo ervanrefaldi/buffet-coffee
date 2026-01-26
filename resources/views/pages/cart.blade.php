@@ -25,8 +25,8 @@
 
     @include('partials.navbar')
 
-    <header class="relative h-64 flex items-center justify-center overflow-hidden">
-        <img src="{{ asset('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-50">
+    <header class="relative h-48 md:h-64 flex items-center justify-center overflow-hidden">
+        <img src="/{{ ('images/kopi1.jpeg') }}" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-50">
         <div class="relative z-10 text-center text-white px-4">
             <p class="text-[10px] font-black uppercase tracking-[0.5em] mb-2 opacity-80">Pesanan Anda</p>
             <h1 class="text-5xl md:text-6xl font-serif font-bold uppercase tracking-tighter">Keranjang Belanja</h1>
@@ -53,10 +53,11 @@
                         $subtotal = $price * $item->quantity;
                         $grandTotal += $subtotal;
                     @endphp
-                    <div class="group bg-white rounded-[2.5rem] p-8 shadow-sm border border-brown/5 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden" id="cart-item-{{ $item->carts_id }}">
+                    <div class="group bg-white rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 shadow-sm border border-brown/5 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-center gap-6 md:gap-8 relative overflow-hidden" id="cart-item-{{ $item->carts_id }}">
                         <!-- Image -->
-                        <div class="h-32 w-32 bg-cream/30 rounded-2xl flex items-center justify-center overflow-hidden group-hover:bg-cream/50 transition-colors">
-                            <img src="{{ asset($item->product->image) }}" class="max-h-[80%] object-contain drop-shadow-lg group-hover:scale-110 transition duration-500">
+                        <div class="h-24 w-24 md:h-32 md:w-32 bg-cream/30 rounded-2xl flex items-center justify-center overflow-hidden group-hover:bg-cream/50 transition-colors shrink-0">
+                            <img src="/{{ $item->product->image }}" class="max-h-[80%] object-contain drop-shadow-lg group-hover:scale-110 transition duration-500" 
+                                 onerror="this.onerror=null; this.src='/images/logo.png'; this.classList.add('opacity-10','grayscale');">
                         </div>
 
                         <!-- Details -->
