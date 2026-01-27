@@ -64,8 +64,8 @@
                         
                         {{-- Stock Badge --}}
                         <div class="absolute top-4 right-4 md:top-6 md:right-8 z-10">
-                            <span class="px-3 py-1 bg-brown text-[#FDF8F5] text-[8px] md:text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                                {{ $item->stock }} Kg Left
+                            <span id="stock-{{ $item->products_id }}" class="px-3 py-1 bg-brown text-[#FDF8F5] text-[8px] md:text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                                {{ $item->stock_200g }} Packs Left
                             </span>
                         </div>
 
@@ -91,7 +91,10 @@
                                 {{ $item->name }}
                             </h3>
                             <p class="text-[10px] md:text-xs text-brown/50 leading-relaxed px-2 md:px-4 mb-6 md:mb-8 line-clamp-3 italic font-medium">
-                                "{{ $item->description }}"
+                                "{{ $item->description }}" <br>
+                                <span class="text-[9px] not-italic text-gold mt-1 block font-bold uppercase tracking-wider">
+                                    Variant: {{ ucfirst($item->coffee_variant) }}
+                                </span>
                             </p>
                             
                             {{-- Interactive Area --}}
@@ -99,11 +102,11 @@
                                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
                                     <div class="flex flex-col text-center sm:text-left w-full sm:w-auto">
                                         <span class="text-[8px] font-black uppercase tracking-widest text-brown/30 mb-2">Select Size</span>
-                                        <select onchange="updatePrice('{{ $item->products_id }}', this, '{{ $userName }}')" 
+                                        <select onchange="updateVariantInfo('{{ $item->products_id }}', this)" 
                                                 class="text-xs font-black text-brown bg-transparent border-none p-0 focus:ring-0 cursor-pointer uppercase tracking-wider text-center sm:text-left">
-                                            <option value="{{ $item->price_200g }}" data-size="200 Gram">200 Gram</option>
-                                            <option value="{{ $item->price_500g }}" data-size="500 Gram">500 Gram</option>
-                                            <option value="{{ $item->price_1kg }}" data-size="1 Kg">1 Kg</option>
+                                            <option value="{{ $item->price_200g }}" data-size="200 Gram" data-stock="{{ $item->stock_200g }}">200 Gram</option>
+                                            <option value="{{ $item->price_500g }}" data-size="500 Gram" data-stock="{{ $item->stock_500g }}">500 Gram</option>
+                                            <option value="{{ $item->price_1kg }}" data-size="1 Kg" data-stock="{{ $item->stock_1kg }}">1 Kg</option>
                                         </select>
                                     </div>
                                     <div class="text-center sm:text-right w-full sm:w-auto">
@@ -227,13 +230,32 @@
             }
         }
 
-        function updatePrice(id, el, userName) {
+        function updateVariantInfo(id, el) {
             const price = el.value;
-            const size = el.options[el.selectedIndex].getAttribute('data-size');
+            const selectedOption = el.options[el.selectedIndex];
+            const size = selectedOption.getAttribute('data-size');
+            const stock = selectedOption.getAttribute('data-stock');
             
+            // Update Price
             const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
             document.getElementById('price-' + id).innerText = formattedPrice;
+
+            // Update Stock
+            const stockEl = document.getElementById('stock-' + id);
+            if(stockEl) {
+                stockEl.innerText = stock + " Packs Left";
+                // Optional: Change color if low stock
+                if(parseInt(stock) === 0) {
+                     stockEl.classList.remove('bg-brown');
+                     stockEl.classList.add('bg-red-500');
+                     stockEl.innerText = "Out of Stock";
+                } else {
+                     stockEl.classList.add('bg-brown');
+                     stockEl.classList.remove('bg-red-500');
+                }
+            }
             
+            // Update Link
             const btn = document.getElementById('link-' + id);
             if(btn) {
                 let variantCode = '200g';
