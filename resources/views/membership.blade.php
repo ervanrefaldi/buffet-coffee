@@ -47,8 +47,8 @@
     
     <div class="relative z-10 text-center px-6 max-w-4xl">
         <div class="mb-6 opacity-0 animate-[fadeIn_1.5s_ease-out_forwards]">
-            <span class="text-brown/80 font-bold tracking-[0.4em] text-[10px] uppercase block mb-4">Keanggotaan Eksklusif</span>
-            <div class="w-12 h-px bg-brown mx-auto"></div>
+            <span class="text-brown-dark font-black tracking-[0.4em] text-[10px] uppercase block mb-4">Keanggotaan Eksklusif</span>
+            <div class="w-12 h-px bg-brown-dark mx-auto"></div>
         </div>
 
         @if(session('user_role') === 'membership')
@@ -59,10 +59,10 @@
                 Kehadiran Anda mendefinisikan seni dari cita rasa yang luar biasa.
             </p>
         @else
-            <h1 class="text-7xl md:text-9xl font-serif font-bold text-brown uppercase mb-8 tracking-tighter opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
+            <h1 class="text-7xl md:text-9xl font-serif font-black text-brown-dark uppercase mb-8 tracking-tighter opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
                 Bufet <span class="text-gold italic font-normal">Private</span>
             </h1>
-            <p class="text-brown/80 text-lg md:text-xl font-medium leading-relaxed tracking-wide mb-12 opacity-0 animate-[fadeIn_1.5s_ease-out_0.8s_forwards]">
+            <p class="text-brown-dark text-lg md:text-xl font-bold leading-relaxed tracking-wide mb-12 opacity-0 animate-[fadeIn_1.5s_ease-out_0.8s_forwards]">
                 Sebuah undangan menuju hal yang luar biasa. Dikhususkan bagi mereka yang menghargai ketenangan di balik sangraian sempurna.
             </p>
              <div class="opacity-0 animate-[fadeIn_1.5s_ease-out_1.2s_forwards]">
