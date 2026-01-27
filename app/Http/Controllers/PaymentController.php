@@ -155,7 +155,6 @@ class PaymentController extends Controller
             $message .= "Diskon Member (3%) : - Rp " . number_format($discountAmount, 0, ',', '.') . "\n";
         }
         $message .= "Total Pembayaran   : Rp " . number_format($totalPrice, 0, ',', '.') . "\n\n";
-        $message .= "Mohon konfirmasi ketersediaan barang dan total akhir pembayaran.\n\n";
         $message .= "Terima kasih.";
 
         return redirect("https://wa.me/{$waNumber}?text=" . rawurlencode($message));
