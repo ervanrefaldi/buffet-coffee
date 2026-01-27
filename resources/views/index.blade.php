@@ -73,22 +73,41 @@
         </div>
     </section>
 
-    <div class="bg-cream pt-48 pb-20 text-center relative overflow-hidden">
+    <div class="bg-gradient-to-b from-cream via-[#f8f1eb] to-cream pt-48 pb-32 text-center relative overflow-hidden">
+        {{-- Elegant subtle background decoration --}}
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
+        
         {{-- Elegant separator element --}}
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-gold/50 to-transparent"></div>
         
-        <div class="relative z-10 group">
-            <span class="text-xs font-black uppercase tracking-[0.6em] text-brown/30 mb-8 block group-hover:text-gold transition-colors duration-500">The Roastery Experience</span>
-            <h1 class="text-6xl md:text-9xl font-serif font-black text-brown tracking-tighter leading-[0.85] animate-fade-up">
-                BUFET <span class="text-gold italic">COFFEE</span> <br> 
-                <span class="text-brown/10 outline-text">ROASTERY</span>
+        <div class="relative z-10">
+            <span class="inline-block text-[10px] md:text-xs font-black uppercase tracking-[0.8em] text-brown/40 mb-10 animate-fade-up">The Roastery Experience</span>
+            
+            <h1 class="relative font-serif font-black tracking-tighter leading-[0.85]">
+                {{-- Top Line --}}
+                <div class="block text-6xl md:text-9xl mb-2 md:mb-4 animate-fade-up" style="animation-delay: 0.2s;">
+                    <span class="text-[#2C1E17]">BUFET</span> 
+                    <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-[#C5A358] via-[#E5C578] to-[#C5A358] animate-shimmer bg-[length:200%_auto]">COFFEE</span>
+                </div>
+                
+                {{-- Bottom Line --}}
+                <div class="block text-[4rem] md:text-[8rem] lg:text-[10rem] animate-fade-up" style="animation-delay: 0.4s;">
+                    <span class="relative inline-block text-transparent bg-clip-text bg-gradient-to-b from-brown/20 to-brown/5 hover:from-gold/40 hover:to-gold/10 transition-all duration-700 cursor-default select-none" style="-webkit-text-stroke: 1px rgba(197, 163, 88, 0.3);">
+                        ROASTERY
+                        {{-- Reflection effect --}}
+                        <span class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-700 mask-image-text"></span>
+                    </span>
+                </div>
             </h1>
         </div>
         
         <style>
-            .outline-text {
-                -webkit-text-stroke: 1px rgba(74, 52, 39, 0.2);
-                color: transparent;
+            @keyframes shimmer {
+                0% { background-position: 0% 50%; }
+                100% { background-position: 200% 50%; }
+            }
+            .animate-shimmer {
+                animation: shimmer 3s linear infinite;
             }
         </style>
     </div>
