@@ -48,16 +48,16 @@
         </div>
 
         <div class="relative z-10 text-center text-white px-4">
-            <p class="font-serif italic text-gold text-xl md:text-2xl mb-4 animate-fade-up opacity-0" style="animation-fill-mode: forwards;">
+            <p class="font-serif italic text-gold text-3xl md:text-6xl mb-6 animate-fade-up opacity-0 leading-tight" style="animation-fill-mode: forwards;">
                 Sedang mencari biji kopi dan bubuk kopi premium dengan rasa khas Indonesia?
             </p>
-            <h1 class="text-4xl md:text-8xl font-serif font-black mb-6 animate-fade-up tracking-tighter opacity-0" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
-                BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
-            </h1>
-            <div class="w-24 h-1 bg-gold mx-auto mb-8 rounded-full animate-fade-up opacity-0" style="animation-delay: 0.3s; animation-fill-mode: forwards;"></div>
-            <p class="text-white/95 text-lg md:text-2xl font-medium tracking-wide mb-12 max-w-3xl mx-auto animate-fade-up opacity-0 leading-relaxed" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+            <p class="text-white/90 text-lg md:text-3xl font-medium tracking-wide mb-10 max-w-4xl mx-auto animate-fade-up opacity-0 leading-relaxed" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
                 Bufet Coffee menghadirkan solusi kopi premium dengan cita rasa terbaik Nusantara.
             </p>
+            <div class="w-24 h-1 bg-gold mx-auto mb-10 rounded-full animate-fade-up opacity-0" style="animation-delay: 0.3s; animation-fill-mode: forwards;"></div>
+            <h1 class="text-4xl md:text-8xl font-serif font-black mb-12 animate-fade-up tracking-tighter opacity-0" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+                BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
+            </h1>
 
             @if(session()->has('user_id'))
             <div class="mt-6 animate-fade-up opacity-0 text-gold font-serif italic text-xl md:text-2xl" style="animation-delay: 0.5s; animation-fill-mode: forwards;">
