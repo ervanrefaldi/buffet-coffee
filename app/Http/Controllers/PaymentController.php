@@ -61,6 +61,7 @@ class PaymentController extends Controller
                 default => 0.2
             };
             $itemWeight = $weightPerPack * $quantity;
+            $pricePerItem = $product->getPriceByVariant($variant);
             $itemSubtotal = $pricePerItem * $quantity;
 
             $totalWeight += $itemWeight;
