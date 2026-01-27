@@ -36,7 +36,7 @@
         #nav-logo { transition: all 0.5s ease; }
     </style>
 </head>
-<body class="bg-cream font-sans text-brown">
+<body class="bg-cream font-sans text-brown overflow-x-hidden">
 
     @include('partials.navbar')
     @include('partials.flash_message')
@@ -47,29 +47,22 @@
             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-brown/20 to-cream"></div>
         </div>
 
-        <div class="relative z-10 text-center text-white px-4 pt-40 md:pt-48 pb-20">
-            <p class="font-serif italic text-gold text-3xl md:text-5xl lg:text-6xl mb-8 animate-fade-up opacity-0 leading-[1.1]" style="animation-fill-mode: forwards;">
+        <div class="relative z-10 text-center text-white px-4 pt-32 md:pt-40">
+            <p class="font-serif italic text-gold text-2xl md:text-5xl lg:text-6xl mb-8 animate-fade-up opacity-0 leading-[1.1]" style="animation-fill-mode: forwards;">
                 Sedang mencari biji kopi dan bubuk kopi premium dengan rasa khas Indonesia?
             </p>
             <p class="text-white/95 text-xl md:text-3xl font-medium tracking-wide mb-14 max-w-4xl mx-auto animate-fade-up opacity-0 leading-relaxed" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
                 Bufet Coffee menghadirkan solusi kopi premium dengan cita rasa terbaik Nusantara.
             </p>
-            
-            <div class="mt-12 animate-fade-up opacity-0" style="animation-delay: 0.6s; animation-fill-mode: forwards;">
-                <a href="#produk" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-white hover:text-brown transition-all font-bold uppercase text-xs tracking-[0.2em] shadow-2xl">
-                    Lihat Koleksi Menu
-                </a>
-            </div>
-        </div>
 
             @if(session()->has('user_id'))
-            <div class="mt-6 animate-fade-up opacity-0 text-gold font-serif italic text-xl md:text-2xl" style="animation-delay: 0.5s; animation-fill-mode: forwards;">
-                Halo, {{ session('user_name') }}!
-            </div>
+                <div class="mb-10 animate-fade-up opacity-0 text-gold font-serif italic text-xl md:text-2xl" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+                    Halo, {{ session('user_name') }}!
+                </div>
             @endif
             
-            <div class="mt-12 animate-fade-up opacity-0" style="animation-delay: 0.6s; animation-fill-mode: forwards;">
-                <a href="#produk" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-white hover:text-brown transition-all font-bold uppercase text-xs tracking-[0.2em] shadow-2xl">
+            <div class="animate-fade-up opacity-0" style="animation-delay: 0.6s; animation-fill-mode: forwards;">
+                <a href="#produk" class="inline-block bg-gold text-white px-12 py-5 rounded-full hover:bg-white hover:text-brown transition-all font-bold uppercase text-xs tracking-[0.3em] shadow-2xl hover:-translate-y-1 transform duration-300">
                     Lihat Koleksi Menu
                 </a>
             </div>
@@ -80,11 +73,24 @@
         </div>
     </section>
 
-    <div class="bg-cream pt-32 pb-10 text-center">
-        <div class="w-24 h-1 bg-gold/40 mx-auto mb-16 rounded-full"></div>
-        <h1 class="text-5xl md:text-9xl font-serif font-black text-brown tracking-tighter animate-fade-up">
-            BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
-        </h1>
+    <div class="bg-cream pt-48 pb-20 text-center relative overflow-hidden">
+        {{-- Elegant separator element --}}
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-gold/50 to-transparent"></div>
+        
+        <div class="relative z-10 group">
+            <span class="text-xs font-black uppercase tracking-[0.6em] text-brown/30 mb-8 block group-hover:text-gold transition-colors duration-500">The Roastery Experience</span>
+            <h1 class="text-6xl md:text-9xl font-serif font-black text-brown tracking-tighter leading-[0.85] animate-fade-up">
+                BUFET <span class="text-gold italic">COFFEE</span> <br> 
+                <span class="text-brown/10 outline-text">ROASTERY</span>
+            </h1>
+        </div>
+        
+        <style>
+            .outline-text {
+                -webkit-text-stroke: 1px rgba(74, 52, 39, 0.2);
+                color: transparent;
+            }
+        </style>
     </div>
 
    <section id="about" class="py-28 bg-cream overflow-hidden">
