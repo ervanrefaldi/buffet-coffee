@@ -47,17 +47,20 @@
             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-brown/20 to-cream"></div>
         </div>
 
-        <div class="relative z-10 text-center text-white px-4">
-            <p class="font-serif italic text-gold text-3xl md:text-6xl mb-6 animate-fade-up opacity-0 leading-tight" style="animation-fill-mode: forwards;">
+        <div class="relative z-10 text-center text-white px-4 pt-40 md:pt-48 pb-20">
+            <p class="font-serif italic text-gold text-3xl md:text-5xl lg:text-6xl mb-8 animate-fade-up opacity-0 leading-[1.1]" style="animation-fill-mode: forwards;">
                 Sedang mencari biji kopi dan bubuk kopi premium dengan rasa khas Indonesia?
             </p>
-            <p class="text-white/90 text-lg md:text-3xl font-medium tracking-wide mb-10 max-w-4xl mx-auto animate-fade-up opacity-0 leading-relaxed" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
+            <p class="text-white/95 text-xl md:text-3xl font-medium tracking-wide mb-14 max-w-4xl mx-auto animate-fade-up opacity-0 leading-relaxed" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
                 Bufet Coffee menghadirkan solusi kopi premium dengan cita rasa terbaik Nusantara.
             </p>
-            <div class="w-24 h-1 bg-gold mx-auto mb-10 rounded-full animate-fade-up opacity-0" style="animation-delay: 0.3s; animation-fill-mode: forwards;"></div>
-            <h1 class="text-4xl md:text-8xl font-serif font-black mb-12 animate-fade-up tracking-tighter opacity-0" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
-                BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
-            </h1>
+            
+            <div class="mt-12 animate-fade-up opacity-0" style="animation-delay: 0.6s; animation-fill-mode: forwards;">
+                <a href="#produk" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-white hover:text-brown transition-all font-bold uppercase text-xs tracking-[0.2em] shadow-2xl">
+                    Lihat Koleksi Menu
+                </a>
+            </div>
+        </div>
 
             @if(session()->has('user_id'))
             <div class="mt-6 animate-fade-up opacity-0 text-gold font-serif italic text-xl md:text-2xl" style="animation-delay: 0.5s; animation-fill-mode: forwards;">
@@ -72,10 +75,17 @@
             </div>
         </div>
 
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce opacity-50">
+        <div class="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 animate-bounce opacity-50">
             <div class="w-1 h-12 bg-gradient-to-b from-gold to-transparent rounded-full"></div>
         </div>
     </section>
+
+    <div class="bg-cream pt-32 pb-10 text-center">
+        <div class="w-24 h-1 bg-gold/40 mx-auto mb-16 rounded-full"></div>
+        <h1 class="text-5xl md:text-9xl font-serif font-black text-brown tracking-tighter animate-fade-up">
+            BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
+        </h1>
+    </div>
 
    <section id="about" class="py-28 bg-cream overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
