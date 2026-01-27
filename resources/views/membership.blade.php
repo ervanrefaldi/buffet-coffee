@@ -30,7 +30,7 @@
 <body class="bg-cream font-sans text-brown overflow-x-hidden">
 
 @php
-    $navDark = false; // We want the transparent navbar on top of the dark hero
+    $navDark = true; // We need dark text for the light cream background
 @endphp
 
 @include('partials.navbar')
