@@ -91,11 +91,11 @@
                 </div>
                 
                 {{-- Bottom Line --}}
-                <div class="block text-[4rem] md:text-[8rem] lg:text-[10rem] animate-fade-up" style="animation-delay: 0.4s;">
-                    <span class="relative inline-block text-transparent bg-clip-text bg-gradient-to-b from-brown/20 to-brown/5 hover:from-gold/40 hover:to-gold/10 transition-all duration-700 cursor-default select-none" style="-webkit-text-stroke: 1px rgba(197, 163, 88, 0.3);">
+                <div class="block text-[4rem] md:text-[8rem] lg:text-[10rem] animate-fade-up leading-none -mt-4 md:-mt-8" style="animation-delay: 0.4s;">
+                    <span class="relative inline-block text-transparent bg-clip-text bg-gradient-to-b from-[#D4AF37] to-[#996515] filter drop-shadow-lg transform transition-all duration-700 hover:scale-105 cursor-default select-none" style="-webkit-text-stroke: 2px #C5A358;">
                         ROASTERY
-                        {{-- Reflection effect --}}
-                        <span class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-700 mask-image-text"></span>
+                        {{-- Glossy highlight --}}
+                        <span class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none"></span>
                     </span>
                 </div>
             </h1>
