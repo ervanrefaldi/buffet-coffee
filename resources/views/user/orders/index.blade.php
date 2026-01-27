@@ -95,7 +95,7 @@
                                                 @if($item->product->image)
                                                     <img src="{{ asset($item->product->image) }}" class="w-8 h-8 object-contain">
                                                 @endif
-                                                <span class="text-[10px] font-bold text-brown">{{ $item->quantity }}x {{ $item->product->name }}</span>
+                                                <span class="text-[10px] font-bold text-brown">{{ $item->quantity }}x {{ $item->product->name }} ({{ $item->variant }})</span>
                                             </div>
                                         @endforeach
                                     </div>
