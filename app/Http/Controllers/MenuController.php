@@ -28,8 +28,8 @@ class MenuController extends Controller
         // Simple membership check
         $isMember = ($user->role === 'membership' || $user->membership === 'membership');
 
-        // Fetch all products for adding more items
-        $allProducts = Product::where('products_id', '!=', $id)->get();
+        // Fetch all products (include current one to allow different variant selection)
+        $allProducts = Product::all();
 
         return view('pages.checkout', compact('product', 'user', 'isMember', 'allProducts'));
     }
