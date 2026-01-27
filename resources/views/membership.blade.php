@@ -39,9 +39,10 @@
 <header class="relative h-screen flex items-center justify-center overflow-hidden">
     <!-- Immersive Background -->
     <div class="absolute inset-0 z-0">
-        {{-- Lighter image processing for the bright theme --}}
-        <img src="{{ asset('images/kopi2.jpeg') }}" class="w-full h-full object-cover brightness-[0.8] parallax-zoom">
-        <div class="absolute inset-0 bg-gradient-to-b from-cream/90 via-white/40 to-cream"></div>
+        {{-- Balanced image processing --}}
+        <img src="{{ asset('images/kopi2.jpeg') }}" class="w-full h-full object-cover brightness-[0.9] parallax-zoom">
+        {{-- Soft warm overlay instead of heavy white fog --}}
+        <div class="absolute inset-0 bg-gradient-to-b from-cream/90 via-brown/10 to-cream"></div>
     </div>
     
     <div class="relative z-10 text-center px-6 max-w-4xl">
