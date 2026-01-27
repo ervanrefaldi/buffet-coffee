@@ -127,8 +127,8 @@
 
         <div class="max-w-7xl mx-auto px-6 relative z-10">
             <div class="text-center mb-20 animate-fade-up">
-                <span class="text-gold font-bold tracking-[0.4em] uppercase text-xs mb-4 block">The Path to Prestige</span>
-                <h2 class="text-5xl md:text-6xl font-serif font-black text-brown mb-6">Unlock The Inner Circle</h2>
+                <span class="text-gold font-bold tracking-[0.4em] uppercase text-xs mb-4 block">Langkah Menuju Prestise</span>
+                <h2 class="text-5xl md:text-6xl font-serif font-black text-brown mb-6">Bergabunglah Dengan Kalangan Eksklusif</h2>
                 <div class="w-20 h-1 bg-brown mx-auto rounded-full"></div>
             </div>
 
@@ -145,7 +145,7 @@
                             Jadilah bagian dari keluarga eksklusif kami dengan melakukan transaksi pembelian kopi dalam jumlah besar.
                         </p>
                         <div class="bg-brown/5 py-4 px-8 rounded-2xl border border-brown/10">
-                            <span class="block text-xs uppercase text-brown/50 tracking-widest mb-1">Minimum Purchase</span>
+                            <span class="block text-xs uppercase text-brown/50 tracking-widest mb-1">Minimal Pembelian</span>
                             <span class="text-4xl font-black text-brown">100<span class="text-xl align-top text-gold">kg</span></span>
                             <span class="block text-xs text-brown/50 mt-1 italic">dalam 1x transaksi</span>
                         </div>
@@ -154,7 +154,7 @@
 
                 {{-- Benefits Grid --}}
                 <div class="space-y-8">
-                    <h3 class="text-3xl font-serif font-bold text-brown mb-8 text-center lg:text-left">Privilege Member</h3>
+                    <h3 class="text-3xl font-serif font-bold text-brown mb-8 text-center lg:text-left">Keuntungan Member</h3>
                     
                     {{-- Benefit 1: Discount --}}
                     <div class="flex items-start gap-6 group p-6 rounded-3xl hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gold/20">
@@ -164,7 +164,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-brown mb-2 group-hover:text-gold transition-colors">Exclusive Discount</h4>
+                            <h4 class="text-xl font-bold text-brown mb-2 group-hover:text-gold transition-colors">Diskon Eksklusif</h4>
                             <p class="text-brown/60 text-sm leading-relaxed">Nikmati harga spesial member untuk setiap pembelian produk kopi premium kami.</p>
                         </div>
                     </div>
@@ -177,7 +177,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-brown mb-2 group-hover:text-gold transition-colors">Lifetime Access</h4>
+                            <h4 class="text-xl font-bold text-brown mb-2 group-hover:text-gold transition-colors">Akses Seumur Hidup</h4>
                             <p class="text-brown/60 text-sm leading-relaxed">Status membership berlaku selamanya tanpa biaya perpanjangan tahunan.</p>
                         </div>
                     </div>
@@ -190,7 +190,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-brown mb-2 group-hover:text-gold transition-colors">Priority Shipping</h4>
+                            <h4 class="text-xl font-bold text-brown mb-2 group-hover:text-gold transition-colors">Pengiriman Prioritas</h4>
                             <p class="text-brown/60 text-sm leading-relaxed">Pengiriman paket Anda akan diprioritaskan untuk memastikan kesegaran kopi.</p>
                         </div>
                     </div>
