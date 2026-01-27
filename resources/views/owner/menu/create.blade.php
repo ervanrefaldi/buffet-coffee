@@ -38,12 +38,41 @@
                 @error('category') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Stok -->
+            <!-- Jenis Kopi (Robusta/Arabica) -->
             <div>
-                <label for="stock" class="block text-sm font-medium text-gray-700">Stok (Kg)</label>
-                <input type="number" step="0.01" name="stock" id="stock" value="{{ old('stock') }}" required min="0" placeholder="Contoh: 10.5"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
-                @error('stock') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                <label for="coffee_variant" class="block text-sm font-medium text-gray-700">Jenis Kopi</label>
+                <select name="coffee_variant" id="coffee_variant" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-2 border">
+                    <option value="">-- Pilih Jenis --</option>
+                    <option value="robusta" {{ old('coffee_variant') == 'robusta' ? 'selected' : '' }}>Robusta</option>
+                    <option value="arabica" {{ old('coffee_variant') == 'arabica' ? 'selected' : '' }}>Arabica</option>
+                </select>
+                @error('coffee_variant') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+
+            <!-- Stok Per Varian -->
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h3 class="text-sm font-medium text-blue-800 mb-4 border-b border-blue-200 pb-2">Stok (Jumlah Pack)</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="stock_200g" class="block text-xs font-medium text-gray-500 mb-1">Stok 200 Gram</label>
+                        <input type="number" name="stock_200g" id="stock_200g" value="{{ old('stock_200g', 0) }}" required min="0"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                         @error('stock_200g') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="stock_500g" class="block text-xs font-medium text-gray-500 mb-1">Stok 500 Gram</label>
+                        <input type="number" name="stock_500g" id="stock_500g" value="{{ old('stock_500g', 0) }}" required min="0"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                         @error('stock_500g') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="stock_1kg" class="block text-xs font-medium text-gray-500 mb-1">Stok 1 Kg</label>
+                        <input type="number" name="stock_1kg" id="stock_1kg" value="{{ old('stock_1kg', 0) }}" required min="0"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                         @error('stock_1kg') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                </div>
             </div>
 
             <!-- Varian Harga (200gr, 500gr, 1kg) -->

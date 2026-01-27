@@ -17,13 +17,26 @@ class Product extends Model
         'products_id',
         'name',
         'description',
-        'stock',       // Shared stock in Kg
+        'stock_200g',  // Stock for 200g packs
+        'stock_500g',  // Stock for 500g packs
+        'stock_1kg',   // Stock for 1kg packs
         'price_200g',  // Variant prices
         'price_500g',
         'price_1kg',
-        'category',
+        'category',    // Biji / Bubuk
+        'coffee_variant', // Robusta / Arabica
         'image',
     ];
+
+    public function getStockForVariant($variant)
+    {
+        return match($variant) {
+            '200g' => $this->stock_200g,
+            '500g' => $this->stock_500g,
+            '1kg' => $this->stock_1kg,
+            default => 0,
+        };
+    }
 
     public function getPriceByVariant($variant)
     {

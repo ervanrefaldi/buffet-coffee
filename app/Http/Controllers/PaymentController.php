@@ -39,20 +39,29 @@ class PaymentController extends Controller
             $variant = $itemInput['variant'];
             $quantity = $itemInput['quantity'];
 
-            $deductionPerItem = match($variant) {
+            // Pack-based deduction
+            $stockField = match($variant) {
+                '200g' => 'stock_200g',
+                '500g' => 'stock_500g',
+                '1kg' => 'stock_1kg',
+                default => 'stock_200g'
+            };
+            $currentStock = $product->$stockField;
+
+            // Simple check: do we have enough packs?
+            if ($currentStock < $quantity) {
+                return back()->with('error', "Stok {$product->name} ({$variant}) tidak mencukupi.");
+            }
+            
+            // Calculate weight just for shipping/Total Order Weight, NOT for stock deduction
+            $weightPerPack = match($variant) {
                 '200g' => 0.2,
                 '500g' => 0.5,
                 '1kg' => 1.0,
                 default => 0.2
             };
-            $pricePerItem = $product->getPriceByVariant($variant);
-            
-            $itemWeight = $deductionPerItem * $quantity;
+            $itemWeight = $weightPerPack * $quantity;
             $itemSubtotal = $pricePerItem * $quantity;
-
-            if ($product->stock < $itemWeight) {
-                return back()->with('error', "Stok {$product->name} tidak mencukupi.");
-            }
 
             $totalWeight += $itemWeight;
             $subtotal += $itemSubtotal;
@@ -63,7 +72,8 @@ class PaymentController extends Controller
                 'quantity' => $quantity,
                 'price' => $pricePerItem,
                 'subtotal' => $itemSubtotal,
-                'weight' => $itemWeight
+                'weight' => $itemWeight, // Total weight of this item line
+                'stock_field' => $stockField // Track which column to decrement
             ];
         }
 
@@ -95,7 +105,8 @@ class PaymentController extends Controller
             ]);
 
             foreach ($itemsData as $data) {
-                $data['product']->decrement('stock', $data['weight']);
+                // Decrement specific variant stock
+                $data['product']->decrement($data['stock_field'], $data['quantity']);
                 
                 \App\Models\OrderItem::create([
                     'orders_id'   => $order->orders_id,
@@ -203,20 +214,29 @@ class PaymentController extends Controller
         $itemsData = [];
 
         foreach ($cartItems as $item) {
-            $deduction = match($item->variant) {
+            // Pack-based deduction
+            $stockField = match($item->variant) {
+                '200g' => 'stock_200g',
+                '500g' => 'stock_500g',
+                '1kg' => 'stock_1kg',
+                default => 'stock_200g'
+            };
+
+            if ($item->product->$stockField < $item->quantity) {
+                 return back()->with('error', "Stok {$item->product->name} ({$item->variant}) tidak mencukupi.");
+            }
+            
+            // Weight calculation for shipping/membership
+            $weightPerPack = match($item->variant) {
                 '200g' => 0.2,
                 '500g' => 0.5,
                 '1kg' => 1.0,
                 default => 0.2
             };
             
-            $itemWeight = $deduction * $item->quantity;
+            $itemWeight = $weightPerPack * $item->quantity;
             $itemPrice = $item->product->getPriceByVariant($item->variant);
             $itemSubtotal = $itemPrice * $item->quantity;
-
-            if ($item->product->stock < $itemWeight) {
-                return back()->with('error', "Stok {$item->product->name} tidak mencukupi.");
-            }
 
             $totalWeight += $itemWeight;
             $subtotal += $itemSubtotal;
@@ -226,7 +246,8 @@ class PaymentController extends Controller
                 'quantity' => $item->quantity,
                 'price' => $itemPrice,
                 'subtotal' => $itemSubtotal,
-                'weight' => $itemWeight
+                'weight' => $itemWeight,
+                'stock_field' => $stockField
             ];
         }
 
@@ -262,7 +283,8 @@ class PaymentController extends Controller
             ]);
 
             foreach ($itemsData as $data) {
-                $data['product']->decrement('stock', $data['weight']);
+                // Decrement specific variant stock
+                $data['product']->decrement($data['stock_field'], $data['quantity']);
                 
                 \App\Models\OrderItem::create([
                     'orders_id'   => $order->orders_id,

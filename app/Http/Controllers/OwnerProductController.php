@@ -28,14 +28,17 @@ class OwnerProductController extends Controller
         }
 
         $request->validate([
-            'name'        => 'required|string|max:100',
-            'category'    => 'required|in:biji,bubuk',
-            'stock'       => 'required|numeric|min:0',
-            'price_200g'  => 'required|numeric|min:0',
-            'price_500g'  => 'required|numeric|min:0',
-            'price_1kg'   => 'required|numeric|min:0',
-            'description' => 'required|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg|max:5120'
+            'name'           => 'required|string|max:100',
+            'category'       => 'required|in:biji,bubuk',
+            'coffee_variant' => 'required|in:robusta,arabica', // New Enum
+            'stock_200g'     => 'required|integer|min:0',      // New Stock
+            'stock_500g'     => 'required|integer|min:0',
+            'stock_1kg'      => 'required|integer|min:0',
+            'price_200g'     => 'required|numeric|min:0',
+            'price_500g'     => 'required|numeric|min:0',
+            'price_1kg'      => 'required|numeric|min:0',
+            'description'    => 'required|string',
+            'image'          => 'required|image|mimes:jpeg,png,jpg|max:5120'
         ], [
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
@@ -65,14 +68,17 @@ class OwnerProductController extends Controller
         }
 
         Product::create([
-            'name'        => $request->name,
-            'category'    => $request->category,
-            'stock'       => $request->stock,
-            'price_200g'  => $request->price_200g,
-            'price_500g'  => $request->price_500g,
-            'price_1kg'   => $request->price_1kg,
-            'description' => $request->description,
-            'image'       => $imagePath
+            'name'           => $request->name,
+            'category'       => $request->category,
+            'coffee_variant' => $request->coffee_variant,
+            'stock_200g'     => $request->stock_200g,
+            'stock_500g'     => $request->stock_500g,
+            'stock_1kg'      => $request->stock_1kg,
+            'price_200g'     => $request->price_200g,
+            'price_500g'     => $request->price_500g,
+            'price_1kg'      => $request->price_1kg,
+            'description'    => $request->description,
+            'image'          => $imagePath
         ]);
 
         return redirect()->route('menu.index')->with('success', 'Produk berhasil ditambahkan.');
@@ -94,14 +100,17 @@ class OwnerProductController extends Controller
         }
 
         $request->validate([
-            'name'        => 'required|string|max:100',
-            'category'    => 'required|in:biji,bubuk',
-            'stock'       => 'required|numeric|min:0',
-            'price_200g'  => 'required|numeric|min:0',
-            'price_500g'  => 'required|numeric|min:0',
-            'price_1kg'   => 'required|numeric|min:0',
-            'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
+            'name'           => 'required|string|max:100',
+            'category'       => 'required|in:biji,bubuk',
+            'coffee_variant' => 'required|in:robusta,arabica',
+            'stock_200g'     => 'required|integer|min:0',
+            'stock_500g'     => 'required|integer|min:0',
+            'stock_1kg'      => 'required|integer|min:0',
+            'price_200g'     => 'required|numeric|min:0',
+            'price_500g'     => 'required|numeric|min:0',
+            'price_1kg'      => 'required|numeric|min:0',
+            'description'    => 'required|string',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
         ], [
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);

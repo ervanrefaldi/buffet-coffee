@@ -74,19 +74,16 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        // Stock validation
-        $itemWeightKg = 0;
-        if ($cartItem->variant == '200g') $itemWeightKg = 0.2;
-        elseif ($cartItem->variant == '500g') $itemWeightKg = 0.5;
-        elseif ($cartItem->variant == '1kg') $itemWeightKg = 1.0;
+        // Pack-based stock validation
+        $stockField = 'stock_200g';
+        if ($cartItem->variant == '500g') $stockField = 'stock_500g';
+        elseif ($cartItem->variant == '1kg') $stockField = 'stock_1kg';
 
-        $totalRequestedWeight = $itemWeightKg * $request->quantity;
+        $availableStock = $cartItem->product->$stockField;
 
-        // Note: This check only considers the current cart item's weight. 
-        // A more robust check would sum weights for all cart items of the same product.
-        if ($cartItem->product->stock < $totalRequestedWeight) {
-            return response()->json([
-                'error' => "Stok tidak mencukupi. Tersedia: {$cartItem->product->stock} Kg"
+        if ($availableStock < $request->quantity) {
+             return response()->json([
+                'error' => "Stok tidak mencukupi. Tersedia: {$availableStock} pack"
             ], 422);
         }
 

@@ -37,12 +37,16 @@
                             </div>
                         @endif
                     </div>
-                    <div class="flex-1">
+                <div class="flex-1">
                         <div class="text-base font-bold text-gray-900">{{ $product->name }}</div>
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->category == 'biji' ? 'bg-amber-100 text-amber-800' : 'bg-brown-100 text-brown-800' }} mt-1">
-                            {{ $product->category == 'biji' ? 'Biji Kopi' : 'Bubuk Kopi' }}
+                            {{ $product->category == 'biji' ? 'Biji Kopi' : 'Bubuk Kopi' }} ({{ ucfirst($product->coffee_variant) }})
                         </span>
-                        <div class="text-sm text-gray-500 mt-1">Stok: {{ $product->stock }} Kg</div>
+                        <div class="text-xs text-gray-500 mt-1 space-y-0.5">
+                            <div>Stok 200g: <span class="font-bold">{{ $product->stock_200g }}</span></div>
+                            <div>Stok 500g: <span class="font-bold">{{ $product->stock_500g }}</span></div>
+                            <div>Stok 1Kg: <span class="font-bold">{{ $product->stock_1kg }}</span></div>
+                        </div>
                     </div>
                 </div>
                 
@@ -103,11 +107,15 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->category == 'biji' ? 'bg-amber-100 text-amber-800' : 'bg-brown-100 text-brown-800' }}">
-                                {{ $product->category == 'biji' ? 'Biji Kopi' : 'Bubuk Kopi' }}
+                                {{ $product->category == 'biji' ? 'Biji' : 'Bubuk' }} - {{ ucfirst($product->coffee_variant) }}
                             </span>
                         </td>
                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $product->stock }}
+                            <div class="text-xs space-y-1">
+                                <div>200g: <span class="font-bold text-gray-700">{{ $product->stock_200g }}</span></div>
+                                <div>500g: <span class="font-bold text-gray-700">{{ $product->stock_500g }}</span></div>
+                                <div>1Kg : <span class="font-bold text-gray-700">{{ $product->stock_1kg }}</span></div>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div class="flex flex-col space-y-1 text-xs">
