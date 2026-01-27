@@ -48,11 +48,15 @@
         </div>
 
         <div class="relative z-10 text-center text-white px-4">
-            <h1 class="text-4xl md:text-8xl font-serif font-black mb-6 animate-fade-up tracking-tighter">
+            <p class="font-serif italic text-gold text-xl md:text-2xl mb-4 animate-fade-up opacity-0" style="animation-fill-mode: forwards;">
+                Sedang mencari biji kopi dan bubuk kopi premium dengan rasa khas Indonesia?
+            </p>
+            <h1 class="text-4xl md:text-8xl font-serif font-black mb-6 animate-fade-up tracking-tighter opacity-0" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
                 BUFET <span class="text-gold italic">COFFEE</span> <br> ROASTERY
             </h1>
-            
-                Menyajikan cita rasa kopi premium yang diproses dari kebun terbaik di seluruh Indonesia.
+            <div class="w-24 h-1 bg-gold mx-auto mb-8 rounded-full animate-fade-up opacity-0" style="animation-delay: 0.3s; animation-fill-mode: forwards;"></div>
+            <p class="text-white/95 text-lg md:text-2xl font-medium tracking-wide mb-12 max-w-3xl mx-auto animate-fade-up opacity-0 leading-relaxed" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+                Bufet Coffee menghadirkan solusi kopi premium dengan cita rasa terbaik Nusantara.
             </p>
 
             @if(session()->has('user_id'))
@@ -96,7 +100,7 @@
                     </div>
                     <h2 class="text-5xl font-serif font-bold mb-8 text-brown leading-[1.1]">Menjelajahi Rasa Dari Setiap Biji Kopi</h2>
                     <p class="text-lg text-brown/80 leading-relaxed mb-6">
-                        <strong>Bufet Coffee</strong> adalah wadah keberagaman rasa kopi yang berakar dari kebun sendiri, Kubangsari, yang kami sebut sebagai Kubangseries. Terinspirasi dari filosofi bufet dalam budaya Sunda sebagai tempat menyimpan hal-hal berharga, Bufet Coffee menghadirkan kopi Arabika dan Robusta berkualitas dengan berbagai proses pasca panen.
+                        Berakar dari kebun sendiri di Pangalengan, Kubangsari (Kubangseries), <strong>Bufet Coffee</strong> secara khusus menghadirkan biji kopi dan bubuk kopi Arabika serta Robusta pilihan. Terinspirasi dari filosofi bufet dalam budaya Sunda sebagai tempat menyimpan hal berharga, setiap kopi kami diproses dengan penuh perhatian untuk menjaga kualitas dan karakter rasa terbaik.
                     </p>
                     <div class="flex gap-8 border-t border-brown/10 pt-8">
                         <div>
