@@ -132,7 +132,11 @@
                         </div>
                         <div class="flex-grow">
                             <h4 class="font-bold text-brown group-hover:text-gold transition">{{ $p->name }}</h4>
-                            <p class="text-xs text-brown/60">Stok: {{ $p->stock }} Kg</p>
+                            <div class="text-[10px] text-brown/60 flex gap-2">
+                                <span>200g: {{ $p->stock_200g }}</span> | 
+                                <span>500g: {{ $p->stock_500g }}</span> | 
+                                <span>1kg: {{ $p->stock_1kg }}</span>
+                            </div>
                         </div>
                         <div class="flex flex-col gap-2">
                              <select id="variant-{{ $p->products_id }}" class="text-[10px] font-bold uppercase tracking-widest bg-white border border-brown/10 rounded-lg px-2 py-1 outline-none">
@@ -140,7 +144,7 @@
                                 <option value="500g">500g</option>
                                 <option value="1kg">1kg</option>
                             </select>
-                            <button onclick="addItem('{{ $p->products_id }}', '{{ $p->name }}', '/{{ $p->image ?? '' }}', {{ $p->price_200g }}, {{ $p->price_500g }}, {{ $p->price_1kg }}, {{ $p->stock }})" 
+                            <button onclick="addItem('{{ $p->products_id }}', '{{ $p->name }}', '/{{ $p->image ?? '' }}', {{ $p->price_200g }}, {{ $p->price_500g }}, {{ $p->price_1kg }}, {{ $p->stock_200g }}, {{ $p->stock_500g }}, {{ $p->stock_1kg }})" 
                                     class="px-4 py-2 bg-brown text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-colors">
                                 Tambah
                             </button>
@@ -167,7 +171,11 @@
                     '500g': {{ $product->price_500g }},
                     '1kg':  {{ $product->price_1kg }}
                 },
-                stock: {{ $product->stock }}
+                stocks: {
+                    '200g': {{ $product->stock_200g }},
+                    '500g': {{ $product->stock_500g }},
+                    '1kg':  {{ $product->stock_1kg }}
+                }
             }
         ];
 
@@ -185,7 +193,7 @@
             document.body.classList.remove('overflow-hidden');
         }
 
-        function addItem(id, name, image, p200, p500, p1000, stock) {
+        function addItem(id, name, image, p200, p500, p1000, s200, s500, s1000) {
             const variantSelect = document.getElementById(`variant-${id}`);
             const variant = variantSelect.value;
             
@@ -198,7 +206,7 @@
                     id, name, image, variant,
                     quantity: 1,
                     prices: { '200g': p200, '500g': p500, '1kg': p1000 },
-                    stock
+                    stocks: { '200g': s200, '500g': s500, '1kg': s1000 }
                 });
             }
             render();
@@ -212,8 +220,7 @@
 
         function updateQty(index, change) {
             const item = items[index];
-            const weightPerItem = item.variant === '200g' ? 0.2 : (item.variant === '500g' ? 0.5 : 1.0);
-            const maxQty = Math.floor(item.stock / weightPerItem);
+            const maxQty = item.stocks[item.variant];
             
             let next = item.quantity + change;
             if (next >= 1 && next <= maxQty) {
@@ -254,7 +261,7 @@
                             <h3 class="font-bold text-brown uppercase text-sm mb-1">${item.name}</h3>
                             <div class="flex items-center gap-2 mb-4">
                                 <span class="px-2 py-0.5 bg-brown/10 rounded-md text-[10px] font-bold text-brown uppercase">${item.variant}</span>
-                                <span class="text-[10px] text-brown/40 font-bold uppercase">Stok: ${item.stock} Kg</span>
+                                <span class="text-[10px] text-brown/40 font-bold uppercase">Stok: ${item.stocks[item.variant]} Pack</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center border border-brown/10 rounded-lg bg-white overflow-hidden">
