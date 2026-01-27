@@ -27,7 +27,7 @@
         .lux-border { border-image: linear-gradient(to right, transparent, #C5A358, transparent) 1; }
     </style>
 </head>
-<body class="bg-luxury font-sans text-cream overflow-x-hidden">
+<body class="bg-cream font-sans text-brown overflow-x-hidden">
 
 @php
     $navDark = false; // We want the transparent navbar on top of the dark hero
@@ -39,78 +39,79 @@
 <header class="relative h-screen flex items-center justify-center overflow-hidden">
     <!-- Immersive Background -->
     <div class="absolute inset-0 z-0">
-        <img src="{{ asset('images/kopi2.jpeg') }}" class="w-full h-full object-cover brightness-[0.3] parallax-zoom">
-        <div class="absolute inset-0 bg-gradient-to-b from-luxury via-transparent to-luxury"></div>
+        {{-- Lighter image processing for the bright theme --}}
+        <img src="{{ asset('images/kopi2.jpeg') }}" class="w-full h-full object-cover brightness-[0.8] parallax-zoom">
+        <div class="absolute inset-0 bg-gradient-to-b from-cream/90 via-white/40 to-cream"></div>
     </div>
     
     <div class="relative z-10 text-center px-6 max-w-4xl">
         <div class="mb-6 opacity-0 animate-[fadeIn_1.5s_ease-out_forwards]">
-            <span class="text-gold font-light tracking-[0.8em] text-[10px] uppercase block mb-4">The Inner Circle</span>
-            <div class="w-12 h-px bg-gold mx-auto"></div>
+            <span class="text-brown/80 font-bold tracking-[0.4em] text-[10px] uppercase block mb-4">Keanggotaan Eksklusif</span>
+            <div class="w-12 h-px bg-brown mx-auto"></div>
         </div>
 
         @if(session('user_role') === 'membership')
-            <h1 class="text-6xl md:text-9xl font-serif italic text-white mb-8 tracking-tighter opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
-                Welcome Back, <span class="text-gold">{{ session('user_name') }}</span>
+            <h1 class="text-6xl md:text-9xl font-serif italic text-brown mb-8 tracking-tighter opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
+                Selamat Datang, <span class="text-gold">{{ session('user_name') }}</span>
             </h1>
-            <p class="text-gold/60 text-lg md:text-xl font-light leading-relaxed tracking-wide opacity-0 animate-[fadeIn_1.5s_ease-out_0.8s_forwards]">
-                Your presence in our community defines the art of exceptional taste.
+            <p class="text-brown/70 text-lg md:text-xl font-medium leading-relaxed tracking-wide opacity-0 animate-[fadeIn_1.5s_ease-out_0.8s_forwards]">
+                Kehadiran Anda mendefinisikan seni dari cita rasa yang luar biasa.
             </p>
         @else
-            <h1 class="text-7xl md:text-9xl font-serif font-bold text-white uppercase mb-8 tracking-tighter opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
+            <h1 class="text-7xl md:text-9xl font-serif font-bold text-brown uppercase mb-8 tracking-tighter opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
                 Bufet <span class="text-gold italic font-normal">Private</span>
             </h1>
-            <p class="text-white/60 text-lg md:text-xl font-light leading-relaxed tracking-wide mb-12 opacity-0 animate-[fadeIn_1.5s_ease-out_0.8s_forwards]">
-                An invitation to the extraordinary. Reserved for those who appreciate the silence behind the perfect roast.
+            <p class="text-brown/80 text-lg md:text-xl font-medium leading-relaxed tracking-wide mb-12 opacity-0 animate-[fadeIn_1.5s_ease-out_0.8s_forwards]">
+                Sebuah undangan menuju hal yang luar biasa. Dikhususkan bagi mereka yang menghargai ketenangan di balik sangraian sempurna.
             </p>
              <div class="opacity-0 animate-[fadeIn_1.5s_ease-out_1.2s_forwards]">
-                <a href="{{ url('/menu') }}" class="inline-block border border-gold/40 text-gold px-12 py-4 rounded-full font-light uppercase text-xs tracking-[0.4em] hover:bg-gold hover:text-luxury transition-all duration-700 shadow-[0_0_30px_rgba(197,163,88,0.1)]">
-                    Explore Collection
+                <a href="{{ url('/menu') }}" class="inline-block bg-brown text-white px-12 py-4 rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:bg-gold hover:text-white transition-all duration-700 shadow-xl hover:shadow-gold/30">
+                    Jelajahi Koleksi
                 </a>
             </div>
         @endif
     </div>
 
     <!-- Scroll Decor -->
-    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-40">
-        <span class="text-[8px] uppercase tracking-[0.6em] text-white">Scroll</span>
-        <div class="w-px h-16 bg-gradient-to-b from-gold to-transparent"></div>
+    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-60">
+        <span class="text-[8px] uppercase tracking-[0.6em] text-brown font-bold">Gulir</span>
+        <div class="w-px h-16 bg-gradient-to-b from-brown to-transparent"></div>
     </div>
 </header>
 
-<main class="relative bg-luxury">
+<main class="relative bg-white">
     
     <!-- Exclusivity Visual Section -->
     <section class="py-40 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
                 <div class="relative">
-                    <div class="absolute -inset-10 bg-gold/5 blur-[100px] rounded-full"></div>
-                    <img src="{{ asset('images/kopi1.jpeg') }}" class="relative rounded-2xl w-full h-[600px] object-cover grayscale brightness-75 hover:grayscale-0 transition-all duration-1000">
+                    <div class="absolute -inset-10 bg-gold/10 blur-[100px] rounded-full"></div>
+                    <img src="{{ asset('images/kopi1.jpeg') }}" class="relative rounded-2xl w-full h-[600px] object-cover shadow-2xl transition-all duration-1000 transform hover:scale-[1.02]">
                     <!-- Elegant Label -->
-                    <div class="absolute bottom-10 -right-10 bg- luxury/80 backdrop-blur-xl border border-gold/20 p-8 rounded-2xl hidden lg:block">
-                        <p class="text-gold font-serif italic text-2xl mb-1">Estate Reserve</p>
-                        <p class="text-white/40 text-[9px] uppercase tracking-[0.3em]">Kubangsari Selection</p>
+                    <div class="absolute bottom-10 -right-10 bg-white/90 backdrop-blur-xl border border-brown/5 p-8 rounded-2xl hidden lg:block shadow-xl">
+                        <p class="text-brown font-serif italic text-2xl mb-1">Estate Reserve</p>
+                        <p class="text-brown/40 text-[9px] uppercase tracking-[0.3em] font-bold">Koleksi Kubangsari</p>
                     </div>
                 </div>
                 
                 <div class="space-y-12">
                     <div>
-                        <span class="text-gold font-bold tracking-[0.3em] uppercase text-[10px] mb-6 block">Legacy & Craft</span>
-                        <h2 class="text-5xl md:text-7xl font-serif text-white leading-none mb-8 italic">More than a <br> Membership.</h2>
-                        <p class="text-white/40 text-lg md:text-xl font-light leading-relaxed max-w-lg">
-                            We don't just offer coffee; we offer an identity. Being a part of Bufet Private means standing at the source of every bean, every story, and every morning ritual.
+                        <span class="text-gold font-bold tracking-[0.3em] uppercase text-[10px] mb-6 block">Warisan & Keahlian</span>
+                        <h2 class="text-5xl md:text-7xl font-serif text-brown leading-none mb-8 italic">Lebih dari Sekadar <br> Keanggotaan.</h2>
+                        <p class="text-brown/70 text-lg md:text-xl leading-relaxed max-w-lg">
+                            Kami tidak hanya menawarkan kopi; kami menawarkan identitas. Menjadi bagian dari Bufet Private berarti berada di sumber dari setiap biji kopi, setiap cerita, dan setiap ritual pagi.
                         </p>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-12 pt-12 border-t border-white/5">
+                    <div class="grid grid-cols-2 gap-12 pt-12 border-t border-brown/10">
                         <div>
-                            <p class="text-2xl font-serif text-gold italic">Exclusivity</p>
-                            <p class="text-white/30 text-xs mt-2">Unparalleled access to heritage crops.</p>
+                            <p class="text-2xl font-serif text-gold italic">Eksklusivitas</p>
+                            <p class="text-brown/60 text-xs mt-2">Akses tak tertandingi ke hasil panen terbaik.</p>
                         </div>
                         <div>
-                            <p class="text-2xl font-serif text-gold italic">Elegance</p>
-                            <p class="text-white/30 text-xs mt-2">Designed for the sophisticated palate.</p>
+                            <p class="text-2xl font-serif text-gold italic">Elegan</p>
+                            <p class="text-brown/60 text-xs mt-2">Dirancang khusus untuk selera yang berkelas.</p>
                         </div>
                     </div>
                 </div>
@@ -201,26 +202,26 @@
     @endif
 
     <!-- Final CTA Section -->
-    <section class="py-60 text-center relative overflow-hidden">
+    <section class="py-60 text-center relative overflow-hidden bg-cream">
         <!-- Decoration -->
-        <div class="absolute inset-0 z-0 opacity-10">
+        <div class="absolute inset-0 z-0 opacity-20">
              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold rounded-full blur-[200px]"></div>
         </div>
 
         <div class="relative z-10 max-w-3xl mx-auto px-6">
             @if(session('user_role') === 'membership')
-                <h2 class="text-5xl font-serif italic text-white mb-12">Fine coffee for a fine member.</h2>
-                <a href="{{ url('/menu') }}" class="inline-block bg-gold text-luxury px-16 py-6 rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:scale-105 transition-all duration-500 shadow-2xl shadow-gold/20">
-                    Return to Catalog
+                <h2 class="text-5xl font-serif italic text-brown mb-12">Kopi terbaik untuk anggota terbaik.</h2>
+                <a href="{{ url('/menu') }}" class="inline-block bg-brown text-white px-16 py-6 rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:scale-105 transition-all duration-500 shadow-2xl shadow-brown/20 transform hover:-translate-y-1">
+                    Kembali ke Katalog
                 </a>
             @else
-                <h2 class="text-5xl font-serif italic text-white mb-12">Begin your journey.</h2>
-                <a href="{{ url('/menu') }}" class="inline-block bg-gold text-luxury px-16 py-6 rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:scale-105 transition-all duration-500 shadow-2xl shadow-gold/20">
-                    Shop Premium Menu
+                <h2 class="text-5xl font-serif italic text-brown mb-12">Mulai perjalanan Anda.</h2>
+                <a href="{{ url('/menu') }}" class="inline-block bg-brown text-white px-16 py-6 rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:scale-105 transition-all duration-500 shadow-2xl shadow-brown/20 transform hover:-translate-y-1">
+                    Belanja Menu Premium
                 </a>
             @endif
             
-            <p class="text-white/20 text-[9px] uppercase font-bold tracking-[0.5em] mt-16 italic">
+            <p class="text-brown/30 text-[9px] uppercase font-bold tracking-[0.5em] mt-16 italic">
                 Bufet Coffee Roastery &bull; Est. 2018
             </p>
         </div>
