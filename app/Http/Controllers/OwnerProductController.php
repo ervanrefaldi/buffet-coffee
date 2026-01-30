@@ -30,8 +30,8 @@ class OwnerProductController extends Controller
         $request->validate([
             'name'           => 'required|string|max:100',
             'category'       => 'required|in:biji,bubuk',
-            'coffee_variant' => 'required|in:robusta,arabica', // New Enum
-            'stock_200g'     => 'required|integer|min:0',      // New Stock
+            'coffee_variant' => 'required|in:robusta,arabica',
+            'stock_200g'     => 'required|integer|min:0',
             'stock_500g'     => 'required|integer|min:0',
             'stock_1kg'      => 'required|integer|min:0',
             'price_200g'     => 'required|numeric|min:0',
@@ -45,26 +45,7 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
-            
-            // Multi-path strategy
-            $paths = [];
-            $paths[] = public_path('images/products');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
-            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/products');
-            $paths = array_unique($paths);
-
-            // Upload ke SEMUA lokasi
-            foreach ($paths as $path) {
-                if (!file_exists($path)) @mkdir($path, 0755, true);
-                @copy($file->getRealPath(), $path . '/' . $filename);
-                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
-            }
-
-            $imagePath = 'images/products/' . $filename;
+            $imagePath = $request->file('image')->store('products', 'public');
         }
 
         Product::create([
@@ -118,34 +99,13 @@ class OwnerProductController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
-            
-            // Multi-path strategy
-            $paths = [];
-            $paths[] = public_path('images/products');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
-            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/products');
-            $paths = array_unique($paths);
-
-            // Upload ke SEMUA lokasi
-            foreach ($paths as $path) {
-                if (!file_exists($path)) @mkdir($path, 0755, true);
-                @copy($file->getRealPath(), $path . '/' . $filename);
-                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
-            }
-
-            $data['image'] = 'images/products/' . $filename;
-
-            // Hapus file lama di semua lokasi
+            // Hapus gambar lama jika ada
             if ($product->image) {
-                foreach ($paths as $path) {
-                    $oldFile = $path . '/' . basename($product->image);
-                    if (file_exists($oldFile)) @unlink($oldFile);
-                }
+                Storage::disk('public')->delete($product->image);
             }
+            
+            // Simpan gambar baru
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product->update($data);
@@ -157,18 +117,9 @@ class OwnerProductController extends Controller
     {
         $product = Product::findOrFail($id);
         
-        // Cleanup files
+        // Hapus gambar dari storage
         if ($product->image) {
-            $paths = [];
-            $paths[] = public_path('images/products');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/products';
-            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/products');
-            $paths = array_unique($paths);
-
-            foreach ($paths as $path) {
-                $file = $path . '/' . basename($product->image);
-                if (file_exists($file)) @unlink($file);
-            }
+            Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
