@@ -23,22 +23,31 @@ class ImgBBService
         }
 
         try {
-            $response = Http::asMultipart()->attach(
-                'image', 
-                file_get_contents($file->getRealPath()), 
-                $file->getClientOriginalName()
-            )->post('https://api.imgbb.com/1/upload', [
-                'key' => $apiKey,
-            ]);
+            $response = Http::withoutVerifying() // Bypass SSL verification for environments with outdated CA bundles
+                ->timeout(60) // Increase timeout for slower uploads
+                ->asMultipart()
+                ->attach(
+                    'image', 
+                    file_get_contents($file->getRealPath()), 
+                    $file->getClientOriginalName()
+                )->post('https://api.imgbb.com/1/upload', [
+                    'key' => $apiKey,
+                ]);
 
             if ($response->successful()) {
-                return $response->json()['data']['url'];
+                $url = $response->json()['data']['url'] ?? null;
+                if ($url) {
+                    Log::info('ImgBB Upload Success: ' . $url);
+                    return $url;
+                }
+                Log::error('ImgBB Upload Success but no URL found: ' . $response->body());
+                return null;
             }
 
-            Log::error('ImgBB Upload Failed: Status ' . $response->status() . ' - ' . $response->body());
+            Log::error('ImgBB Upload Failed | Status: ' . $response->status() . ' | Response: ' . $response->body());
             return null;
         } catch (\Exception $e) {
-            Log::error('ImgBB Upload Exception: ' . $e->getMessage());
+            Log::error('ImgBB Upload Exception | Message: ' . $e->getMessage() . ' | Stack: ' . $e->getTraceAsString());
             return null;
         }
     }
