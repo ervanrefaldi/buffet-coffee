@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Services\ImgBBService;
 
 class OwnerProductController extends Controller
 {
@@ -45,7 +46,11 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
+            $imagePath = ImgBBService::upload($request->file('image'));
+            
+            if (!$imagePath) {
+                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
+            }
         }
 
         Product::create([
@@ -99,13 +104,19 @@ class OwnerProductController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image) {
+            $newImagePath = ImgBBService::upload($request->file('image'));
+            
+            if (!$newImagePath) {
+                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
+            }
+
+            // Hapus gambar lama jika ada (lokal)
+            if ($product->image && !str_starts_with($product->image, 'http')) {
                 Storage::disk('public')->delete($product->image);
             }
             
             // Simpan gambar baru
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $data['image'] = $newImagePath;
         }
 
         $product->update($data);
@@ -117,8 +128,8 @@ class OwnerProductController extends Controller
     {
         $product = Product::findOrFail($id);
         
-        // Hapus gambar dari storage
-        if ($product->image) {
+        // Hapus gambar dari storage (lokal)
+        if ($product->image && !str_starts_with($product->image, 'http')) {
             Storage::disk('public')->delete($product->image);
         }
 

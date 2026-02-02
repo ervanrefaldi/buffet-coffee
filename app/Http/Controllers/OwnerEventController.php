@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Services\ImgBBService;
 
 class OwnerEventController extends Controller
 {
@@ -48,26 +49,11 @@ class OwnerEventController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
+            $imagePath = ImgBBService::upload($request->file('image'));
             
-            // Tentukan folder tujuan (Multi-path strategy)
-            $paths = [];
-            $paths[] = public_path('images/events');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
-            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
-            $paths = array_unique($paths);
-
-            // Upload ke SEMUA lokasi
-            foreach ($paths as $path) {
-                if (!file_exists($path)) @mkdir($path, 0755, true);
-                @copy($file->getRealPath(), $path . '/' . $filename);
-                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
+            if (!$imagePath) {
+                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
             }
-
-            $imagePath = 'images/events/' . $filename;
         }
 
         Event::create([
@@ -117,29 +103,23 @@ class OwnerEventController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . \Illuminate\Support\Str::slug($name) . '.' . $extension;
+            $newImagePath = ImgBBService::upload($request->file('image'));
             
-            // Tentukan folder tujuan (Multi-path strategy)
-            $paths = [];
-            $paths[] = public_path('images/events');
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
-            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
-            $paths = array_unique($paths);
-
-            // Upload ke SEMUA lokasi
-            foreach ($paths as $path) {
-                if (!file_exists($path)) @mkdir($path, 0755, true);
-                @copy($file->getRealPath(), $path . '/' . $filename);
-                try { @chmod($path . '/' . $filename, 0644); } catch (\Exception $e) {}
+            if (!$newImagePath) {
+                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
             }
 
-            $data['image'] = 'images/events/' . $filename;
+            $data['image'] = $newImagePath;
             
-            // Hapus file lama di semua lokasi
-            if ($event->image) {
+            // Hapus file lama jika ada (lokal)
+            if ($event->image && !str_starts_with($event->image, 'http')) {
+                $paths = [
+                    public_path('images/events'),
+                ];
+                if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
+                if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
+                $paths = array_unique($paths);
+
                 foreach ($paths as $path) {
                     $oldFile = $path . '/' . basename($event->image);
                     if (file_exists($oldFile)) @unlink($oldFile);
@@ -160,9 +140,10 @@ class OwnerEventController extends Controller
         $event = Event::findOrFail($id);
         
         // Cleanup files
-        if ($event->image) {
-            $paths = [];
-            $paths[] = public_path('images/events');
+        if ($event->image && !str_starts_with($event->image, 'http')) {
+            $paths = [
+                public_path('images/events'),
+            ];
             if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
             if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
             $paths = array_unique($paths);
