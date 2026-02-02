@@ -15,24 +15,27 @@ class ImgBBService
      */
     public static function upload($file)
     {
-        $apiKey = env('IMGBB_API_KEY');
+        $apiKey = config('services.imgbb.key');
 
         if (!$apiKey) {
-            Log::error('ImgBB API Key is not set in .env file.');
+            Log::error('ImgBB API Key is not set in config/services.php or .env file.');
             return null;
         }
 
         try {
-            $response = Http::asMultipart()->post('https://api.imgbb.com/1/upload', [
+            $response = Http::asMultipart()->attach(
+                'image', 
+                file_get_contents($file->getRealPath()), 
+                $file->getClientOriginalName()
+            )->post('https://api.imgbb.com/1/upload', [
                 'key' => $apiKey,
-                'image' => base64_encode(file_get_contents($file->getRealPath())),
             ]);
 
             if ($response->successful()) {
                 return $response->json()['data']['url'];
             }
 
-            Log::error('ImgBB Upload Failed: ' . $response->body());
+            Log::error('ImgBB Upload Failed: Status ' . $response->status() . ' - ' . $response->body());
             return null;
         } catch (\Exception $e) {
             Log::error('ImgBB Upload Exception: ' . $e->getMessage());

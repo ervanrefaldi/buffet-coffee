@@ -45,7 +45,7 @@
                 <div class="bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-brown/5 border border-brown/5 group flex flex-col transition-all duration-500 hover:shadow-2xl">
                     <div class="h-80 overflow-hidden relative">
                         @if($event->image)
-                            <img src="{{ asset($event->image) }}?v={{ strtotime($event->updated_at ?? $event->created_at) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                            <img src="{{ str_starts_with($event->image, 'http') ? $event->image : asset($event->image) }}?v={{ strtotime($event->updated_at ?? $event->created_at) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         @else
                             <div class="w-full h-full bg-brown/5 flex items-center justify-center">
                                 <span class="text-brown/20 font-serif text-4xl italic">Bufet Event</span>
