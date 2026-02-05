@@ -18,36 +18,48 @@ class ImgBBService
         $apiKey = config('services.imgbb.key');
 
         if (!$apiKey) {
-            Log::error('ImgBB API Key is not set in config/services.php or .env file.');
+            Log::error('ImgBB Upload Error: API Key is not set in config/services.php or .env file.');
+            return null;
+        }
+
+        if (!$file->isValid()) {
+            Log::error('ImgBB Upload Error: File is invalid | Error: ' . $file->getErrorMessage());
             return null;
         }
 
         try {
-            $response = Http::withoutVerifying() // Bypass SSL verification for environments with outdated CA bundles
-                ->timeout(60) // Increase timeout for slower uploads
+            $apiUrl = 'https://api.imgbb.com/1/upload?key=' . $apiKey;
+            
+            // Log attempt
+            Log::info('Attempting ImgBB upload for: ' . $file->getClientOriginalName() . ' | Size: ' . $file->getSize() . ' bytes');
+
+            $response = Http::withoutVerifying()
+                ->timeout(120) // Give it more time
                 ->asMultipart()
                 ->attach(
                     'image', 
-                    file_get_contents($file->getRealPath()), 
+                    fopen($file->getRealPath(), 'r'), 
                     $file->getClientOriginalName()
-                )->post('https://api.imgbb.com/1/upload', [
-                    'key' => $apiKey,
-                ]);
+                )
+                ->post($apiUrl);
 
             if ($response->successful()) {
-                $url = $response->json()['data']['url'] ?? null;
+                $data = $response->json();
+                $url = $data['data']['url'] ?? null;
+                
                 if ($url) {
                     Log::info('ImgBB Upload Success: ' . $url);
                     return $url;
                 }
-                Log::error('ImgBB Upload Success but no URL found: ' . $response->body());
+                
+                Log::error('ImgBB Upload Success but no URL in JSON: ' . json_encode($data));
                 return null;
             }
 
             Log::error('ImgBB Upload Failed | Status: ' . $response->status() . ' | Response: ' . $response->body());
             return null;
         } catch (\Exception $e) {
-            Log::error('ImgBB Upload Exception | Message: ' . $e->getMessage() . ' | Stack: ' . $e->getTraceAsString());
+            Log::error('ImgBB Upload Exception | Message: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
             return null;
         }
     }
