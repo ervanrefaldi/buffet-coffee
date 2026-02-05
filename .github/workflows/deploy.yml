@@ -114,7 +114,8 @@ jobs:
             --set-env-vars "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" \
             --set-env-vars "MAIL_ENCRYPTION=ssl" \
             --set-env-vars "MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}" \
-            --set-env-vars "MAIL_FROM_NAME=Bufet Coffee"
+            --set-env-vars "MAIL_FROM_NAME=Bufet Coffee" \
+            --set-env-vars "IMGBB_API_KEY=${{ secrets.IMGBB_API_KEY }}"
 
       - name: Update APP_URL with Cloud Run URL
         run: |
