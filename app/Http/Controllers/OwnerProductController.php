@@ -46,9 +46,11 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
+            Log::info('Product store: image detected, calling ImgBB upload service...');
             $imagePath = ImgBBService::upload($request->file('image'));
             
             if (!$imagePath) {
+                Log::error('Product store: ImgBB upload service returned null.');
                 return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
             }
         }
