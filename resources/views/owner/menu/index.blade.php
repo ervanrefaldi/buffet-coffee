@@ -25,7 +25,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-lg overflow-hidden">
                         @if($product->image)
-                            <img class="h-full w-full object-cover" src="{{ asset('storage/' . $product->image) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            <img class="h-full w-full object-cover" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
                         @else
                             <img class="h-full w-full object-cover" src="{{ asset('images/default.png') }}" alt="Default Image">
                         @endif
@@ -84,7 +84,7 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full overflow-hidden">
                                     @if($product->image)
-                                        <img class="h-full w-full object-cover" src="{{ asset('storage/' . $product->image) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                                        <img class="h-full w-full object-cover" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
                                     @else
                                         <img class="h-full w-full object-cover" src="{{ asset('images/default.png') }}" alt="Default Image">
                                     @endif

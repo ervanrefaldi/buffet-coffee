@@ -97,8 +97,6 @@ class OwnerProductController extends Controller
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
-        $data = $request->except(['image']);
-
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada di storage
             if ($product->image && Storage::disk('public')->exists($product->image)) {
@@ -107,10 +105,21 @@ class OwnerProductController extends Controller
             
             // Simpan gambar baru ke folder menu
             $imagePath = $request->file('image')->store('menu', 'public');
-            $data['image'] = $imagePath;
+            $product->image = $imagePath;
         }
 
-        $product->update($data);
+        $product->name = $request->name;
+        $product->category = $request->category;
+        $product->coffee_variant = $request->coffee_variant;
+        $product->stock_200g = $request->stock_200g;
+        $product->stock_500g = $request->stock_500g;
+        $product->stock_1kg = $request->stock_1kg;
+        $product->price_200g = $request->price_200g;
+        $product->price_500g = $request->price_500g;
+        $product->price_1kg = $request->price_1kg;
+        $product->description = $request->description;
+        
+        $product->save();
 
         return redirect()->route('menu.index')->with('success', 'Produk berhasil diperbarui.');
     }
