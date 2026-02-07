@@ -48,6 +48,30 @@ class Product extends Model
         };
     }
 
+    /**
+     * Get the image URL with a safe fallback for shared hosting.
+     * This avoids reliance on symbolic links which might be broken.
+     */
+    public function getImageUrlAttribute()
+    {
+        // 1. Cek jika image ada isinya
+        if ($this->image) {
+            // 2. Cek apakah file benar-benar ada di folder public/storage
+            // Ini untuk mengatasi masalah symbolic link di hosting
+            if (file_exists(public_path('storage/' . $this->image))) {
+                return asset('storage/' . $this->image);
+            }
+            
+            // 3. Fallback: Coba cek di folder storage/app/public jika symlink jalan (opsional)
+            if (file_exists(storage_path('app/public/' . $this->image))) {
+                 return asset('storage/' . $this->image); 
+            }
+        }
+
+        // 4. Default jika tidak ditemukan
+        return asset('images/default.png');
+    }
+
     protected static function boot()
     {
         parent::boot();
