@@ -100,13 +100,14 @@ class OwnerProductController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image) {
+            // Hapus gambar lama jika ada di storage
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
             
             // Simpan gambar baru ke folder menu
-            $data['image'] = $request->file('image')->store('menu', 'public');
+            $imagePath = $request->file('image')->store('menu', 'public');
+            $data['image'] = $imagePath;
         }
 
         $product->update($data);
@@ -119,7 +120,7 @@ class OwnerProductController extends Controller
         $product = Product::findOrFail($id);
         
         // Hapus gambar dari storage
-        if ($product->image) {
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
 
