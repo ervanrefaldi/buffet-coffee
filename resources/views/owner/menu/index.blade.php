@@ -25,16 +25,9 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-lg overflow-hidden">
                         @if($product->image)
-                            <img class="h-full w-full object-cover" src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}?v={{ time() }}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="hidden h-full w-full items-center justify-center text-gray-400">
-                                <span class="text-[8px] font-bold uppercase">No Img</span>
-                            </div>
+                            <img class="h-full w-full object-cover" src="{{ asset('storage/' . $product->image) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
                         @else
-                            <div class="h-full w-full flex items-center justify-center text-gray-500">
-                                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
+                            <img class="h-full w-full object-cover" src="{{ asset('images/default.png') }}" alt="Default Image">
                         @endif
                     </div>
                 <div class="flex-1">
@@ -91,13 +84,9 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full overflow-hidden">
                                     @if($product->image)
-                                        <img class="h-full w-full object-cover" src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default-kopi.jpg') }}';">
+                                        <img class="h-full w-full object-cover" src="{{ asset('storage/' . $product->image) }}?v={{ time() }}" alt="" onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
                                     @else
-                                        <div class="h-full w-full flex items-center justify-center text-gray-500">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
+                                        <img class="h-full w-full object-cover" src="{{ asset('images/default.png') }}" alt="Default Image">
                                     @endif
                                 </div>
                                 <div class="ml-4">

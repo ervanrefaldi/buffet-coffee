@@ -149,7 +149,7 @@
                 @if($product->image)
                     <div class="mb-2">
                         <p class="text-xs text-gray-500 mb-1">Foto Saat Ini:</p>
-                        <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}?v={{ time() }}" class="h-24 w-24 object-cover rounded-md border border-gray-200">
+                        <img src="{{ asset('storage/' . $product->image) }}?v={{ time() }}" class="h-24 w-24 object-cover rounded-md border border-gray-200">
                     </div>
                 @endif
                 
