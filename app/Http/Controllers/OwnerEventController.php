@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Services\ImgBBService;
 
 class OwnerEventController extends Controller
@@ -33,7 +34,7 @@ class OwnerEventController extends Controller
     {
         // Detect POST Size Violation
         if (!$request->has('title')) {
-            return back()->withErrors(['image' => 'Gagal: File terlau besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres file di bawah 5MB.'])->withInput();
+            return back()->withErrors(['image' => 'Gagal: File terlalu besar (Melebihi batas server ' . ini_get('post_max_size') . '). Mohon kompres file di bawah 5MB.'])->withInput();
         }
 
         $request->validate([
@@ -47,16 +48,7 @@ class OwnerEventController extends Controller
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            Log::info('Event store: image detected, calling ImgBB upload service...');
-            $imagePath = ImgBBService::upload($request->file('image'));
-            
-            if (!$imagePath) {
-                Log::error('Event store: ImgBB upload service returned null.');
-                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
-            }
-        }
+        $imagePath = $this->handleUpload($request->file('image'));
 
         Event::create([
             'title'          => $request->title,
@@ -105,28 +97,14 @@ class OwnerEventController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            $newImagePath = ImgBBService::upload($request->file('image'));
-            
-            if (!$newImagePath) {
-                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
-            }
-
-            $data['image'] = $newImagePath;
+            $newImagePath = $this->handleUpload($request->file('image'));
             
             // Hapus file lama jika ada (lokal)
             if ($event->image && !str_starts_with($event->image, 'http')) {
-                $paths = [
-                    public_path('images/events'),
-                ];
-                if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
-                if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
-                $paths = array_unique($paths);
-
-                foreach ($paths as $path) {
-                    $oldFile = $path . '/' . basename($event->image);
-                    if (file_exists($oldFile)) @unlink($oldFile);
-                }
+                Storage::disk('public')->delete($event->image);
             }
+
+            $data['image'] = $newImagePath;
         }
 
         $event->update($data);
@@ -143,22 +121,35 @@ class OwnerEventController extends Controller
         
         // Cleanup files
         if ($event->image && !str_starts_with($event->image, 'http')) {
-            $paths = [
-                public_path('images/events'),
-            ];
-            if (isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT'])) $paths[] = $_SERVER['DOCUMENT_ROOT'] . '/images/events';
-            if (file_exists(base_path('../public_html'))) $paths[] = base_path('../public_html/images/events');
-            $paths = array_unique($paths);
-
-            foreach ($paths as $path) {
-                $file = $path . '/' . basename($event->image);
-                if (file_exists($file)) @unlink($file);
-            }
+            Storage::disk('public')->delete($event->image);
         }
         
         $event->delete();
 
         return redirect('/owner/event')->with('success', 'Event berhasil dihapus.');
+    }
+
+    /**
+     * Handle Image Upload with ImgBB as primary and Local Storage as fallback.
+     */
+    private function handleUpload($file)
+    {
+        if (!$file) return null;
+
+        // 1. Attempt ImgBB Upload
+        Log::info('Attempting ImgBB upload for: ' . $file->getClientOriginalName());
+        $url = ImgBBService::upload($file);
+
+        if ($url) {
+            return $url;
+        }
+
+        // 2. Fallback to Local Storage if ImgBB fails
+        Log::warning('ImgBB upload failed, falling back to local storage.');
+        // Store in public/events folder
+        $path = $file->store('events', 'public');
+        
+        return $path;
     }
 }
 

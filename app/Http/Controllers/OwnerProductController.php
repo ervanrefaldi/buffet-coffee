@@ -44,16 +44,7 @@ class OwnerProductController extends Controller
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
         
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            Log::info('Product store: image detected, calling ImgBB upload service...');
-            $imagePath = ImgBBService::upload($request->file('image'));
-            
-            if (!$imagePath) {
-                Log::error('Product store: ImgBB upload service returned null.');
-                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
-            }
-        }
+        $imagePath = $this->handleUpload($request->file('image'));
 
         Product::create([
             'name'           => $request->name,
@@ -106,12 +97,8 @@ class OwnerProductController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            $newImagePath = ImgBBService::upload($request->file('image'));
+            $newImagePath = $this->handleUpload($request->file('image'));
             
-            if (!$newImagePath) {
-                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke ImgBB. Silakan coba lagi.'])->withInput();
-            }
-
             // Hapus gambar lama jika ada (lokal)
             if ($product->image && !str_starts_with($product->image, 'http')) {
                 Storage::disk('public')->delete($product->image);
@@ -138,6 +125,28 @@ class OwnerProductController extends Controller
         $product->delete();
 
         return redirect()->route('menu.index')->with('success', 'Produk berhasil dihapus.');
+    }
+
+    /**
+     * Handle Image Upload with ImgBB as primary and Local Storage as fallback.
+     */
+    private function handleUpload($file)
+    {
+        if (!$file) return null;
+
+        // 1. Attempt ImgBB Upload
+        Log::info('Attempting ImgBB upload for: ' . $file->getClientOriginalName());
+        $url = ImgBBService::upload($file);
+
+        if ($url) {
+            return $url;
+        }
+
+        // 2. Fallback to Local Storage if ImgBB fails
+        Log::warning('ImgBB upload failed, falling back to local storage.');
+        $path = $file->store('products', 'public');
+        
+        return $path;
     }
 }
 

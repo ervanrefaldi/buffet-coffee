@@ -15,7 +15,6 @@ class ImgBBService
      */
     public static function upload($file)
     {
-        // 1. Get API Key from config
         $apiKey = config('services.imgbb.key') ?? env('IMGBB_API_KEY');
 
         if (!$apiKey) {
@@ -23,28 +22,22 @@ class ImgBBService
             return null;
         }
 
-        // 2. Validate File
         if (!$file || !$file->isValid()) {
             Log::error('ImgBB Upload Error: File is invalid or missing.');
             return null;
         }
 
         try {
-            // 3. Prepare Image Data as Base64 (More stable than multipart on some servers)
-            $imageData = base64_encode(file_get_contents($file->getRealPath()));
-            
-            Log::info('Attempting ImgBB upload (Base64 method) for: ' . $file->getClientOriginalName());
+            Log::info('Attempting ImgBB upload (Multipart method) for: ' . $file->getClientOriginalName());
 
-            // 4. Send Request
+            // 3. Send Request using Multipart (Better for larger files)
             $response = Http::withoutVerifying()
                 ->timeout(60)
-                ->asForm()
+                ->attach('image', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
                 ->post('https://api.imgbb.com/1/upload', [
-                    'key'   => $apiKey,
-                    'image' => $imageData,
+                    'key' => $apiKey,
                 ]);
 
-            // 5. Handle Response
             if ($response->successful()) {
                 $url = $response->json()['data']['url'] ?? null;
                 if ($url) {
@@ -63,7 +56,6 @@ class ImgBBService
 
         } catch (\Exception $e) {
             Log::error('ImgBB Exception: ' . $e->getMessage());
-            Log::error('Stack Trace: ' . $e->getTraceAsString());
             return null;
         }
     }
