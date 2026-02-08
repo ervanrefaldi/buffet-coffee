@@ -17,7 +17,7 @@
             @forelse($events as $event)
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div class="h-40 w-full relative">
-                        <img src="{{ str_starts_with($event->image, 'http') ? $event->image : asset($event->image) }}" alt="Event" class="w-full h-full object-cover">
+                        <img src="{{ asset($event->image) }}" alt="Event" class="w-full h-full object-cover">
                         @php
                             $now = date('Y-m-d');
                             $isActive = $event->start_date <= $now && $event->end_date >= $now;
@@ -66,7 +66,7 @@
                     @forelse($events as $event)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <img src="{{ str_starts_with($event->image, 'http') ? $event->image : asset($event->image) }}?v={{ strtotime($event->updated_at ?? $event->created_at) }}" alt="Event" class="h-16 w-24 object-cover rounded-md border border-gray-200">
+                                <img src="{{ asset($event->image) }}" alt="Event" class="h-16 w-24 object-cover rounded-md border border-gray-200">
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900">{{ $event->title }}</div>

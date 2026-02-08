@@ -48,7 +48,13 @@ class OwnerEventController extends Controller
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
 
-        $imagePath = $this->handleUpload($request->file('image'));
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time().'_'.$image->getClientOriginalName();
+            $image->move(public_path('uploads/event'), $imageName);
+            $imagePath = 'uploads/event/'.$imageName;
+        }
 
         Event::create([
             'title'          => $request->title,
@@ -97,14 +103,15 @@ class OwnerEventController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            $newImagePath = $this->handleUpload($request->file('image'));
-            
-            // Hapus file lama jika ada (lokal)
-            if ($event->image && !str_starts_with($event->image, 'http')) {
-                Storage::disk('public')->delete($event->image);
+            // Hapus file lama jika ada
+            if ($event->image && file_exists(public_path($event->image))) {
+                unlink(public_path($event->image));
             }
 
-            $data['image'] = $newImagePath;
+            $image = $request->file('image');
+            $imageName = time().'_'.$image->getClientOriginalName();
+            $image->move(public_path('uploads/event'), $imageName);
+            $data['image'] = 'uploads/event/'.$imageName;
         }
 
         $event->update($data);
@@ -120,8 +127,8 @@ class OwnerEventController extends Controller
         $event = Event::findOrFail($id);
         
         // Cleanup files
-        if ($event->image && !str_starts_with($event->image, 'http')) {
-            Storage::disk('public')->delete($event->image);
+        if ($event->image && file_exists(public_path($event->image))) {
+            unlink(public_path($event->image));
         }
         
         $event->delete();
@@ -132,24 +139,6 @@ class OwnerEventController extends Controller
     /**
      * Handle Image Upload with ImgBB as primary and Local Storage as fallback.
      */
-    private function handleUpload($file)
-    {
-        if (!$file) return null;
 
-        // 1. Attempt ImgBB Upload
-        Log::info('Attempting ImgBB upload for: ' . $file->getClientOriginalName());
-        $url = ImgBBService::upload($file);
-
-        if ($url) {
-            return $url;
-        }
-
-        // 2. Fallback to Local Storage if ImgBB fails
-        Log::warning('ImgBB upload failed, falling back to local storage.');
-        // Store in public/events folder
-        $path = $file->store('events', 'public');
-        
-        return $path;
-    }
 }
 
