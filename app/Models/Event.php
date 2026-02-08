@@ -34,4 +34,15 @@ class Event extends Model
             }
         });
     }
+
+    /**
+     * Get the image URL with absolute path for all devices.
+     */
+    public function getImageUrlAttribute()
+    {
+        if ($this->image && file_exists(public_path($this->image))) {
+            return asset($this->image);
+        }
+        return asset('images/default_event.png'); // Or any default image
+    }
 }

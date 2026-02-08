@@ -54,6 +54,7 @@ class Product extends Model
      */
     public function getImageUrlAttribute()
     {
+        // Return full absolute URL using asset() helper
         if ($this->image && file_exists(public_path($this->image))) {
             return asset($this->image);
         }
