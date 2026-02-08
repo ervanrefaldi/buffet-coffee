@@ -51,9 +51,10 @@ class OwnerEventController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time().'_'.$image->getClientOriginalName();
+            $extension = $image->getClientOriginalExtension();
+            $imageName = 'event_' . time() . '.' . $extension;
             $image->move(public_path('uploads/event'), $imageName);
-            $imagePath = 'uploads/event/'.$imageName;
+            $imagePath = 'uploads/event/' . $imageName;
         }
 
         Event::create([
@@ -109,9 +110,10 @@ class OwnerEventController extends Controller
             }
 
             $image = $request->file('image');
-            $imageName = time().'_'.$image->getClientOriginalName();
+            $extension = $image->getClientOriginalExtension();
+            $imageName = 'event_' . time() . '.' . $extension;
             $image->move(public_path('uploads/event'), $imageName);
-            $data['image'] = 'uploads/event/'.$imageName;
+            $data['image'] = 'uploads/event/' . $imageName;
         }
 
         $event->update($data);

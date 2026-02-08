@@ -74,7 +74,8 @@
                             <div class="absolute inset-0 bg-gradient-to-br from-cream to-transparent opacity-50"></div>
                             <img src="{{ asset($item->image) }}" 
                                  alt="{{ $item->name }}"
-                                 class="relative z-10 w-full h-full object-contain transform transition duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_25px_45px_rgba(197,163,88,0.25)]">
+                                 style="width:100%; height:100%; object-fit:cover;"
+                                 class="relative z-10 w-full h-full object-cover transform transition duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_25px_45px_rgba(197,163,88,0.25)]">
                         </div>
                         
                         {{-- Product Content --}}

@@ -46,9 +46,10 @@ class OwnerProductController extends Controller
         
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time().'_'.$image->getClientOriginalName();
+            $extension = $image->getClientOriginalExtension();
+            $imageName = 'menu_' . time() . '.' . $extension;
             $image->move(public_path('uploads/menu'), $imageName);
-            $imagePath = 'uploads/menu/'.$imageName;
+            $imagePath = 'uploads/menu/' . $imageName;
         }
 
         Product::create([
@@ -106,9 +107,10 @@ class OwnerProductController extends Controller
             }
 
             $image = $request->file('image');
-            $imageName = time().'_'.$image->getClientOriginalName();
+            $extension = $image->getClientOriginalExtension();
+            $imageName = 'menu_' . time() . '.' . $extension;
             $image->move(public_path('uploads/menu'), $imageName);
-            $product->image = 'uploads/menu/'.$imageName;
+            $product->image = 'uploads/menu/' . $imageName;
         }
 
         $product->name = $request->name;
