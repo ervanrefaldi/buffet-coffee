@@ -44,9 +44,11 @@ class OwnerProductController extends Controller
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
         
-        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('menu', 'public');
+            $image = $request->file('image');
+            $imageName = time().'_'.$image->getClientOriginalName();
+            $image->move(public_path('uploads/menu'), $imageName);
+            $imagePath = 'uploads/menu/'.$imageName;
         }
 
         Product::create([
@@ -98,14 +100,15 @@ class OwnerProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada di storage
-            if ($product->image && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
+            // Hapus gambar lama jika ada
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
             }
-            
-            // Simpan gambar baru ke folder menu
-            $imagePath = $request->file('image')->store('menu', 'public');
-            $product->image = $imagePath;
+
+            $image = $request->file('image');
+            $imageName = time().'_'.$image->getClientOriginalName();
+            $image->move(public_path('uploads/menu'), $imageName);
+            $product->image = 'uploads/menu/'.$imageName;
         }
 
         $product->name = $request->name;
@@ -128,9 +131,9 @@ class OwnerProductController extends Controller
     {
         $product = Product::findOrFail($id);
         
-        // Hapus gambar dari storage
-        if ($product->image && Storage::disk('public')->exists($product->image)) {
-            Storage::disk('public')->delete($product->image);
+        // Hapus gambar dari folder public
+        if ($product->image && file_exists(public_path($product->image))) {
+            unlink(public_path($product->image));
         }
 
         $product->delete();

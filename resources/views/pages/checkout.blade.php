@@ -124,7 +124,7 @@
                     <div class="flex items-center gap-6 p-4 rounded-2xl hover:bg-cream transition group border border-transparent hover:border-gold/20">
                         <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                             @if($p->image)
-                                <img src="/{{ $p->image }}" class="object-cover w-full h-full"
+                                <img src="{{ asset($p->image) }}" class="object-cover w-full h-full"
                                      onerror="this.onerror=null; this.src='/images/logo.png'; this.classList.add('opacity-10','grayscale');">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-2xl">☕</div>
@@ -144,7 +144,8 @@
                                 <option value="500g">500g</option>
                                 <option value="1kg">1kg</option>
                             </select>
-                            <button onclick="addItem('{{ $p->products_id }}', '{{ $p->name }}', '/{{ $p->image ?? '' }}', {{ $p->price_200g }}, {{ $p->price_500g }}, {{ $p->price_1kg }}, {{ $p->stock_200g }}, {{ $p->stock_500g }}, {{ $p->stock_1kg }})" 
+                            </select>
+                            <button onclick="addItem('{{ $p->products_id }}', '{{ $p->name }}', '{{ $p->image ? asset($p->image) : '' }}', {{ $p->price_200g }}, {{ $p->price_500g }}, {{ $p->price_1kg }}, {{ $p->stock_200g }}, {{ $p->stock_500g }}, {{ $p->stock_1kg }})" 
                                     class="px-4 py-2 bg-brown text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-colors">
                                 Tambah
                             </button>
@@ -163,7 +164,7 @@
             {
                 id: '{{ $product->products_id }}',
                 name: '{{ $product->name }}',
-                image: '/{{ $product->image ?? "" }}',
+                image: '{{ $product->image ? asset($product->image) : "" }}',
                 variant: '{{ request("variant", "200g") }}',
                 quantity: 1,
                 prices: {

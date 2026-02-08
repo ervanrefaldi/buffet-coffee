@@ -54,21 +54,9 @@ class Product extends Model
      */
     public function getImageUrlAttribute()
     {
-        // 1. Cek jika image ada isinya
-        if ($this->image) {
-            // 2. Cek apakah file benar-benar ada di folder public/storage
-            // Ini untuk mengatasi masalah symbolic link di hosting
-            if (file_exists(public_path('storage/' . $this->image))) {
-                return asset('storage/' . $this->image);
-            }
-            
-            // 3. Fallback: Coba cek di folder storage/app/public jika symlink jalan (opsional)
-            if (file_exists(storage_path('app/public/' . $this->image))) {
-                 return asset('storage/' . $this->image); 
-            }
+        if ($this->image && file_exists(public_path($this->image))) {
+            return asset($this->image);
         }
-
-        // 4. Default jika tidak ditemukan
         return asset('images/default.png');
     }
 

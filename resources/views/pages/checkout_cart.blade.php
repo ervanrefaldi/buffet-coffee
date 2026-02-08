@@ -51,7 +51,7 @@
                         @endphp
                         <div class="flex items-center gap-6 pb-6 border-b border-brown/5 last:border-0 last:pb-0">
                             <div class="h-16 w-16 bg-cream/50 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-                                <img src="/{{ $item->product->image }}" class="max-h-[85%] object-contain"
+                                <img src="{{ asset($item->product->image) }}" class="max-h-[85%] object-contain"
                                      onerror="this.onerror=null; this.src='/images/logo.png'; this.classList.add('opacity-10','grayscale');">
                             </div>
                             <div class="flex-grow">
