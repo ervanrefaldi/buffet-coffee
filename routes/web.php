@@ -51,15 +51,31 @@ Route::get('/fix-storage', function () {
         $imgbbKey = config('services.imgbb.key') ?? env('IMGBB_API_KEY');
         $imgbbStatus = $imgbbKey ? "Set (First 5 chars: " . substr($imgbbKey, 0, 5) . "...)" : "NOT SET";
         
+        // Check image existence
+        $lastProduct = \App\Models\Product::orderBy('created_at', 'desc')->first();
+        $fileCheck = "N/A";
+        if ($lastProduct && $lastProduct->image && !filter_var($lastProduct->image, FILTER_VALIDATE_URL)) {
+             $fullPath = storage_path('app/public/' . $lastProduct->image);
+             $exists = file_exists($fullPath);
+             $fileCheck = "Product '{$lastProduct->name}' image: " . ($exists ? "Exists at $fullPath" : "NOT FOUND at $fullPath");
+        }
+
         return "
             <h1>System Fix Report</h1>
             <p><b>Storage Link:</b> " . $status . " (New link created)</p>
             <p><b>Cache:</b> Cleared</p>
             <p><b>APP_URL:</b> " . $appUrl . "</p>
             <p><b>ImgBB API Key:</b> " . $imgbbStatus . "</p>
+            <p><b>Last Product File Check:</b> " . $fileCheck . "</p>
             <p><b>Fixed Product Paths:</b> " . $fixedProducts . "</p>
             <p><b>Fixed Event Paths:</b> " . $fixedEvents . "</p>
-            <p><b>Action Required:</b> Please visit this URL manually on your browser to trigger the fix on hosting.</p>
+            <hr>
+            <h3>How to fix broken images:</h3>
+            <ol>
+                <li>Check <b>GitHub Secrets</b>: Is 'IMGBB_API_KEY' set?</li>
+                <li>Wait for GitHub Actions to be <b>Green</b>.</li>
+                <li><b>Delete</b> the broken product and <b>Upload</b> it again.</li>
+            </ol>
         ";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();

@@ -24,5 +24,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Ensure storage link exists
+php artisan storage:link --force
+
 echo "✅ Application ready!"
 exec /usr/bin/supervisord -c /etc/supervisord.conf
