@@ -46,8 +46,7 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('menu', 'public');
+            $path = $request->file('image')->store('menu', 'public');
             $imagePath = $path;
         }
 
@@ -105,8 +104,7 @@ class OwnerProductController extends Controller
                 Storage::disk('public')->delete($product->image);
             }
 
-            $file = $request->file('image');
-            $path = $file->store('menu', 'public');
+            $path = $request->file('image')->store('menu', 'public');
             $product->image = $path;
         }
 

@@ -50,9 +50,8 @@ class OwnerEventController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            // Menggunakan Laravel Storage untuk menyimpan ke folder 'event' di disk 'public'
-            // storage/app/public/events
-            $imagePath = $request->file('image')->store('events', 'public');
+            $path = $request->file('image')->store('events', 'public');
+            $imagePath = $path;
         }
 
         Event::create([
@@ -107,8 +106,8 @@ class OwnerEventController extends Controller
                 Storage::disk('public')->delete($event->image);
             }
 
-            // Simpan gambar baru ke folder 'events' di disk 'public'
-            $data['image'] = $request->file('image')->store('events', 'public');
+            $path = $request->file('image')->store('events', 'public');
+            $data['image'] = $path;
         }
 
         $event->update($data);
