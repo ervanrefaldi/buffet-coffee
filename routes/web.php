@@ -122,8 +122,10 @@ require __DIR__.'/auth.php';
 Route::get('/', function () {
     // Ambil event yang sedang aktif ATAU akan datang (Upcoming)
     // Batasi 4 event untuk tampilan home
-    $events = DB::table('events')
-        ->where('end_date', '>=', date('Y-m-d')) 
+    // Ambil event yang sedang aktif ATAU akan datang (Upcoming)
+    // Batasi 4 event untuk tampilan home
+    // Gunakan Eloquent agar accessor image_url bisa digunakan di view
+    $events = \App\Models\Event::where('end_date', '>=', date('Y-m-d')) 
         ->orderBy('start_date', 'asc')
         ->limit(4)
         ->get();
@@ -417,39 +419,24 @@ Route::get('/image-proxy', function (\Illuminate\Http\Request $request) {
     }
 });
 
-Route::get('/test-img', function() {
-    $p = \App\Models\Product::orderBy('created_at', 'desc')->first();
-    if (!$p) return "No product found";
-    $url = trim($p->image_url);
+Route::get('/debug-events', function() {
+    $events = \App\Models\Event::all();
+    $output = "<h1>Event Image Debug</h1><table border='1' cellpadding='5'><tr><th>ID</th><th>Title</th><th>DB Image</th><th>Computed URL</th><th>File Check (Local)</th></tr>";
     
-    // Server-side check
-    $serverCheck = "Failed";
-    try {
-        if (\Illuminate\Support\Facades\Http::get($url)->successful()) {
-            $serverCheck = "Success (Server can see the image)";
-        } else {
-             $serverCheck = "Failed (Server also cannot see it - broken link)";
-        }
-    } catch (\Exception $e) { $serverCheck = "Error: " . $e->getMessage(); }
-
-    return "
-        <html>
-        <head><title>Image Test</title></head>
-        <body style='padding:20px; font-family:sans-serif;'>
-            <h1>Image Test</h1>
-            <p><b>Product:</b> {$p->name}</p>
-            <p><b>Raw DB Image Field:</b> [{$p->image}]</p>
-            <p><b>Processed Image URL:</b> [{$url}]</p>
-            <p><b>Server-Side Check:</b> {$serverCheck}</p>
-            <p><b>Diagnosis:</b> If server check is Success but you see broken images below, your ISP is blocking the image provider.</p>
-            <hr>
-            <h3>1. Standard Image Tag:</h3>
-            <img src='{$url}' style='height:200px; border:2px solid red;' alt='Standard Test'>
-            
-            <h3>2. Proxy Bypass Test (SOLUSI):</h3>
-            <p>If this one works, I will apply this fix everywhere.</p>
-            <img src='/image-proxy?url=" . urlencode($url) . "' style='height:200px; border:4px solid green;' alt='Proxy Test'>
-        </body>
-        </html>
-    ";
+    foreach($events as $e) {
+        $localPath = storage_path('app/public/' . $e->image);
+        $publicPath = public_path('storage/' . $e->image);
+        $existsLocal = file_exists($localPath) ? "YES" : "NO";
+        $existsPublic = file_exists($publicPath) ? "YES" : "NO";
+        
+        $output .= "<tr>
+            <td>{$e->events_id}</td>
+            <td>{$e->title}</td>
+            <td>{$e->image}</td>
+            <td>{$e->image_url}</td>
+            <td>Storage: $existsLocal<br>Public: $existsPublic</td>
+        </tr>";
+    }
+    $output .= "</table>";
+    return $output;
 });

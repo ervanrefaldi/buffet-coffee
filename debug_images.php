@@ -1,10 +1,16 @@
 <?php
-require 'vendor/autoload.php';
-$app = require_once 'bootstrap/app.php';
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-$products = \App\Models\Product::all();
-foreach($products as $p) {
-    echo "ID: " . $p->products_id . " | Name: " . $p->name . " | Image: " . ($p->image ?? 'NULL') . PHP_EOL;
+$events = \App\Models\Event::all();
+foreach($events as $e) { 
+    echo "ID: " . $e->events_id . "\n";
+    echo "Title: " . $e->title . "\n";
+    echo "Image DB: " . $e->image . "\n";
+    echo "Image URL: " . $e->image_url . "\n";
+    echo "Storage exists: " . (file_exists(storage_path('app/public/' . $e->image)) ? 'YES' : 'NO') . "\n";
+    echo "Public link exists: " . (file_exists(public_path('storage/' . $e->image)) ? 'YES' : 'NO') . "\n";
+    echo "--------------------------------\n";
 }

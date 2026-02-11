@@ -1,0 +1,14 @@
+$e = \App\Models\Event::where('title', 'like', '%indo event%')->first();
+if($e) {
+    dump('FOUND EVENT: ' . $e->title);
+    dump('IMAGE FIELD: ' . $e->image);
+    dump('COMPUTED URL: ' . $e->image_url);
+    if (!str_contains($e->image, 'http')) {
+        $fullPath = storage_path('app/public/' . $e->image);
+        $publicPath = public_path('storage/' . $e->image);
+        dump('LOCAL PATH: ' . $fullPath . ' exists: ' . (file_exists($fullPath) ? 'YES' : 'NO'));
+        dump('PUBLIC PATH: ' . $publicPath . ' exists: ' . (file_exists($publicPath) ? 'YES' : 'NO'));
+    }
+} else {
+    dump('EVENT NOT FOUND');
+}

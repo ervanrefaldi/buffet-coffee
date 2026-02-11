@@ -315,7 +315,7 @@
                             <div class="relative group rounded-[2.5rem] overflow-hidden shadow-2xl h-80">
                         @endif
                             @if($event->image)
-                                <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->title }}" style="width:100%; height:100%; object-fit:cover;" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ $event->image_url }}" alt="{{ $event->title }}" style="width:100%; height:100%; object-fit:cover;" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             @else
                                 <div class="w-full h-full bg-brown/5 flex items-center justify-center text-brown/20 italic text-sm">No Image</div>
                             @endif

@@ -48,7 +48,12 @@ class Event extends Model
                 }
                 return url('/image-proxy?url=' . urlencode($imagePath));
             }
-            return asset('storage/' . $imagePath);
+            // Handle local files
+            $storagePath = 'storage/' . $imagePath;
+            // Split by / and encode each segment to handle spaces/special chars
+            $segments = explode('/', $storagePath);
+            $encodedPath = implode('/', array_map('rawurlencode', $segments));
+            return asset($encodedPath);
         }
         return asset('images/default_event.png');
     }
