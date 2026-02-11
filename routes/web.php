@@ -5,7 +5,11 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/fix-storage', function () {
     try {
-        Artisan::call('optimize:clear');
+        try {
+            Artisan::call('optimize:clear');
+        } catch (\Exception $e) {
+            // Ignore if cache table is missing
+        }
         
         $link = public_path('storage');
         $status = "No existing storage link found.";
