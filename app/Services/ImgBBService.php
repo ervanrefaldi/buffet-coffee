@@ -28,14 +28,16 @@ class ImgBBService
         }
 
         try {
-            Log::info('Attempting ImgBB upload (Multipart method) for: ' . $file->getClientOriginalName());
+            Log::info('Attempting ImgBB upload (Base64 method) for: ' . $file->getClientOriginalName());
 
-            // 3. Send Request using Multipart (Better for larger files)
+            // Using Base64 method which is more robust
             $response = Http::withoutVerifying()
                 ->timeout(60)
-                ->attach('image', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
+                ->asForm()
                 ->post('https://api.imgbb.com/1/upload', [
-                    'key' => $apiKey,
+                    'key'   => $apiKey,
+                    'image' => base64_encode(file_get_contents($file->getRealPath())),
+                    'name'  => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
                 ]);
 
             if ($response->successful()) {

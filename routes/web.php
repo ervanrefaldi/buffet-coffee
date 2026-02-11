@@ -5,12 +5,25 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/fix-storage', function () {
     try {
+        $output = "";
+        
+        // 1. Run Migrations
+        try {
+            Artisan::call('migrate', ['--force' => true]);
+            $output .= "<p><b>Migrations:</b> " . Artisan::output() . "</p>";
+        } catch (\Exception $e) {
+            $output .= "<p><b>Migrations Error:</b> " . $e->getMessage() . "</p>";
+        }
+
+        // 2. Clear Caches
         try {
             Artisan::call('optimize:clear');
+            $output .= "<p><b>Cache:</b> Cleared</p>";
         } catch (\Exception $e) {
-            // Ignore if cache table is missing
+            $output .= "<p><b>Cache Error:</b> " . $e->getMessage() . " (Often means cache table is missing, running migrate usually fixes this)</p>";
         }
         
+        // 3. Storage Link
         $link = public_path('storage');
         $status = "No existing storage link found.";
         if (file_exists($link)) {
@@ -22,14 +35,13 @@ Route::get('/fix-storage', function () {
                 rename($link, public_path('storage_old_' . time()));
             }
         }
-        
         Artisan::call('storage:link');
+        $output .= "<p><b>Storage Link:</b> " . $status . " (New link created)</p>";
         
-        // Fix Database Paths
+        // 4. Fix Database Paths
         $fixedProducts = 0;
         foreach (\App\Models\Product::all() as $p) {
-            if ($p->image) {
-                // Clean common wrong prefixes
+            if ($p->image && !filter_var($p->image, FILTER_VALIDATE_URL)) {
                 $newPath = str_replace(['storage/', 'public/', 'public/storage/'], '', $p->image);
                 if ($newPath !== $p->image) {
                     $p->image = $newPath;
@@ -38,10 +50,11 @@ Route::get('/fix-storage', function () {
                 }
             }
         }
+        $output .= "<p><b>Fixed Product Paths:</b> " . $fixedProducts . "</p>";
 
         $fixedEvents = 0;
         foreach (\App\Models\Event::all() as $e) {
-            if ($e->image) {
+            if ($e->image && !filter_var($e->image, FILTER_VALIDATE_URL)) {
                 $newPath = str_replace(['storage/', 'public/', 'public/storage/'], '', $e->image);
                 if ($newPath !== $e->image) {
                     $e->image = $newPath;
@@ -50,39 +63,29 @@ Route::get('/fix-storage', function () {
                 }
             }
         }
+        $output .= "<p><b>Fixed Event Paths:</b> " . $fixedEvents . "</p>";
         
+        // 5. Diagnostics
         $appUrl = config('app.url');
         $imgbbKey = config('services.imgbb.key') ?? env('IMGBB_API_KEY');
         $imgbbStatus = $imgbbKey ? "Set (First 5 chars: " . substr($imgbbKey, 0, 5) . "...)" : "NOT SET";
         
-        // Check image existence
-        $lastProduct = \App\Models\Product::orderBy('created_at', 'desc')->first();
-        $fileCheck = "N/A";
-        if ($lastProduct && $lastProduct->image && !filter_var($lastProduct->image, FILTER_VALIDATE_URL)) {
-             $fullPath = storage_path('app/public/' . $lastProduct->image);
-             $exists = file_exists($fullPath);
-             $fileCheck = "Product '{$lastProduct->name}' image: " . ($exists ? "Exists at $fullPath" : "NOT FOUND at $fullPath");
-        }
+        $output .= "<p><b>APP_URL:</b> " . $appUrl . "</p>";
+        $output .= "<p><b>ImgBB API Key:</b> " . $imgbbStatus . "</p>";
 
         return "
             <h1>System Fix Report</h1>
-            <p><b>Storage Link:</b> " . $status . " (New link created)</p>
-            <p><b>Cache:</b> Cleared</p>
-            <p><b>APP_URL:</b> " . $appUrl . "</p>
-            <p><b>ImgBB API Key:</b> " . $imgbbStatus . "</p>
-            <p><b>Last Product File Check:</b> " . $fileCheck . "</p>
-            <p><b>Fixed Product Paths:</b> " . $fixedProducts . "</p>
-            <p><b>Fixed Event Paths:</b> " . $fixedEvents . "</p>
+            $output
             <hr>
-            <h3>How to fix broken images:</h3>
+            <h3>Next Steps:</h3>
             <ol>
-                <li>Check <b>GitHub Secrets</b>: Is 'IMGBB_API_KEY' set?</li>
-                <li>Wait for GitHub Actions to be <b>Green</b>.</li>
-                <li><b>Delete</b> the broken product and <b>Upload</b> it again.</li>
+                <li>If <b>ImgBB API Key</b> is 'NOT SET', add it to GitHub Secrets.</li>
+                <li>Wait for <b>GitHub Actions</b> to be Green.</li>
+                <li><b>Hapus</b> produk yang lama, lalu <b>Upload Ulang</b>.</li>
             </ol>
         ";
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "Critical Error: " . $e->getMessage();
     }
 });
 use Illuminate\Support\Facades\DB;
