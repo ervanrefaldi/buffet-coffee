@@ -50,11 +50,9 @@ class OwnerEventController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $extension = $image->getClientOriginalExtension();
-            $imageName = 'event_' . time() . '.' . $extension;
-            $image->move(public_path('uploads/event'), $imageName);
-            $imagePath = 'uploads/event/' . $imageName;
+            // Menggunakan Laravel Storage untuk menyimpan ke folder 'event' di disk 'public'
+            // storage/app/public/events
+            $imagePath = $request->file('image')->store('events', 'public');
         }
 
         Event::create([
@@ -104,16 +102,13 @@ class OwnerEventController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            // Hapus file lama jika ada
-            if ($event->image && file_exists(public_path($event->image))) {
-                unlink(public_path($event->image));
+            // Hapus file lama jika ada menggunakan Storage Facade
+            if ($event->image) {
+                Storage::disk('public')->delete($event->image);
             }
 
-            $image = $request->file('image');
-            $extension = $image->getClientOriginalExtension();
-            $imageName = 'event_' . time() . '.' . $extension;
-            $image->move(public_path('uploads/event'), $imageName);
-            $data['image'] = 'uploads/event/' . $imageName;
+            // Simpan gambar baru ke folder 'events' di disk 'public'
+            $data['image'] = $request->file('image')->store('events', 'public');
         }
 
         $event->update($data);
@@ -128,9 +123,9 @@ class OwnerEventController extends Controller
     {
         $event = Event::findOrFail($id);
         
-        // Cleanup files
-        if ($event->image && file_exists(public_path($event->image))) {
-            unlink(public_path($event->image));
+        // Hapus gambar menggunakan Storage Facade
+        if ($event->image) {
+            Storage::disk('public')->delete($event->image);
         }
         
         $event->delete();

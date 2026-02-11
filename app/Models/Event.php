@@ -40,9 +40,9 @@ class Event extends Model
      */
     public function getImageUrlAttribute()
     {
-        if ($this->image && file_exists(public_path($this->image))) {
-            return asset($this->image);
+        if ($this->image) {
+            return asset('storage/' . $this->image);
         }
-        return asset('images/default_event.png'); // Or any default image
+        return asset('images/default_event.png');
     }
 }

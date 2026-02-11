@@ -44,12 +44,11 @@ class OwnerProductController extends Controller
             'image.max' => 'Ukuran gambar maksimal 5MB.'
         ]);
         
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $extension = $image->getClientOriginalExtension();
-            $imageName = 'menu_' . time() . '.' . $extension;
-            $image->move(public_path('uploads/menu'), $imageName);
-            $imagePath = 'uploads/menu/' . $imageName;
+            // Menggunakan Laravel Storage untuk menyimpan ke folder 'menu' di disk 'public'
+            // storage/app/public/menu
+            $imagePath = $request->file('image')->store('menu', 'public');
         }
 
         Product::create([
@@ -101,16 +100,13 @@ class OwnerProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image && file_exists(public_path($product->image))) {
-                unlink(public_path($product->image));
+            // Hapus gambar lama jika ada menggunakan Storage Facade
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
             }
 
-            $image = $request->file('image');
-            $extension = $image->getClientOriginalExtension();
-            $imageName = 'menu_' . time() . '.' . $extension;
-            $image->move(public_path('uploads/menu'), $imageName);
-            $product->image = 'uploads/menu/' . $imageName;
+            // Simpan gambar baru ke folder 'menu' di disk 'public'
+            $product->image = $request->file('image')->store('menu', 'public');
         }
 
         $product->name = $request->name;
@@ -133,9 +129,9 @@ class OwnerProductController extends Controller
     {
         $product = Product::findOrFail($id);
         
-        // Hapus gambar dari folder public
-        if ($product->image && file_exists(public_path($product->image))) {
-            unlink(public_path($product->image));
+        // Hapus gambar menggunakan Storage Facade
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
