@@ -390,10 +390,40 @@ Route::get('/about', function () {
     return view('pages.about');
 });
 
+Route::get('/image-proxy', function (\Illuminate\Http\Request $request) {
+    $url = $request->query('url');
+    if (!$url) return abort(404);
+
+    // Security: Only allow ImgBB URLs
+    if (!str_contains($url, 'ibb.co')) {
+        return abort(403);
+    }
+
+    return \Illuminate\Support\Facades\Cache::remember('proxy_' . md5($url), 60 * 60, function () use ($url) {
+        $response = \Illuminate\Support\Facades\Http::get($url);
+        if ($response->failed()) return abort(404);
+        
+        return response($response->body())
+            ->header('Content-Type', $response->header('Content-Type'))
+            ->header('Cache-Control', 'public, max-age=3600');
+    });
+});
+
 Route::get('/test-img', function() {
     $p = \App\Models\Product::orderBy('created_at', 'desc')->first();
     if (!$p) return "No product found";
     $url = trim($p->image_url);
+    
+    // Server-side check
+    $serverCheck = "Failed";
+    try {
+        if (\Illuminate\Support\Facades\Http::get($url)->successful()) {
+            $serverCheck = "Success (Server can see the image)";
+        } else {
+             $serverCheck = "Failed (Server also cannot see it - broken link)";
+        }
+    } catch (\Exception $e) { $serverCheck = "Error: " . $e->getMessage(); }
+
     return "
         <html>
         <head><title>Image Test</title></head>
@@ -402,15 +432,15 @@ Route::get('/test-img', function() {
             <p><b>Product:</b> {$p->name}</p>
             <p><b>Raw DB Image Field:</b> [{$p->image}]</p>
             <p><b>Processed Image URL:</b> [{$url}]</p>
+            <p><b>Server-Side Check:</b> {$serverCheck}</p>
+            <p><b>Diagnosis:</b> If server check is Success but you see broken images below, your ISP is blocking the image provider.</p>
             <hr>
             <h3>1. Standard Image Tag:</h3>
             <img src='{$url}' style='height:200px; border:2px solid red;' alt='Standard Test'>
             
-            <h3>2. With No-Referrer Policy:</h3>
-            <img src='{$url}' referrerpolicy='no-referrer' style='height:200px; border:2px solid blue;' alt='No-Referrer Test'>
-            
-            <h3>3. Direct Link:</h3>
-            <a href='{$url}' target='_blank'>Click here to open image directly</a>
+            <h3>2. Proxy Bypass Test (SOLUSI):</h3>
+            <p>If this one works, I will apply this fix everywhere.</p>
+            <img src='/image-proxy?url=" . urlencode($url) . "' style='height:200px; border:4px solid green;' alt='Proxy Test'>
         </body>
         </html>
     ";
