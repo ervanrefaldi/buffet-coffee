@@ -46,9 +46,9 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            // Menggunakan Laravel Storage ke folder: storage/app/public/menu
-            // Sesuai instruksi: $path = $request->file('image')->store('menu', 'public');
-            $imagePath = $request->file('image')->store('menu', 'public');
+            $file = $request->file('image');
+            $path = $file->store('menu', 'public');
+            $imagePath = $path;
         }
 
         Product::create([
@@ -105,8 +105,9 @@ class OwnerProductController extends Controller
                 Storage::disk('public')->delete($product->image);
             }
 
-            // Gunakan kode: $path = $request->file('image')->store('menu', 'public');
-            $product->image = $request->file('image')->store('menu', 'public');
+            $file = $request->file('image');
+            $path = $file->store('menu', 'public');
+            $product->image = $path;
         }
 
         $product->name = $request->name;
