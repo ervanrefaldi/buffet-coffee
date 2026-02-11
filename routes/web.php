@@ -21,17 +21,42 @@ Route::get('/fix-storage', function () {
         
         Artisan::call('storage:link');
         
+        // Fix Database Paths
+        $fixedProducts = 0;
+        foreach (\App\Models\Product::all() as $p) {
+            if ($p->image) {
+                // Clean common wrong prefixes
+                $newPath = str_replace(['storage/', 'public/', 'public/storage/'], '', $p->image);
+                if ($newPath !== $p->image) {
+                    $p->image = $newPath;
+                    $p->save();
+                    $fixedProducts++;
+                }
+            }
+        }
+
+        $fixedEvents = 0;
+        foreach (\App\Models\Event::all() as $e) {
+            if ($e->image) {
+                $newPath = str_replace(['storage/', 'public/', 'public/storage/'], '', $e->image);
+                if ($newPath !== $e->image) {
+                    $e->image = $newPath;
+                    $e->save();
+                    $fixedEvents++;
+                }
+            }
+        }
+        
         $appUrl = config('app.url');
-        $disk = config('filesystems.default');
         
         return "
             <h1>System Fix Report</h1>
             <p><b>Storage Link:</b> " . $status . " (New link created)</p>
             <p><b>Cache:</b> Cleared</p>
             <p><b>APP_URL:</b> " . $appUrl . "</p>
-            <p><b>Storage Disk:</b> " . $disk . "</p>
-            <p><b>Public Storage Exists:</b> " . (file_exists(storage_path('app/public')) ? 'Yes' : 'No') . "</p>
-            <p><b>Link URL Check:</b> <a href='" . asset('storage/test.txt') . "'>Click here to test image path asset()</a></p>
+            <p><b>Fixed Product Paths:</b> " . $fixedProducts . "</p>
+            <p><b>Fixed Event Paths:</b> " . $fixedEvents . "</p>
+            <p><b>Action Required:</b> Please visit this URL manually on your browser to trigger the fix on hosting.</p>
         ";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
