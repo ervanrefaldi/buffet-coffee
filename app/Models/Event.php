@@ -41,10 +41,11 @@ class Event extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-                return $this->image;
+            $imagePath = trim($this->image);
+            if (str_starts_with($imagePath, 'http')) {
+                return $imagePath;
             }
-            return asset('storage/' . $this->image);
+            return asset('storage/' . $imagePath);
         }
         return asset('images/default_event.png');
     }

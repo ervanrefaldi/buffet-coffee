@@ -389,3 +389,29 @@ Route::get('/membership', function () {
 Route::get('/about', function () {
     return view('pages.about');
 });
+
+Route::get('/test-img', function() {
+    $p = \App\Models\Product::orderBy('created_at', 'desc')->first();
+    if (!$p) return "No product found";
+    $url = trim($p->image_url);
+    return "
+        <html>
+        <head><title>Image Test</title></head>
+        <body style='padding:20px; font-family:sans-serif;'>
+            <h1>Image Test</h1>
+            <p><b>Product:</b> {$p->name}</p>
+            <p><b>Raw DB Image Field:</b> [{$p->image}]</p>
+            <p><b>Processed Image URL:</b> [{$url}]</p>
+            <hr>
+            <h3>1. Standard Image Tag:</h3>
+            <img src='{$url}' style='height:200px; border:2px solid red;' alt='Standard Test'>
+            
+            <h3>2. With No-Referrer Policy:</h3>
+            <img src='{$url}' referrerpolicy='no-referrer' style='height:200px; border:2px solid blue;' alt='No-Referrer Test'>
+            
+            <h3>3. Direct Link:</h3>
+            <a href='{$url}' target='_blank'>Click here to open image directly</a>
+        </body>
+        </html>
+    ";
+});

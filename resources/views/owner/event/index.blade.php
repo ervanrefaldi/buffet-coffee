@@ -17,7 +17,7 @@
             @forelse($events as $event)
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div class="h-40 w-full relative">
-                        <img src="{{ $event->image_url }}" alt="Event" style="width:100%; height:100%; object-fit:cover;" class="w-full h-full object-cover">
+                        <img src="{{ $event->image_url }}" alt="Event" style="width:100%; height:100%; object-fit:cover;" class="w-full h-full object-cover" referrerpolicy="no-referrer">
                         @php
                             $now = date('Y-m-d');
                             $isActive = $event->start_date <= $now && $event->end_date >= $now;
@@ -66,7 +66,7 @@
                     @forelse($events as $event)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <img src="{{ $event->image_url }}" alt="Event" style="width:100%; height:100%; object-fit:cover;" class="h-16 w-24 object-cover rounded-md border border-gray-200">
+                                <img src="{{ $event->image_url }}" alt="Event" style="width:100%; height:100%; object-fit:cover;" class="h-16 w-24 object-cover rounded-md border border-gray-200" referrerpolicy="no-referrer">
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900">{{ $event->title }}</div>
