@@ -5,20 +5,34 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/fix-storage', function () {
     try {
-        // Clear all caches
         Artisan::call('optimize:clear');
         
-        // Remove existing link if possible
         $link = public_path('storage');
+        $status = "No existing storage link found.";
         if (file_exists($link)) {
             if (is_link($link)) {
+                $status = "Link existed as symlink. Removing and recreating...";
                 unlink($link);
+            } else if (is_dir($link)) {
+                $status = "Link existed as DIRECTORY (WRONG). Renaming to storage_old...";
+                rename($link, public_path('storage_old_' . time()));
             }
         }
         
         Artisan::call('storage:link');
         
-        return "Storage link created and cache cleared successfully!";
+        $appUrl = config('app.url');
+        $disk = config('filesystems.default');
+        
+        return "
+            <h1>System Fix Report</h1>
+            <p><b>Storage Link:</b> " . $status . " (New link created)</p>
+            <p><b>Cache:</b> Cleared</p>
+            <p><b>APP_URL:</b> " . $appUrl . "</p>
+            <p><b>Storage Disk:</b> " . $disk . "</p>
+            <p><b>Public Storage Exists:</b> " . (file_exists(storage_path('app/public')) ? 'Yes' : 'No') . "</p>
+            <p><b>Link URL Check:</b> <a href='" . asset('storage/test.txt') . "'>Click here to test image path asset()</a></p>
+        ";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
