@@ -46,8 +46,8 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            // Menggunakan Laravel Storage untuk menyimpan ke folder 'menu' di disk 'public'
-            // storage/app/public/menu
+            // Menggunakan Laravel Storage ke folder: storage/app/public/menu
+            // Sesuai instruksi: $path = $request->file('image')->store('menu', 'public');
             $imagePath = $request->file('image')->store('menu', 'public');
         }
 
@@ -100,12 +100,12 @@ class OwnerProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada menggunakan Storage Facade
+            // Hapus gambar lama jika ada
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
 
-            // Simpan gambar baru ke folder 'menu' di disk 'public'
+            // Gunakan kode: $path = $request->file('image')->store('menu', 'public');
             $product->image = $request->file('image')->store('menu', 'public');
         }
 
