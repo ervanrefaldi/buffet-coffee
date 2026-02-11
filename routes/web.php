@@ -48,12 +48,15 @@ Route::get('/fix-storage', function () {
         }
         
         $appUrl = config('app.url');
+        $imgbbKey = config('services.imgbb.key') ?? env('IMGBB_API_KEY');
+        $imgbbStatus = $imgbbKey ? "Set (First 5 chars: " . substr($imgbbKey, 0, 5) . "...)" : "NOT SET";
         
         return "
             <h1>System Fix Report</h1>
             <p><b>Storage Link:</b> " . $status . " (New link created)</p>
             <p><b>Cache:</b> Cleared</p>
             <p><b>APP_URL:</b> " . $appUrl . "</p>
+            <p><b>ImgBB API Key:</b> " . $imgbbStatus . "</p>
             <p><b>Fixed Product Paths:</b> " . $fixedProducts . "</p>
             <p><b>Fixed Event Paths:</b> " . $fixedEvents . "</p>
             <p><b>Action Required:</b> Please visit this URL manually on your browser to trigger the fix on hosting.</p>
