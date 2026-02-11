@@ -394,19 +394,27 @@ Route::get('/image-proxy', function (\Illuminate\Http\Request $request) {
     $url = $request->query('url');
     if (!$url) return abort(404);
 
-    // Security: Only allow ImgBB URLs
-    if (!str_contains($url, 'ibb.co')) {
+    // Simple security check
+    if (!str_contains($url, 'ibb.co') && !str_contains($url, 'http')) {
         return abort(403);
     }
 
-    return \Illuminate\Support\Facades\Cache::remember('proxy_' . md5($url), 60 * 60, function () use ($url) {
-        $response = \Illuminate\Support\Facades\Http::get($url);
-        if ($response->failed()) return abort(404);
+    try {
+        $response = \Illuminate\Support\Facades\Http::withoutVerifying()->get($url);
         
+        if ($response->failed()) {
+            return abort(404);
+        }
+
+        $contentType = $response->header('Content-Type') ?? 'image/jpeg';
+
         return response($response->body())
-            ->header('Content-Type', $response->header('Content-Type'))
-            ->header('Cache-Control', 'public, max-age=3600');
-    });
+            ->header('Content-Type', $contentType)
+            ->header('Access-Control-Allow-Origin', '*');
+            
+    } catch (\Exception $e) {
+        return abort(500);
+    }
 });
 
 Route::get('/test-img', function() {

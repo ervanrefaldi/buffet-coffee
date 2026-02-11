@@ -57,9 +57,13 @@ class Product extends Model
         if ($this->image) {
             $imagePath = trim($this->image);
             
-            // Check for external URL
+            // Force proxy for external URLs to solve ISP blocking
             if (str_starts_with($imagePath, 'http')) {
-                return $imagePath;
+                // Ensure we don't double-proxy if already proxied (unlikely but safe)
+                if (str_contains($imagePath, '/image-proxy')) {
+                    return $imagePath;
+                }
+                return url('/image-proxy?url=' . urlencode($imagePath));
             }
             
             // Local path

@@ -43,7 +43,10 @@ class Event extends Model
         if ($this->image) {
             $imagePath = trim($this->image);
             if (str_starts_with($imagePath, 'http')) {
-                return $imagePath;
+                if (str_contains($imagePath, '/image-proxy')) {
+                    return $imagePath;
+                }
+                return url('/image-proxy?url=' . urlencode($imagePath));
             }
             return asset('storage/' . $imagePath);
         }
