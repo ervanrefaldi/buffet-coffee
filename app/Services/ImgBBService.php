@@ -41,7 +41,8 @@ class ImgBBService
                 ]);
 
             if ($response->successful()) {
-                $url = $response->json()['data']['url'] ?? null;
+                // Use display_url for a direct image link that works in <img> tags
+                $url = $response->json()['data']['display_url'] ?? $response->json()['data']['url'] ?? null;
                 if ($url) {
                     Log::info('ImgBB Upload Success: ' . $url);
                     return $url;

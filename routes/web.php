@@ -70,8 +70,25 @@ Route::get('/fix-storage', function () {
         $imgbbKey = config('services.imgbb.key') ?? env('IMGBB_API_KEY');
         $imgbbStatus = $imgbbKey ? "Set (First 5 chars: " . substr($imgbbKey, 0, 5) . "...)" : "NOT SET";
         
+        // Check image existence
+        $lastProduct = \App\Models\Product::orderBy('created_at', 'desc')->first();
+        $fileCheck = "N/A";
+        $dbImageLink = "N/A";
+        if ($lastProduct) {
+             $dbImageLink = $lastProduct->image ?? "Empty";
+             if ($lastProduct->image && !filter_var($lastProduct->image, FILTER_VALIDATE_URL)) {
+                 $fullPath = storage_path('app/public/' . $lastProduct->image);
+                 $exists = file_exists($fullPath);
+                 $fileCheck = "Product '{$lastProduct->name}' image: " . ($exists ? "Exists at $fullPath" : "NOT FOUND at $fullPath");
+             } else {
+                 $fileCheck = "Product '{$lastProduct->name}' uses URL: " . ($lastProduct->image);
+             }
+        }
+
         $output .= "<p><b>APP_URL:</b> " . $appUrl . "</p>";
         $output .= "<p><b>ImgBB API Key:</b> " . $imgbbStatus . "</p>";
+        $output .= "<p><b>Last Product DB Link:</b> " . $dbImageLink . "</p>";
+        $output .= "<p><b>File Check:</b> " . $fileCheck . "</p>";
 
         return "
             <h1>System Fix Report</h1>
@@ -79,8 +96,8 @@ Route::get('/fix-storage', function () {
             <hr>
             <h3>Next Steps:</h3>
             <ol>
-                <li>If <b>ImgBB API Key</b> is 'NOT SET', add it to GitHub Secrets.</li>
-                <li>Wait for <b>GitHub Actions</b> to be Green.</li>
+                <li>Pastikan <b>GitHub Actions</b> sudah Centang Hijau (Selesai).</li>
+                <li>Buka link ini lagi untuk membersihkan sistem.</li>
                 <li><b>Hapus</b> produk yang lama, lalu <b>Upload Ulang</b>.</li>
             </ol>
         ";
