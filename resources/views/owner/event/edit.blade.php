@@ -54,7 +54,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Saat Ini</label>
                 @if($event->image)
-                    <img src="{{ $event->image_url }}" alt="Current Image" class="h-32 w-auto object-cover rounded-lg border border-gray-200 mb-4">
+                    <img src="{{ $event->image_url }}" alt="Current Image" class="h-32 w-auto object-cover rounded-lg border border-gray-200 mb-4" referrerpolicy="no-referrer">
                 @endif
 
                 <label for="image" class="block text-sm font-medium text-gray-700">Ganti Gambar (Opsional)</label>

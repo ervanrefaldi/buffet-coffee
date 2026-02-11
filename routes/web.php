@@ -354,8 +354,8 @@ Route::get('/tentang', [PageController::class, 'about']);
 */
 Route::get('/event', function () {
     // Ambil event yang sedang aktif ATAU akan datang (Upcoming)
-    $events = DB::table('events')
-        ->where('end_date', '>=', date('Y-m-d')) 
+    // Gunakan Eloquent Model agar accessor image_url bisa berjalan
+    $events = \App\Models\Event::where('end_date', '>=', date('Y-m-d')) 
         ->orderBy('start_date', 'asc')
         ->get();
 
