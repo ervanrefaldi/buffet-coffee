@@ -50,8 +50,14 @@ class OwnerEventController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('events', 'public');
-            $imagePath = $path;
+            // Upload to ImgBB
+            $imageUrl = ImgBBService::upload($request->file('image'));
+            
+            if ($imageUrl) {
+                $imagePath = $imageUrl;
+            } else {
+                $imagePath = $request->file('image')->store('events', 'public');
+            }
         }
 
         Event::create([
@@ -101,13 +107,19 @@ class OwnerEventController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            // Hapus file lama jika ada menggunakan Storage Facade
-            if ($event->image) {
+            // Hapus file lama jika ada (lokal)
+            if ($event->image && !filter_var($event->image, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($event->image);
             }
 
-            $path = $request->file('image')->store('events', 'public');
-            $data['image'] = $path;
+            // Upload to ImgBB
+            $imageUrl = ImgBBService::upload($request->file('image'));
+            
+            if ($imageUrl) {
+                $data['image'] = $imageUrl;
+            } else {
+                $data['image'] = $request->file('image')->store('events', 'public');
+            }
         }
 
         $event->update($data);

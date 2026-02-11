@@ -24,7 +24,7 @@
             <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col space-y-3">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-lg overflow-hidden">
-                        <img class="h-full w-full object-cover" style="width:100%; height:100%; object-fit:cover;" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        <img class="h-full w-full object-cover" style="width:100%; height:100%; object-fit:cover;" src="{{ $product->image_url }}" alt="{{ $product->name }}">
                     </div>
                 <div class="flex-1">
                         <div class="text-base font-bold text-gray-900">{{ $product->name }}</div>
@@ -79,7 +79,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full overflow-hidden">
-                                    <img class="h-full w-full object-cover" style="width:100%; height:100%; object-fit:cover;" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                    <img class="h-full w-full object-cover" style="width:100%; height:100%; object-fit:cover;" src="{{ $product->image_url }}" alt="{{ $product->name }}">
                                 </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>

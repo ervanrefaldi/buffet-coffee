@@ -67,7 +67,7 @@
                                         $firstItem = $order->items->first();
                                     @endphp
                                     @if($firstItem && $firstItem->product->image)
-                                        <img src="{{ asset('storage/' . $firstItem->product->image) }}" class="w-full h-full object-cover">
+                                        <img src="{{ $firstItem->product->image_url }}" class="w-full h-full object-cover">
                                     @else
                                         <svg class="w-8 h-8 text-brown/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                                     @endif
@@ -93,7 +93,7 @@
                                         @foreach($order->items as $item)
                                             <div class="flex items-center gap-3 bg-cream/50 rounded-xl px-4 py-2 border border-brown/5">
                                                 @if($item->product->image)
-                                                    <img src="{{ asset('storage/' . $item->product->image) }}" class="w-8 h-8 object-contain">
+                                                    <img src="{{ $item->product->image_url }}" class="w-8 h-8 object-contain">
                                                 @endif
                                                 <span class="text-[10px] font-bold text-brown">{{ $item->quantity }}x {{ $item->product->name }} ({{ $item->variant }})</span>
                                             </div>

@@ -183,7 +183,7 @@
                             {{-- Image Glow --}}
                             <div class="absolute w-40 h-40 bg-gold/10 rounded-full blur-3xl scale-0 group-hover:scale-150 transition-transform duration-1000"></div>
                             
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width:100%; height:100%; object-fit:cover;" 
+                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width:100%; height:100%; object-fit:cover;" 
                                   class="relative z-10 w-full h-full object-cover filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)] group-hover:scale-110 transition-transform duration-700">
                         </div>
 

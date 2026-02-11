@@ -56,7 +56,7 @@
                     <div class="group bg-white rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 shadow-sm border border-brown/5 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-center gap-6 md:gap-8 relative overflow-hidden" id="cart-item-{{ $item->carts_id }}">
                         <!-- Image -->
                         <div class="h-24 w-24 md:h-32 md:w-32 bg-cream/30 rounded-2xl flex items-center justify-center overflow-hidden group-hover:bg-cream/50 transition-colors shrink-0">
-                            <img src="{{ asset('storage/' . $item->product->image) }}" class="max-h-[80%] object-contain drop-shadow-lg group-hover:scale-110 transition duration-500" 
+                            <img src="{{ $item->product->image_url }}" class="max-h-[80%] object-contain drop-shadow-lg group-hover:scale-110 transition duration-500" 
                                  onerror="this.onerror=null; this.src='/images/logo.png'; this.classList.add('opacity-10','grayscale');">
                         </div>
 

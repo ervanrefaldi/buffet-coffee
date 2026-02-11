@@ -46,8 +46,15 @@ class OwnerProductController extends Controller
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('menu', 'public');
-            $imagePath = $path;
+            // Priority: Upload to ImgBB for Cloud Run persistence
+            $imageUrl = ImgBBService::upload($request->file('image'));
+            
+            if ($imageUrl) {
+                $imagePath = $imageUrl;
+            } else {
+                // Fallback to local storage
+                $imagePath = $request->file('image')->store('menu', 'public');
+            }
         }
 
         Product::create([
@@ -99,13 +106,20 @@ class OwnerProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image) {
+            // Hapus gambar lama jika ada (hanya jika lokalan)
+            if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($product->image);
             }
 
-            $path = $request->file('image')->store('menu', 'public');
-            $product->image = $path;
+            // Priority: Upload to ImgBB
+            $imageUrl = ImgBBService::upload($request->file('image'));
+            
+            if ($imageUrl) {
+                $product->image = $imageUrl;
+            } else {
+                // Fallback to local storage
+                $product->image = $request->file('image')->store('menu', 'public');
+            }
         }
 
         $product->name = $request->name;

@@ -55,6 +55,11 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
+            // If it's a full URL (ImgBB), return as is
+            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+                return $this->image;
+            }
+            // If it's a local path
             return asset('storage/' . $this->image);
         }
         return asset('images/default.png');

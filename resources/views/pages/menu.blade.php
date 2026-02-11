@@ -72,7 +72,7 @@
                         {{-- Elegant Image Presentation --}}
                         <div class="relative aspect-square w-full mb-6 md:mb-8 flex items-center justify-center p-4 md:p-6 bg-transparent rounded-3xl overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-br from-cream to-transparent opacity-50"></div>
-                            <img src="{{ asset('storage/' . $item->image) }}" 
+                            <img src="{{ $item->image_url }}" 
                                  alt="{{ $item->name }}"
                                  style="width:100%; height:100%; object-fit:cover;"
                                  class="relative z-10 w-full h-full object-cover transform transition duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)] group-hover:drop-shadow-[0_25px_45px_rgba(197,163,88,0.25)]">
