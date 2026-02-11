@@ -1,6 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/fix-storage', function () {
+    try {
+        // Clear all caches
+        Artisan::call('optimize:clear');
+        
+        // Remove existing link if possible
+        $link = public_path('storage');
+        if (file_exists($link)) {
+            if (is_link($link)) {
+                unlink($link);
+            }
+        }
+        
+        Artisan::call('storage:link');
+        
+        return "Storage link created and cache cleared successfully!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
